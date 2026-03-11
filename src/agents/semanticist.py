@@ -16,6 +16,10 @@ class Semanticist:
             self.model = None
             print("Warning: GEMINI_API_KEY not set. Semanticist will be disabled.")
 
+    @property
+    def enabled(self) -> bool:
+        return self.model is not None
+
     async def generate_purpose(self, code: str) -> str:
         if not self.model:
             return "LLM Analysis Disabled"

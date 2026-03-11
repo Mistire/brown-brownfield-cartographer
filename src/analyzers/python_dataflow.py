@@ -22,6 +22,13 @@ class PythonDataFlowAnalyzer:
                     (string) @path
                 )
             ) @call
+
+            (call
+                function: (attribute
+                    object: (identifier) @obj
+                    attribute: (identifier) @method (#match? @method "^(fit|predict|score|transform)$")
+                )
+            ) @ml_call
         """)
 
     def extract_io(self, file_path: str) -> List[Dict[str, Any]]:
@@ -34,16 +41,27 @@ class PythonDataFlowAnalyzer:
             tree = parser.parse(content)
             
         ios = []
-        captures = self.io_query.captures(tree.root_node)
+        if hasattr(self.io_query, "captures"):
+            captures = self.io_query.captures(tree.root_node)
+        else:
+            from tree_sitter import QueryCursor
+            captures = QueryCursor().captures(self.io_query, tree.root_node)
         
         # Group captures by call
         calls = {}
+        ml_calls = []
         for node, tag in captures:
+            if tag == "ml_call":
+                method = content[node.child_by_field_name("function").child_by_field_name("attribute").start_byte:node.child_by_field_name("function").child_by_field_name("attribute").end_byte].decode("utf-8")
+                ml_calls.append({"method": method, "type": "transformation"})
+                continue
+                
             call_id = id(node) if tag == "call" else id(node.parent)
             if call_id not in calls: calls[call_id] = {}
             calls[call_id][tag] = node
 
         for call_id, nodes in calls.items():
+            if "method" not in nodes or "path" not in nodes: continue
             method = content[nodes["method"].start_byte:nodes["method"].end_byte].decode("utf-8")
             path = content[nodes["path"].start_byte:nodes["path"].end_byte].decode("utf-8").strip("'\"")
             
@@ -54,4 +72,5 @@ class PythonDataFlowAnalyzer:
                     "type": "source" if method.startswith("read_") else "sink"
                 })
         
+        ios.extend(ml_calls)
         return ios

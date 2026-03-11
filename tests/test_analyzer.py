@@ -21,8 +21,8 @@ def my_function(a, b):
     results = analyzer.analyze_module(str(file_path))
     
     assert results["language"] == "python"
-    assert any("import os" in imp for imp in results["imports"])
-    assert any("from datetime import datetime" in imp for imp in results["imports"])
+    assert "os" in results["imports"]
+    assert "datetime" in results["imports"]
     assert "MyClass" in results["classes"]
     assert "my_function" in results["functions"]
     assert "method" in results["functions"]

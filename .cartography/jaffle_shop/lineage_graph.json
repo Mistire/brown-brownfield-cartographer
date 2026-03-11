@@ -1,0 +1,98 @@
+{
+  "directed": true,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "type": "dataset",
+      "subtype": "dbt_model",
+      "id": "stg_payments"
+    },
+    {
+      "id": "models/orders.sql"
+    },
+    {
+      "type": "dataset",
+      "subtype": "dbt_model",
+      "id": "stg_orders"
+    },
+    {
+      "type": "dataset",
+      "subtype": "dbt_model",
+      "id": "stg_customers"
+    },
+    {
+      "id": "models/customers.sql"
+    },
+    {
+      "type": "dataset",
+      "subtype": "dbt_model",
+      "id": "customers"
+    },
+    {
+      "type": "dataset",
+      "subtype": "dbt_model",
+      "id": "orders"
+    },
+    {
+      "id": "raw_payments"
+    },
+    {
+      "id": "models/staging/stg_payments.sql"
+    },
+    {
+      "id": "raw_customers"
+    },
+    {
+      "id": "models/staging/stg_customers.sql"
+    },
+    {
+      "id": "raw_orders"
+    },
+    {
+      "id": "models/staging/stg_orders.sql"
+    }
+  ],
+  "edges": [
+    {
+      "type": "CONSUMES",
+      "source": "stg_payments",
+      "target": "models/orders.sql"
+    },
+    {
+      "type": "CONSUMES",
+      "source": "stg_payments",
+      "target": "models/customers.sql"
+    },
+    {
+      "type": "CONSUMES",
+      "source": "stg_orders",
+      "target": "models/orders.sql"
+    },
+    {
+      "type": "CONSUMES",
+      "source": "stg_orders",
+      "target": "models/customers.sql"
+    },
+    {
+      "type": "CONSUMES",
+      "source": "stg_customers",
+      "target": "models/customers.sql"
+    },
+    {
+      "type": "CONSUMES",
+      "source": "raw_payments",
+      "target": "models/staging/stg_payments.sql"
+    },
+    {
+      "type": "CONSUMES",
+      "source": "raw_customers",
+      "target": "models/staging/stg_customers.sql"
+    },
+    {
+      "type": "CONSUMES",
+      "source": "raw_orders",
+      "target": "models/staging/stg_orders.sql"
+    }
+  ]
+}

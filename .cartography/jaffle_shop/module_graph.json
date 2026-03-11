@@ -1,0 +1,96 @@
+{
+  "directed": true,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "path": "dbt_project.yml",
+      "language": "yaml",
+      "purpose_statement": null,
+      "domain_cluster": null,
+      "complexity_score": 0.0,
+      "change_velocity_30d": 0,
+      "is_dead_code_candidate": false,
+      "last_modified": null,
+      "id": "dbt_project.yml"
+    },
+    {
+      "path": "models/orders.sql",
+      "language": "sql",
+      "purpose_statement": null,
+      "domain_cluster": null,
+      "complexity_score": 0.0,
+      "change_velocity_30d": 0,
+      "is_dead_code_candidate": false,
+      "last_modified": null,
+      "id": "models/orders.sql"
+    },
+    {
+      "path": "models/customers.sql",
+      "language": "sql",
+      "purpose_statement": null,
+      "domain_cluster": null,
+      "complexity_score": 0.0,
+      "change_velocity_30d": 0,
+      "is_dead_code_candidate": false,
+      "last_modified": null,
+      "id": "models/customers.sql"
+    },
+    {
+      "path": "models/schema.yml",
+      "language": "yaml",
+      "purpose_statement": null,
+      "domain_cluster": null,
+      "complexity_score": 0.0,
+      "change_velocity_30d": 0,
+      "is_dead_code_candidate": false,
+      "last_modified": null,
+      "id": "models/schema.yml"
+    },
+    {
+      "path": "models/staging/stg_payments.sql",
+      "language": "sql",
+      "purpose_statement": null,
+      "domain_cluster": null,
+      "complexity_score": 0.0,
+      "change_velocity_30d": 0,
+      "is_dead_code_candidate": false,
+      "last_modified": null,
+      "id": "models/staging/stg_payments.sql"
+    },
+    {
+      "path": "models/staging/stg_customers.sql",
+      "language": "sql",
+      "purpose_statement": null,
+      "domain_cluster": null,
+      "complexity_score": 0.0,
+      "change_velocity_30d": 0,
+      "is_dead_code_candidate": false,
+      "last_modified": null,
+      "id": "models/staging/stg_customers.sql"
+    },
+    {
+      "path": "models/staging/schema.yml",
+      "language": "yaml",
+      "purpose_statement": null,
+      "domain_cluster": null,
+      "complexity_score": 0.0,
+      "change_velocity_30d": 0,
+      "is_dead_code_candidate": false,
+      "last_modified": null,
+      "id": "models/staging/schema.yml"
+    },
+    {
+      "path": "models/staging/stg_orders.sql",
+      "language": "sql",
+      "purpose_statement": null,
+      "domain_cluster": null,
+      "complexity_score": 0.0,
+      "change_velocity_30d": 0,
+      "is_dead_code_candidate": false,
+      "last_modified": null,
+      "id": "models/staging/stg_orders.sql"
+    }
+  ],
+  "edges": []
+}

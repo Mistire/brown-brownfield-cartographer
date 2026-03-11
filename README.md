@@ -47,23 +47,45 @@ The Brownfield Cartographer is a multi-agent system designed to rapidly map and 
    export GEMINI_API_KEY="your_api_key_here"
    ```
 
-## Usage
+## Usage (Simplified 🚀)
 
-### Analyze a Codebase
+Use the `./cartographer.sh` helper script for the fastest workflow.
 
-Point the Cartographer at any local repository path:
-
+### 1. Analyze a Repository
+Map any GitHub repository or local path:
 ```bash
-uv run python src/cli.py /path/to/target/repo
+./cartographer.sh map https://github.com/dbt-labs/jaffle_shop
+```
+*Artifacts are saved to `.cartography/jaffle_shop/`.*
+
+### 2. View the Dashboard
+Launch the interactive visualization with automatic port-cleanup:
+```bash
+./cartographer.sh view jaffle_shop
+```
+*Visit http://localhost:8000 to explore.*
+
+### 3. List Mapped Projects
+See all your analyzed codebases:
+```bash
+./cartographer.sh list
 ```
 
-This will generate architectural artifacts in the `.cartography/` directory.
+---
 
-### Key Outputs
+## Technical CLI Usage
 
-- **`.cartography/CODEBASE.md`**: A living context file for AI coding agents.
-- **`.cartography/module_graph.json`**: Structural dependency graph.
-- **`.cartography/cartography_trace.jsonl`**: Audit log of all analysis actions.
+For advanced users, use the structured CLI:
+
+```bash
+uv run cartographer /path/to/target/repo
+```
+
+## Outputs
+Each project generates its own set of artifacts in `.cartography/<project_name>/`:
+- **`interactive_graph.html`**: Premium, full-screen interactive network map.
+- **`onboarding_brief.md`**: "Day-One" brief of complexity and velocity hotspots.
+- **`CODEBASE.md`**: Living technical specification with Mermaid diagrams.
 
 ## Architecture
 

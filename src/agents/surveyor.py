@@ -6,6 +6,7 @@ from typing import Dict, List, Any
 import networkx as nx
 from src.models.graph import ModuleNode, Edge
 from src.analyzers.tree_sitter_analyzer import SurveyorAnalyzer
+from src.utils.resolver import PathResolver
 
 class GitVelocityAnalyzer:
     """
@@ -35,16 +36,17 @@ class Surveyor:
         self.repo_path = repo_path
         self.analyzer = SurveyorAnalyzer()
         self.velocity_analyzer = GitVelocityAnalyzer(repo_path)
+        self.resolver = PathResolver(repo_path)
         self.graph = nx.DiGraph()
 
     def run(self):
         velocity = self.velocity_analyzer.get_velocity()
         
         for root, _, files in os.walk(self.repo_path):
-            if ".git" in root or ".venv" in root:
+            if ".git" in root or ".venv" in root or "__pycache__" in root:
                 continue
             for file in files:
-                if file.endswith((".py", ".sql", ".yaml", ".yml")):
+                if file.endswith((".py", ".sql", ".yaml", ".yml", ".ipynb")):
                     full_path = os.path.join(root, file)
                     rel_path = os.path.relpath(full_path, self.repo_path)
                     
@@ -55,15 +57,17 @@ class Surveyor:
                     node = ModuleNode(
                         path=rel_path,
                         language=analysis.get("language", "unknown"),
+                        complexity_score=analysis.get("complexity_score", 0.0),
                         change_velocity_30d=velocity.get(rel_path, 0)
                     )
                     
                     self.graph.add_node(rel_path, **node.model_dump())
                     
-                    # Add imports as edges (very basic resolution)
-                    for imp in analysis.get("imports", []):
-                        # This needs better resolution logic for real repos
-                        self.graph.add_edge(rel_path, imp, type="IMPORTS")
+                    # Resolve imports semantically
+                    for imp_str in analysis.get("imports", []):
+                        resolved_path = self.resolver.resolve_import(imp_str, full_path)
+                        target = resolved_path if resolved_path else imp_str
+                        self.graph.add_edge(rel_path, target, type="IMPORTS", raw_string=imp_str)
 
     def save_graph(self, output_path: str):
         os.makedirs(os.path.dirname(output_path), exist_ok=True)

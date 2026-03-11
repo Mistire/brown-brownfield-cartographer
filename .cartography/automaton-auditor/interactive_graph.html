@@ -1,0 +1,321 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script>function neighbourhoodHighlight(params) {
+  // console.log("in nieghbourhoodhighlight");
+  allNodes = nodes.get({ returnType: "Object" });
+  // originalNodes = JSON.parse(JSON.stringify(allNodes));
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    highlightActive = true;
+    var i, j;
+    var selectedNode = params.nodes[0];
+    var degrees = 2;
+
+    // mark all nodes as hard to read.
+    for (let nodeId in allNodes) {
+      // nodeColors[nodeId] = allNodes[nodeId].color;
+      allNodes[nodeId].color = "rgba(200,200,200,0.5)";
+      if (allNodes[nodeId].hiddenLabel === undefined) {
+        allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+    var connectedNodes = network.getConnectedNodes(selectedNode);
+    var allConnectedNodes = [];
+
+    // get the second degree nodes
+    for (i = 1; i < degrees; i++) {
+      for (j = 0; j < connectedNodes.length; j++) {
+        allConnectedNodes = allConnectedNodes.concat(
+          network.getConnectedNodes(connectedNodes[j])
+        );
+      }
+    }
+
+    // all second degree nodes get a different color and their label back
+    for (i = 0; i < allConnectedNodes.length; i++) {
+      // allNodes[allConnectedNodes[i]].color = "pink";
+      allNodes[allConnectedNodes[i]].color = "rgba(150,150,150,0.75)";
+      if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[allConnectedNodes[i]].label =
+          allNodes[allConnectedNodes[i]].hiddenLabel;
+        allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // all first degree nodes get their own color and their label back
+    for (i = 0; i < connectedNodes.length; i++) {
+      // allNodes[connectedNodes[i]].color = undefined;
+      allNodes[connectedNodes[i]].color = nodeColors[connectedNodes[i]];
+      if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[connectedNodes[i]].label =
+          allNodes[connectedNodes[i]].hiddenLabel;
+        allNodes[connectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // the main node gets its own color and its label back.
+    // allNodes[selectedNode].color = undefined;
+    allNodes[selectedNode].color = nodeColors[selectedNode];
+    if (allNodes[selectedNode].hiddenLabel !== undefined) {
+      allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
+      allNodes[selectedNode].hiddenLabel = undefined;
+    }
+  } else if (highlightActive === true) {
+    // console.log("highlightActive was true");
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      // allNodes[nodeId].color = "purple";
+      allNodes[nodeId].color = nodeColors[nodeId];
+      // delete allNodes[nodeId].color;
+      if (allNodes[nodeId].hiddenLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
+        allNodes[nodeId].hiddenLabel = undefined;
+      }
+    }
+    highlightActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    // console.log("Nothing was selected");
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        // allNodes[nodeId].color = {};
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function filterHighlight(params) {
+  allNodes = nodes.get({ returnType: "Object" });
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    filterActive = true;
+    let selectedNodes = params.nodes;
+
+    // hiding all nodes and saving the label
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = true;
+      if (allNodes[nodeId].savedLabel === undefined) {
+        allNodes[nodeId].savedLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+
+    for (let i=0; i < selectedNodes.length; i++) {
+      allNodes[selectedNodes[i]].hidden = false;
+      if (allNodes[selectedNodes[i]].savedLabel !== undefined) {
+        allNodes[selectedNodes[i]].label = allNodes[selectedNodes[i]].savedLabel;
+        allNodes[selectedNodes[i]].savedLabel = undefined;
+      }
+    }
+
+  } else if (filterActive === true) {
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = false;
+      if (allNodes[nodeId].savedLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].savedLabel;
+        allNodes[nodeId].savedLabel = undefined;
+      }
+    }
+    filterActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function selectNode(nodes) {
+  network.selectNodes(nodes);
+  neighbourhoodHighlight({ nodes: nodes });
+  return nodes;
+}
+
+function selectNodes(nodes) {
+  network.selectNodes(nodes);
+  filterHighlight({nodes: nodes});
+  return nodes;
+}
+
+function highlightFilter(filter) {
+  let selectedNodes = []
+  let selectedProp = filter['property']
+  if (filter['item'] === 'node') {
+    let allNodes = nodes.get({ returnType: "Object" });
+    for (let nodeId in allNodes) {
+      if (allNodes[nodeId][selectedProp] && filter['value'].includes((allNodes[nodeId][selectedProp]).toString())) {
+        selectedNodes.push(nodeId)
+      }
+    }
+  }
+  else if (filter['item'] === 'edge'){
+    let allEdges = edges.get({returnType: 'object'});
+    // check if the selected property exists for selected edge and select the nodes connected to the edge
+    for (let edge in allEdges) {
+      if (allEdges[edge][selectedProp] && filter['value'].includes((allEdges[edge][selectedProp]).toString())) {
+        selectedNodes.push(allEdges[edge]['from'])
+        selectedNodes.push(allEdges[edge]['to'])
+      }
+    }
+  }
+  selectNodes(selectedNodes)
+}</script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+            
+            
+            
+            
+            
+
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 100vh;
+                 background-color: #0f172a;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#f59e0b", "font": {"color": "white"}, "id": "main.py", "label": "main.py", "shape": "dot", "title": "Path: main.py\nComplexity: 16.0\nPurpose: None"}, {"color": "#10b981", "font": {"color": "white"}, "id": "os", "label": "os", "shape": "dot", "title": "Path: os\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "json", "label": "json", "shape": "dot", "title": "Path: json\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "sys", "label": "sys", "shape": "dot", "title": "Path: sys\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "dotenv", "label": "dotenv", "shape": "dot", "title": "Path: dotenv\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "src/graph.py", "label": "graph.py", "shape": "dot", "title": "Path: src/graph.py\nComplexity: 4.0\nPurpose: None"}, {"color": "#10b981", "font": {"color": "white"}, "id": "src/state.py", "label": "state.py", "shape": "dot", "title": "Path: src/state.py\nComplexity: 1.0\nPurpose: None"}, {"color": "#10b981", "font": {"color": "white"}, "id": "argparse", "label": "argparse", "shape": "dot", "title": "Path: argparse\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "test_local.py", "label": "test_local.py", "shape": "dot", "title": "Path: test_local.py\nComplexity: 7.0\nPurpose: None"}, {"color": "#10b981", "font": {"color": "white"}, "id": "traceback", "label": "traceback", "shape": "dot", "title": "Path: traceback\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "test_llm.py", "label": "test_llm.py", "shape": "dot", "title": "Path: test_llm.py\nComplexity: 4.0\nPurpose: None"}, {"color": "#10b981", "font": {"color": "white"}, "id": "src/tools/llm_tools.py", "label": "llm_tools.py", "shape": "dot", "title": "Path: src/tools/llm_tools.py\nComplexity: 5.0\nPurpose: None"}, {"color": "#10b981", "font": {"color": "white"}, "id": "src/__init__.py", "label": "__init__.py", "shape": "dot", "title": "Path: src/__init__.py\nComplexity: 1.0\nPurpose: None"}, {"color": "#10b981", "font": {"color": "white"}, "id": "langgraph.graph", "label": "langgraph.graph", "shape": "dot", "title": "Path: langgraph.graph\nComplexity: 0\nPurpose: N/A"}, {"color": "#ef4444", "font": {"color": "white"}, "id": "src/nodes/detectives.py", "label": "detectives.py", "shape": "dot", "title": "Path: src/nodes/detectives.py\nComplexity: 36.0\nPurpose: None"}, {"color": "#10b981", "font": {"color": "white"}, "id": "src/nodes/judges.py", "label": "judges.py", "shape": "dot", "title": "Path: src/nodes/judges.py\nComplexity: 10.0\nPurpose: None"}, {"color": "#f59e0b", "font": {"color": "white"}, "id": "src/nodes/justice.py", "label": "justice.py", "shape": "dot", "title": "Path: src/nodes/justice.py\nComplexity: 22.0\nPurpose: None"}, {"color": "#10b981", "font": {"color": "white"}, "id": "operator", "label": "operator", "shape": "dot", "title": "Path: operator\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "typing", "label": "typing", "shape": "dot", "title": "Path: typing\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "typing_extensions", "label": "typing_extensions", "shape": "dot", "title": "Path: typing_extensions\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "pydantic", "label": "pydantic", "shape": "dot", "title": "Path: pydantic\nComplexity: 0\nPurpose: N/A"}, {"color": "#f59e0b", "font": {"color": "white"}, "id": "src/tools/safety.py", "label": "safety.py", "shape": "dot", "title": "Path: src/tools/safety.py\nComplexity: 11.0\nPurpose: None"}, {"color": "#10b981", "font": {"color": "white"}, "id": "re", "label": "re", "shape": "dot", "title": "Path: re\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "subprocess", "label": "subprocess", "shape": "dot", "title": "Path: subprocess\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "urllib.parse", "label": "urllib.parse", "shape": "dot", "title": "Path: urllib.parse\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "src/tools/__init__.py", "label": "__init__.py", "shape": "dot", "title": "Path: src/tools/__init__.py\nComplexity: 1.0\nPurpose: None"}, {"color": "#ef4444", "font": {"color": "white"}, "id": "src/tools/repo_tools.py", "label": "repo_tools.py", "shape": "dot", "title": "Path: src/tools/repo_tools.py\nComplexity: 94.0\nPurpose: None"}, {"color": "#10b981", "font": {"color": "white"}, "id": "tempfile", "label": "tempfile", "shape": "dot", "title": "Path: tempfile\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "ast", "label": "ast", "shape": "dot", "title": "Path: ast\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "pathlib", "label": "pathlib", "shape": "dot", "title": "Path: pathlib\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "shutil", "label": "shutil", "shape": "dot", "title": "Path: shutil\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "langchain_google_genai", "label": "langchain_google_genai", "shape": "dot", "title": "Path: langchain_google_genai\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "langchain_openai", "label": "langchain_openai", "shape": "dot", "title": "Path: langchain_openai\nComplexity: 0\nPurpose: N/A"}, {"color": "#ef4444", "font": {"color": "white"}, "id": "src/tools/doc_tools.py", "label": "doc_tools.py", "shape": "dot", "title": "Path: src/tools/doc_tools.py\nComplexity: 27.0\nPurpose: None"}, {"color": "#10b981", "font": {"color": "white"}, "id": "fitz", "label": "fitz", "shape": "dot", "title": "Path: fitz\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "docling.document_converter", "label": "docling.document_converter", "shape": "dot", "title": "Path: docling.document_converter\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "datetime", "label": "datetime", "shape": "dot", "title": "Path: datetime\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "src/nodes/__init__.py", "label": "__init__.py", "shape": "dot", "title": "Path: src/nodes/__init__.py\nComplexity: 1.0\nPurpose: None"}, {"color": "#10b981", "font": {"color": "white"}, "id": "langchain_core.messages", "label": "langchain_core.messages", "shape": "dot", "title": "Path: langchain_core.messages\nComplexity: 0\nPurpose: N/A"}, {"color": "#10b981", "font": {"color": "white"}, "id": "base64", "label": "base64", "shape": "dot", "title": "Path: base64\nComplexity: 0\nPurpose: N/A"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "color": "#334155", "from": "main.py", "to": "os"}, {"arrows": "to", "color": "#334155", "from": "main.py", "to": "json"}, {"arrows": "to", "color": "#334155", "from": "main.py", "to": "sys"}, {"arrows": "to", "color": "#334155", "from": "main.py", "to": "dotenv"}, {"arrows": "to", "color": "#334155", "from": "main.py", "to": "src/graph.py"}, {"arrows": "to", "color": "#334155", "from": "main.py", "to": "src/state.py"}, {"arrows": "to", "color": "#334155", "from": "main.py", "to": "argparse"}, {"arrows": "to", "color": "#334155", "from": "src/graph.py", "to": "langgraph.graph"}, {"arrows": "to", "color": "#334155", "from": "src/graph.py", "to": "src/state.py"}, {"arrows": "to", "color": "#334155", "from": "src/graph.py", "to": "src/nodes/detectives.py"}, {"arrows": "to", "color": "#334155", "from": "src/graph.py", "to": "src/nodes/judges.py"}, {"arrows": "to", "color": "#334155", "from": "src/graph.py", "to": "src/nodes/justice.py"}, {"arrows": "to", "color": "#334155", "from": "src/state.py", "to": "operator"}, {"arrows": "to", "color": "#334155", "from": "src/state.py", "to": "typing"}, {"arrows": "to", "color": "#334155", "from": "src/state.py", "to": "typing_extensions"}, {"arrows": "to", "color": "#334155", "from": "src/state.py", "to": "pydantic"}, {"arrows": "to", "color": "#334155", "from": "test_local.py", "to": "os"}, {"arrows": "to", "color": "#334155", "from": "test_local.py", "to": "sys"}, {"arrows": "to", "color": "#334155", "from": "test_local.py", "to": "dotenv"}, {"arrows": "to", "color": "#334155", "from": "test_local.py", "to": "json"}, {"arrows": "to", "color": "#334155", "from": "test_local.py", "to": "src/graph.py"}, {"arrows": "to", "color": "#334155", "from": "test_local.py", "to": "traceback"}, {"arrows": "to", "color": "#334155", "from": "test_llm.py", "to": "os"}, {"arrows": "to", "color": "#334155", "from": "test_llm.py", "to": "dotenv"}, {"arrows": "to", "color": "#334155", "from": "test_llm.py", "to": "src/tools/llm_tools.py"}, {"arrows": "to", "color": "#334155", "from": "src/tools/llm_tools.py", "to": "os"}, {"arrows": "to", "color": "#334155", "from": "src/tools/llm_tools.py", "to": "langchain_google_genai"}, {"arrows": "to", "color": "#334155", "from": "src/tools/llm_tools.py", "to": "langchain_openai"}, {"arrows": "to", "color": "#334155", "from": "src/nodes/detectives.py", "to": "src/tools/llm_tools.py"}, {"arrows": "to", "color": "#334155", "from": "src/nodes/detectives.py", "to": "langchain_core.messages"}, {"arrows": "to", "color": "#334155", "from": "src/nodes/detectives.py", "to": "base64"}, {"arrows": "to", "color": "#334155", "from": "src/nodes/detectives.py", "to": "os"}, {"arrows": "to", "color": "#334155", "from": "src/nodes/detectives.py", "to": "typing"}, {"arrows": "to", "color": "#334155", "from": "src/nodes/detectives.py", "to": "src/state.py"}, {"arrows": "to", "color": "#334155", "from": "src/nodes/detectives.py", "to": "src/tools/__init__.py"}, {"arrows": "to", "color": "#334155", "from": "src/nodes/judges.py", "to": "json"}, {"arrows": "to", "color": "#334155", "from": "src/nodes/judges.py", "to": "os"}, {"arrows": "to", "color": "#334155", "from": "src/nodes/judges.py", "to": "typing"}, {"arrows": "to", "color": "#334155", "from": "src/nodes/judges.py", "to": "langchain_google_genai"}, {"arrows": "to", "color": "#334155", "from": "src/nodes/judges.py", "to": "langchain_openai"}, {"arrows": "to", "color": "#334155", "from": "src/nodes/judges.py", "to": "src/state.py"}, {"arrows": "to", "color": "#334155", "from": "src/nodes/judges.py", "to": "src/tools/llm_tools.py"}, {"arrows": "to", "color": "#334155", "from": "src/nodes/justice.py", "to": "datetime"}, {"arrows": "to", "color": "#334155", "from": "src/nodes/justice.py", "to": "typing"}, {"arrows": "to", "color": "#334155", "from": "src/nodes/justice.py", "to": "json"}, {"arrows": "to", "color": "#334155", "from": "src/nodes/justice.py", "to": "src/state.py"}, {"arrows": "to", "color": "#334155", "from": "src/nodes/justice.py", "to": "os"}, {"arrows": "to", "color": "#334155", "from": "src/tools/safety.py", "to": "re"}, {"arrows": "to", "color": "#334155", "from": "src/tools/safety.py", "to": "subprocess"}, {"arrows": "to", "color": "#334155", "from": "src/tools/safety.py", "to": "typing"}, {"arrows": "to", "color": "#334155", "from": "src/tools/safety.py", "to": "urllib.parse"}, {"arrows": "to", "color": "#334155", "from": "src/tools/repo_tools.py", "to": "os"}, {"arrows": "to", "color": "#334155", "from": "src/tools/repo_tools.py", "to": "tempfile"}, {"arrows": "to", "color": "#334155", "from": "src/tools/repo_tools.py", "to": "ast"}, {"arrows": "to", "color": "#334155", "from": "src/tools/repo_tools.py", "to": "re"}, {"arrows": "to", "color": "#334155", "from": "src/tools/repo_tools.py", "to": "typing"}, {"arrows": "to", "color": "#334155", "from": "src/tools/repo_tools.py", "to": "pathlib"}, {"arrows": "to", "color": "#334155", "from": "src/tools/repo_tools.py", "to": "src/state.py"}, {"arrows": "to", "color": "#334155", "from": "src/tools/repo_tools.py", "to": "src/tools/__init__.py"}, {"arrows": "to", "color": "#334155", "from": "src/tools/repo_tools.py", "to": "shutil"}, {"arrows": "to", "color": "#334155", "from": "src/tools/doc_tools.py", "to": "re"}, {"arrows": "to", "color": "#334155", "from": "src/tools/doc_tools.py", "to": "fitz"}, {"arrows": "to", "color": "#334155", "from": "src/tools/doc_tools.py", "to": "pathlib"}, {"arrows": "to", "color": "#334155", "from": "src/tools/doc_tools.py", "to": "typing"}, {"arrows": "to", "color": "#334155", "from": "src/tools/doc_tools.py", "to": "src/state.py"}, {"arrows": "to", "color": "#334155", "from": "src/tools/doc_tools.py", "to": "src/tools/llm_tools.py"}, {"arrows": "to", "color": "#334155", "from": "src/tools/doc_tools.py", "to": "docling.document_converter"}, {"arrows": "to", "color": "#334155", "from": "src/tools/doc_tools.py", "to": "json"}, {"arrows": "to", "color": "#334155", "from": "src/tools/doc_tools.py", "to": "tempfile"}, {"arrows": "to", "color": "#334155", "from": "src/tools/doc_tools.py", "to": "os"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"physics": {"enabled": false, "stabilization": false}, "interaction": {"hover": true, "navigationButtons": true, "multiselect": true}, "nodes": {"borderWidth": 2, "borderWidthSelected": 4, "shadow": true}, "edges": {"color": {"inherit": true}, "smooth": {"type": "continuous"}, "shadow": true}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
