@@ -41,6 +41,33 @@ class KnowledgeGraph:
     def find_sinks(self) -> List[str]:
         return [n for n in self.lineage_graph.nodes() if self.lineage_graph.out_degree(n) == 0]
 
+    def find_dead_code(self) -> List[str]:
+        """Nodes with zero in-degree in the dependency graph (dead code candidates)."""
+        return [n for n in self.module_graph.nodes() if self.module_graph.in_degree(n) == 0]
+
+    def enrich_metadata(self):
+        """Compute advanced analytics and inject into node metadata."""
+        if len(self.module_graph) == 0:
+            return
+            
+        # PageRank (Centrality)
+        pr = self.get_pagerank()
+        for node, rank in pr.items():
+            self.module_graph.nodes[node]["pagerank"] = rank
+            self.module_graph.nodes[node]["is_hub"] = rank > (1.0 / len(self.module_graph)) * 1.5
+
+        # SCC (Circular Dependencies)
+        sccs = self.get_strongly_connected()
+        for i, scc in enumerate(sccs):
+            for node in scc:
+                self.module_graph.nodes[node]["scc_id"] = i
+                self.module_graph.nodes[node]["in_circular_dep"] = True
+
+        # Dead Code
+        dead = self.find_dead_code()
+        for node in dead:
+            self.module_graph.nodes[node]["is_dead_candidate"] = True
+
     def serialize(self, output_dir: str):
         os.makedirs(output_dir, exist_ok=True)
         

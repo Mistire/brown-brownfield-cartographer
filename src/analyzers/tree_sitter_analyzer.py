@@ -61,8 +61,20 @@ class SurveyorAnalyzer:
         
         if ext in [".py", ".ipynb"]:
             return self._analyze_python(content, tree, path)
+        elif ext == ".sql":
+            return self._analyze_sql(content, tree, path)
+        elif ext in [".yaml", ".yml"]:
+            return self._analyze_yaml(content, tree, path)
         
         return {"path": path, "status": "unsupported_language_analysis", "language": self.router.EXTENSION_MAP.get(ext, "unknown")}
+
+    def _get_captures(self, query: tree_sitter.Query, node: tree_sitter.Node) -> List[Any]:
+        """Helper to handle tree-sitter 0.21 vs 0.22+ capture API."""
+        if hasattr(query, "captures"):
+            return query.captures(node)
+        else:
+            from tree_sitter import QueryCursor
+            return QueryCursor().captures(query, node)
 
     def _extract_notebook_code(self, path: str) -> bytes:
         """Extracts and concatenates Python code from notebook cells."""
@@ -89,29 +101,20 @@ class SurveyorAnalyzer:
     def _analyze_python(self, content: bytes, tree: tree_sitter.Tree, path: str) -> Dict[str, Any]:
         language = get_language("python")
         
-        # Queries for imports, functions, and classes
         import_query = language.query("""
-            (import_from_statement 
-                module_name: (dotted_name) @mod)
-            (import_from_statement 
-                module_name: (relative_import) @mod)
-            (import_statement 
-                name: (dotted_name) @mod)
+            (import_from_statement module_name: (dotted_name) @mod)
+            (import_from_statement module_name: (relative_import) @mod)
+            (import_statement name: (dotted_name) @mod)
         """)
         
         function_query = language.query("""
-            (function_definition
-                name: (identifier) @name
-            ) @func
+            (function_definition name: (identifier) @name) @func
         """)
         
         class_query = language.query("""
-            (class_definition
-                name: (identifier) @name
-            ) @class
+            (class_definition name: (identifier) @name) @class
         """)
         
-        # For complexity, count control flow nodes
         complexity_query = language.query("""
             (if_statement) @if
             (for_statement) @for
@@ -127,51 +130,84 @@ class SurveyorAnalyzer:
             "imports": [],
             "functions": [],
             "classes": [],
-            "complexity_score": 1.0, # Baseline
+            "complexity_score": 1.0,
             "language": "python"
         }
 
-        # Extract Imports
-        if hasattr(import_query, "captures"):
-            captures = import_query.captures(tree.root_node)
-        else:
-            from tree_sitter import QueryCursor
-            captures = QueryCursor().captures(import_query, tree.root_node)
+        # Imports
+        for node, _ in self._get_captures(import_query, tree.root_node):
+            name = content[node.start_byte:node.end_byte].decode("utf-8")
+            if name == "*":
+                # Flag star import in metadata if we can, 
+                # for now just add a special marker to imports
+                if "STAR_IMPORT" not in results["imports"]:
+                    results["imports"].append("STAR_IMPORT")
+                continue
+            if name not in results["imports"]:
+                results["imports"].append(name)
 
-        for node, tag in captures:
-            imp_name = content[node.start_byte:node.end_byte].decode("utf-8")
-            if imp_name not in results["imports"]:
-                results["imports"].append(imp_name)
-
-        # Extract Functions
-        if hasattr(function_query, "captures"):
-            captures = function_query.captures(tree.root_node)
-        else:
-            from tree_sitter import QueryCursor
-            captures = QueryCursor().captures(function_query, tree.root_node)
-
-        for node, tag in captures:
+        # Functions
+        for node, tag in self._get_captures(function_query, tree.root_node):
             if tag == "name":
                 results["functions"].append(content[node.start_byte:node.end_byte].decode("utf-8"))
 
-        # Extract Classes
-        if hasattr(class_query, "captures"):
-            captures = class_query.captures(tree.root_node)
-        else:
-            from tree_sitter import QueryCursor
-            captures = QueryCursor().captures(class_query, tree.root_node)
-
-        for node, tag in captures:
+        # Classes
+        for node, tag in self._get_captures(class_query, tree.root_node):
             if tag == "name":
                 results["classes"].append(content[node.start_byte:node.end_byte].decode("utf-8"))
 
-        # Calculate Complexity
-        if hasattr(complexity_query, "captures"):
-            control_nodes = complexity_query.captures(tree.root_node)
-        else:
-            from tree_sitter import QueryCursor
-            control_nodes = QueryCursor().captures(complexity_query, tree.root_node)
+        # Complexity
+        results["complexity_score"] += len(self._get_captures(complexity_query, tree.root_node))
+        return results
 
-        results["complexity_score"] += len(control_nodes)
+    def _analyze_sql(self, content: bytes, tree: tree_sitter.Tree, path: str) -> Dict[str, Any]:
+        language = get_language("sql")
+        
+        # Simpler queries to avoid version-specific node type errors
+        # Focus on identifiers used as table names or CTE names
+        relation_query = language.query("""
+            (identifier) @id
+        """)
+        
+        results = {
+            "path": path,
+            "imports": [], 
+            "ctes": [],
+            "complexity_score": 1.0,
+            "language": "sql"
+        }
+        
+        # We'll filter ids by looking at their parents in a follow-up if needed,
+        # but for now, just capturing identifiers is a good start for building the map.
+        for node, _ in self._get_captures(relation_query, tree.root_node):
+            name = content[node.start_byte:node.end_byte].decode("utf-8")
+            # Heuristic: Uppercase or snake_case might be tables
+            if name.islower() and "_" in name or name.isupper():
+                if name not in results["imports"]:
+                    results["imports"].append(name)
+                    
+        return results
 
+    def _analyze_yaml(self, content: bytes, tree: tree_sitter.Tree, path: str) -> Dict[str, Any]:
+        language = get_language("yaml")
+        
+        # Simplified YAML query to just find keys
+        key_query = language.query("""
+            (block_mapping_pair key: (_) @key)
+        """)
+        
+        results = {
+            "path": path,
+            "keys": [],
+            "imports": [],
+            "complexity_score": 1.0,
+            "language": "yaml"
+        }
+        
+        for node, _ in self._get_captures(key_query, tree.root_node):
+            key = content[node.start_byte:node.end_byte].decode("utf-8").strip().replace(":", "")
+            if key not in results["keys"]:
+                results["keys"].append(key)
+        
+        results["complexity_score"] += len(results["keys"]) * 0.5
         return results

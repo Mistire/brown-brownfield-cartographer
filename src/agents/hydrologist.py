@@ -7,56 +7,78 @@ from src.analyzers.sql_lineage import SQLLineageAnalyzer
 from src.analyzers.dag_config_parser import DAGConfigParser
 
 class Hydrologist:
-    def __init__(self, repo_path: str):
+    def __init__(self, repo_path: str, graph: nx.DiGraph = None):
         self.repo_path = repo_path
         self.python_analyzer = PythonDataFlowAnalyzer()
         self.sql_analyzer = SQLLineageAnalyzer()
         self.config_parser = DAGConfigParser()
-        self.lineage_graph = nx.DiGraph()
+        self.lineage_graph = graph if graph is not None else nx.DiGraph()
 
     def run(self):
+        # Progress tracking
+        total_files = 0
         for root, _, files in os.walk(self.repo_path):
+            if ".cartography" in root: continue
+            total_files += len([f for f in files if f.endswith((".py", ".sql", ".yml", ".yaml"))])
+            
+        processed_count = 0
+        print(f"Lineage scan: Mapping flows across {total_files} files.")
+
+        for root, _, files in os.walk(self.repo_path):
+            if ".cartography" in root: continue
             for file in files:
                 full_path = os.path.join(root, file)
                 rel_path = os.path.relpath(full_path, self.repo_path)
                 
-                if file.endswith(".py"):
-                    ios = self.python_analyzer.extract_io(full_path)
-                    for io in ios:
-                        if "path" not in io:
-                            # Internal transformation (e.g., fit/predict)
-                            # For now, we just skip as we don't have a dataset node to link to
-                            continue
+                if file.endswith((".py", ".sql", ".yml", ".yaml")):
+                    processed_count += 1
+                    if processed_count % 10 == 0 or processed_count == total_files:
+                        print(f"[{processed_count}/{total_files}] Mapping lineage in {rel_path}...")
+                
+                try:
+                    if file.endswith(".py"):
+                        ios = self.python_analyzer.extract_io(full_path)
+                        for io in ios:
+                            if "path" not in io:
+                                continue
+                                
+                            dataset_name = io["path"]
+                            self.lineage_graph.add_node(dataset_name, type="dataset")
                             
-                        # Add dataset nodes and edges
-                        dataset_name = io["path"]
-                        self.lineage_graph.add_node(dataset_name, type="dataset")
-                        
-                        if io["type"] == "source":
-                            self.lineage_graph.add_edge(dataset_name, rel_path, type="CONSUMES")
-                        else:
-                            self.lineage_graph.add_edge(rel_path, dataset_name, type="PRODUCES")
+                            if io["type"] == "source":
+                                self.lineage_graph.add_edge(dataset_name, rel_path, type="CONSUMES")
+                            else:
+                                self.lineage_graph.add_edge(rel_path, dataset_name, type="PRODUCES")
+                                
+                    elif file.endswith(".sql"):
+                        with open(full_path, "r") as f:
+                            sql = f.read()
                             
-                elif file.endswith(".sql"):
-                    with open(full_path, "r") as f:
-                        sql = f.read()
-                        
-                    # Handle dbt refs
-                    refs = self.sql_analyzer.extract_dbt_refs(sql)
-                    for ref in refs:
-                        self.lineage_graph.add_edge(ref, rel_path, type="CONSUMES")
-                    
-                    # Handle standard SQL tables
-                    deps = self.sql_analyzer.extract_dependencies(sql)
-                    for dep in deps:
-                        if dep not in refs:
-                            self.lineage_graph.add_edge(dep, rel_path, type="CONSUMES")
+                        lineage_items = self.sql_analyzer.extract_lineage(sql)
+                        for item in lineage_items:
+                            source = item["source"]
+                            target = item["target"]
                             
-                elif file.endswith((".yml", ".yaml")):
-                    if file in ("schema.yml", "schema.yaml"):
-                        models = self.config_parser.parse_dbt_schema(full_path)
-                        for model in models:
-                            self.lineage_graph.add_node(model["name"], type="dataset", subtype="dbt_model")
+                            self.lineage_graph.add_node(source, type="dataset")
+                            self.lineage_graph.add_node(target, type="dataset")
+                            
+                            self.lineage_graph.add_edge(
+                                source, 
+                                target, 
+                                type="LINEAGE",
+                                transformation_type=item["type"],
+                                source_file=rel_path,
+                                logic_engine="sqlglot"
+                            )
+                                
+                    elif file.endswith((".yml", ".yaml")):
+                        if file in ("schema.yml", "schema.yaml"):
+                            models = self.config_parser.parse_dbt_schema(full_path)
+                            for model in models:
+                                self.lineage_graph.add_node(model["name"], type="dataset", subtype="dbt_model")
+                except Exception as e:
+                    print(f"Error mapping lineage for {rel_path}: {e}")
+                    continue
         
         # Post-process Airflow DAG structure
         config_results = self.config_parser.scan_configs(self.repo_path)
@@ -72,6 +94,14 @@ class Hydrologist:
         if node_name not in self.lineage_graph:
             return set()
         return set(nx.descendants(self.lineage_graph, node_name))
+
+    def find_sources(self) -> Set[str]:
+        """Find nodes with zero in-degree (data entry points)."""
+        return {n for n in self.lineage_graph.nodes() if self.lineage_graph.in_degree(n) == 0}
+
+    def find_sinks(self) -> Set[str]:
+        """Find nodes with zero out-degree (data exit points)."""
+        return {n for n in self.lineage_graph.nodes() if self.lineage_graph.out_degree(n) == 0}
 
     def save_graph(self, output_path: str):
         """Serialize the lineage graph to JSON."""

@@ -1,35 +1,92 @@
-from typing import List, Set
+from typing import List, Set, Dict, Any
 import sqlglot
 from sqlglot import exp
 
 class SQLLineageAnalyzer:
     """
-    Extracts table dependencies from SQL queries using sqlglot.
+    Extracts table dependencies and lineage from SQL queries using sqlglot.
+    Distinguishes between sources and targets and identifies transformation types.
     """
     def __init__(self, dialect: str = "postgres"):
         self.dialect = dialect
 
-    def extract_dependencies(self, sql: str) -> Set[str]:
-        dependencies = set()
+    def extract_lineage(self, sql: str) -> List[Dict[str, Any]]:
+        """
+        Extracts structured lineage from a SQL string.
+        Returns a list of dictionaries with:
+        - source: table name (input)
+        - target: table name (output)
+        - type: transformation type (e.g., SELECT, INSERT, CREATE)
+        """
+        lineage = []
         try:
-            # Parse the SQL and find all Table expressions
+            # First, extract dbt-only patterns that might not parse perfectly in standard dialects
+            dbt_refs = self.extract_dbt_refs(sql)
+            
+            # Use sqlglot for structured parsing
             for expression in sqlglot.parse(sql, read=self.dialect):
+                if not expression: continue
+                
+                # Identify targets (e.g., CREATE TABLE X, INSERT INTO Y)
+                targets = []
+                if isinstance(expression, exp.Create):
+                    targets.append(expression.this.this.name)
+                elif isinstance(expression, exp.Insert):
+                    targets.append(expression.this.this.name)
+                
+                # Identify sources (e.g., FROM A, JOIN B)
+                sources = set()
+                # Exclude CTEs from sources
+                ctes = {cte.alias: True for cte in expression.find_all(exp.CTE)}
+                
                 for table in expression.find_all(exp.Table):
-                    # In dbt, tables are often in {{ ref('...') }} which might not parse as a clean table name
-                    # but sqlglot handles standard SQL well.
                     table_name = table.name
-                    if table_name:
-                        dependencies.add(table_name)
+                    if table_name and table_name not in ctes:
+                        sources.add(table_name)
+                
+                # Merge dbt refs into sources
+                for ref in dbt_refs:
+                    sources.add(ref)
+
+                # Generate lineage items
+                for source in sources:
+                    for target in (targets if targets else ["unknown_sink"]):
+                        lineage.append({
+                            "source": source,
+                            "target": target,
+                            "type": expression.key.upper() if expression.key else "UNKNOWN"
+                        })
+                        
+                # If no targets yet but we have sources (e.g., a simple SELECT)
+                if not targets and sources:
+                    for source in sources:
+                        lineage.append({
+                            "source": source,
+                            "target": "result_set",
+                            "type": "SELECT"
+                        })
+
         except Exception as e:
-            print(f"Error parsing SQL: {e}")
+            # Fallback for complex Jinja or unsupported dialects: regex extraction
+            print(f"SQL Parser Error (using regex fallback): {e}")
+            refs = self.extract_dbt_refs(sql)
+            for ref in refs:
+                lineage.append({
+                    "source": ref,
+                    "target": "inferred_sink",
+                    "type": "REGEX_FALLBACK"
+                })
         
-        return dependencies
+        return lineage
 
     def extract_dbt_refs(self, sql: str) -> Set[str]:
-        """
-        Specific extractor for dbt ref() calls.
-        """
+        """Specific extractor for dbt ref() and source() calls."""
         import re
-        # Simple regex for {{ ref('...') }} or {{ ref("...") }}
         refs = re.findall(r"\{\{\s*ref\(['\"](.+?)['\"]\)\s*\}\}", sql)
-        return set(refs)
+        sources = re.findall(r"\{\{\s*source\(['\"].+?['\"]\s*,\s*['\"](.+?)['\"]\)\s*\}\}", sql)
+        return set(refs) | set(sources)
+
+    def extract_dependencies(self, sql: str) -> Set[str]:
+        """Legacy method for backward compatibility."""
+        items = self.extract_lineage(sql)
+        return {item["source"] for item in items}

@@ -27,8 +27,8 @@ Analysis pending LLM synthesis.
 - `models/staging/stg_payments.sql` (0 changes/30d)
 
 ## 3. Top Complexity Risks
-- `dbt_project.yml` (Complexity: 0.0)
-- `models/orders.sql` (Complexity: 0.0)
-- `models/customers.sql` (Complexity: 0.0)
-- `models/schema.yml` (Complexity: 0.0)
-- `models/staging/stg_payments.sql` (Complexity: 0.0)
+- `dbt_project.yml` (Complexity: 9.0)
+- `models/schema.yml` (Complexity: 6.5)
+- `models/staging/schema.yml` (Complexity: 4.5)
+- `models/orders.sql` (Complexity: 1.0)
+- `models/customers.sql` (Complexity: 1.0)

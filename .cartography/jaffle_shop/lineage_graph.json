@@ -6,23 +6,21 @@
     {
       "type": "dataset",
       "subtype": "dbt_model",
-      "id": "stg_payments"
+      "id": "stg_orders"
     },
     {
-      "id": "models/orders.sql"
+      "type": "dataset",
+      "id": "inferred_sink"
     },
     {
       "type": "dataset",
       "subtype": "dbt_model",
-      "id": "stg_orders"
+      "id": "stg_payments"
     },
     {
       "type": "dataset",
       "subtype": "dbt_model",
       "id": "stg_customers"
-    },
-    {
-      "id": "models/customers.sql"
     },
     {
       "type": "dataset",
@@ -35,64 +33,66 @@
       "id": "orders"
     },
     {
+      "type": "dataset",
       "id": "raw_payments"
     },
     {
-      "id": "models/staging/stg_payments.sql"
-    },
-    {
+      "type": "dataset",
       "id": "raw_customers"
     },
     {
-      "id": "models/staging/stg_customers.sql"
-    },
-    {
+      "type": "dataset",
       "id": "raw_orders"
-    },
-    {
-      "id": "models/staging/stg_orders.sql"
     }
   ],
   "edges": [
     {
-      "type": "CONSUMES",
-      "source": "stg_payments",
-      "target": "models/orders.sql"
-    },
-    {
-      "type": "CONSUMES",
-      "source": "stg_payments",
-      "target": "models/customers.sql"
-    },
-    {
-      "type": "CONSUMES",
+      "type": "LINEAGE",
+      "transformation_type": "REGEX_FALLBACK",
+      "source_file": "models/customers.sql",
+      "logic_engine": "sqlglot",
       "source": "stg_orders",
-      "target": "models/orders.sql"
+      "target": "inferred_sink"
     },
     {
-      "type": "CONSUMES",
-      "source": "stg_orders",
-      "target": "models/customers.sql"
+      "type": "LINEAGE",
+      "transformation_type": "REGEX_FALLBACK",
+      "source_file": "models/customers.sql",
+      "logic_engine": "sqlglot",
+      "source": "stg_payments",
+      "target": "inferred_sink"
     },
     {
-      "type": "CONSUMES",
+      "type": "LINEAGE",
+      "transformation_type": "REGEX_FALLBACK",
+      "source_file": "models/customers.sql",
+      "logic_engine": "sqlglot",
       "source": "stg_customers",
-      "target": "models/customers.sql"
+      "target": "inferred_sink"
     },
     {
-      "type": "CONSUMES",
+      "type": "LINEAGE",
+      "transformation_type": "REGEX_FALLBACK",
+      "source_file": "models/staging/stg_payments.sql",
+      "logic_engine": "sqlglot",
       "source": "raw_payments",
-      "target": "models/staging/stg_payments.sql"
+      "target": "inferred_sink"
     },
     {
-      "type": "CONSUMES",
+      "type": "LINEAGE",
+      "transformation_type": "REGEX_FALLBACK",
+      "source_file": "models/staging/stg_customers.sql",
+      "logic_engine": "sqlglot",
       "source": "raw_customers",
-      "target": "models/staging/stg_customers.sql"
+      "target": "inferred_sink"
     },
     {
-      "type": "CONSUMES",
+      "type": "LINEAGE",
+      "transformation_type": "REGEX_FALLBACK",
+      "source_file": "models/staging/stg_orders.sql",
+      "logic_engine": "sqlglot",
       "source": "raw_orders",
-      "target": "models/staging/stg_orders.sql"
+      "target": "inferred_sink"
     }
   ]
 }

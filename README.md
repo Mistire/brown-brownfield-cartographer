@@ -7,10 +7,10 @@ The Brownfield Cartographer is a multi-agent system designed to rapidly map and 
 ## The Cartographer's Agents
 
 - **Agent 1: The Surveyor (Static Structure)**
-  Performs deep static analysis using `tree-sitter`. Builds the module import graph, identifies the public API surface, and tracks change velocity via `git`.
+  Performs deep static analysis using `tree-sitter`. Builds the module import graph, identifies the public API surface, and tracks change velocity via `git`. **Mastery Upgrade:** Now computes PageRank centrality, detects circular dependencies (SCC), and identifies dead code candidates.
 
 - **Agent 2: The Hydrologist (Data Lineage)**
-  Specialized for data engineering. Constructs the data lineage DAG by analyzing data sources, transformations (SQL/Python), and sinks across the repo.
+  Specialized for data engineering. Constructs the data lineage DAG by analyzing data sources, transformations (SQL/Python), and sinks across the repo. **Mastery Upgrade:** Standardized high-fidelity lineage metadata with transformation types and multi-dialect SQL support.
 
 - **Agent 3: The Semanticist (LLM Analysis)**
   Uses LLMs (Gemini Flash) to extract purpose statements grounded in implementation evidence, detecting "documentation drift" and clustering modules into business domains.
@@ -69,6 +69,12 @@ Launch the interactive visualization with automatic port-cleanup:
 See all your analyzed codebases:
 ```bash
 ./cartographer.sh list
+```
+
+### 4. System Check (Doctor)
+Verify system dependencies (tree-sitter, sqlglot, etc.):
+```bash
+./cartographer.sh doctor
 ```
 
 ---

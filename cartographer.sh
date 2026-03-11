@@ -82,6 +82,14 @@ case $COMMAND in
         ls -1 "$CARTOGRAPHY_DIR"
         ;;
 
+    "doctor")
+        echo "Checking system dependencies..."
+        echo -n "uv: " && uv --version || echo "MISSING"
+        echo -n "python3: " && python3 --version || echo "MISSING"
+        echo -n "tree-sitter: " && uv run python -c "import tree_sitter; print('OK')" || echo "MISSING or BROKEN"
+        echo -n "sqlglot: " && uv run python -c "import sqlglot; print('OK')" || echo "MISSING"
+        ;;
+
     *)
         echo "Brownfield Cartographer CLI"
         echo "---------------------------"
@@ -91,5 +99,7 @@ case $COMMAND in
         echo "  map <url/path>   Clone (if URL) and analyze a repository"
         echo "  view <project>   Start the interactive dashboard for a project"
         echo "  list             List all analyzed projects"
+        echo "  clean            Remove legacy root artifacts"
+        echo "  doctor           Check system dependencies"
         ;;
 esac

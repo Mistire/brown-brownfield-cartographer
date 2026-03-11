@@ -8,6 +8,8 @@ from src.agents.semanticist import Semanticist
 from src.agents.archivist import Archivist
 
 
+from src.graph.knowledge_graph import KnowledgeGraph
+
 class Orchestrator:
     """
     Wires the Surveyor + Hydrologist (+ Semanticist when available) in sequence,
@@ -16,8 +18,9 @@ class Orchestrator:
     def __init__(self, repo_path: str):
         self.repo_path = repo_path
         self.project_name = os.path.basename(repo_path.rstrip("/"))
-        self.surveyor = Surveyor(repo_path)
-        self.hydrologist = Hydrologist(repo_path)
+        self.kg = KnowledgeGraph()
+        self.surveyor = Surveyor(repo_path, graph=self.kg.module_graph)
+        self.hydrologist = Hydrologist(repo_path, graph=self.kg.lineage_graph)
         self.archivist = Archivist(self.project_name)
         self.semanticist = Semanticist()
 
@@ -25,26 +28,26 @@ class Orchestrator:
         """Execute the full analysis pipeline: Surveyor → Hydrologist → Archivist."""
         print("Starting Surveyor...")
         self.surveyor.run()
-        self.surveyor.save_graph(
-            os.path.join(self.archivist.output_dir, "module_graph.json")
-        )
-
+        
         print("Starting Hydrologist...")
         self.hydrologist.run()
-        self.hydrologist.save_graph(
-            os.path.join(self.archivist.output_dir, "lineage_graph.json")
-        )
+        
+        print("Computing advanced analytics (PageRank, Circularities, Dead Code)...")
+        self.kg.enrich_metadata()
+        
+        print("Saving graphs...")
+        self.kg.serialize(self.archivist.output_dir)
 
         print("Generating Artifacts...")
-        module_data = [data for _, data in self.surveyor.graph.nodes(data=True)]
+        module_data = [data for _, data in self.kg.module_graph.nodes(data=True)]
 
         # Semanticist provides Day-One answers when API key is set
         day_one_answers = {}
         if self.semanticist.enabled:
             pass  # Future: LLM synthesis
 
-        self.archivist.generate_codebase_md(self.surveyor.graph)
-        self.archivist.generate_interactive_graph(self.surveyor.graph)
+        self.archivist.generate_codebase_md(self.kg.module_graph)
+        self.archivist.generate_interactive_graph(self.kg.module_graph)
         self.archivist.generate_onboarding_brief(module_data, day_one_answers)
 
         print("Analysis complete. Artifacts in .cartography/")

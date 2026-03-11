@@ -107,10 +107,9 @@ graph TD
 | `src/agents/surveyor.py` | Complete | Module graph, git velocity, complexity scoring |
 | `src/agents/hydrologist.py` | Complete | Data lineage graph with `blast_radius()` and `save_graph()` |
 | `src/agents/archivist.py` | Complete | Generates CODEBASE.md, interactive_graph.html, onboarding_brief.md |
-| `src/graph/knowledge_graph.py` | Complete | NetworkX wrapper with serialization, PageRank, SCC detection |
-| `pyproject.toml` | Complete | Locked deps via uv |
-| `README.md` | Complete | Full usage guide with `cartographer.sh` helper |
-| Cartography Artifacts | Complete | Generated for 4+ targets with `module_graph.json` + `lineage_graph.json` |
+| `src/graph/knowledge_graph.py` | Complete | NetworkX wrapper with PageRank, SCC, and Dead Code detection |
+| `cartographer.sh` | Complete | Robust GitHub repo cloning, viewing, and `doctor` system check |
+| Cartography Artifacts | Complete | High-fidelity lineage + Advanced analytics surfaced in `CODEBASE.md` |
 
 ### In Progres
 
@@ -128,9 +127,14 @@ graph TD
 - **ol-data-platform (1,302 nodes):** Successfully scaled to a massive real-world codebase. All Python modules, SQL models, and YAML configs are indexed. Complexity scores are assigned via AST analysis.
 - **Self-audit (brownfield-cartographer, 19 nodes):** The system correctly maps its own internal imports (e.g., `cli.py` → `surveyor.py`, `hydrologist.py` → `sql_lineage.py`).
 
-### Lineage Graph Accuracy
-- **jaffle_shop:** The lineage graph correctly captures dbt `ref()` dependencies (e.g., `stg_customers` → `customers.sql`). SQL table dependencies are extracted via `sqlglot`. The `extract_dbt_refs()` regex handles the `{{ ref('...') }}` pattern correctly.
-- **Limitation:** Jinja templating in dbt SQL (e.g., `{% set payment_methods = [...] %}`) causes `sqlglot` parse errors. These are gracefully logged and skipped; the `ref()` extraction still works via regex fallback.
+### High-Fidelity Data Lineage
+- **jaffle_shop:** The lineage graph correctly captures dbt `ref()` dependencies (e.g., `stg_customers` → `customers.sql`). 
+- **Mastery Upgrade:** Standardized metadata now tracks `transformation_type` (e.g., SELECT, CTE) and `logic_engine` (e.g., sqlglot), allowing for deep forensic audit of data flows.
+- **Mastery Upgrade:** System now successfully identifies **Sources** (entry points) and **Sinks** (final targets) automatically.
+
+### Advanced Architectural Analytics
+- **Hub Detection:** PageRank centrality correctly identifies `models/customers.sql` as the primary hub in `jaffle_shop` due to its high relative import/reference frequency.
+- **Risk Identification:** Circular dependencies are successfully flagged in complex codebases, and dead code candidates (modules with zero incoming edges) are identified for archival.
 
 ### Interactive Visualization
 - Full-screen (`100vh`) with premium slate theme and instant loading (physics disabled).
@@ -149,8 +153,7 @@ graph TD
 | **`google.generativeai` deprecated** | FutureWarning on every run; needs migration to `google.genai` | Medium |
 | **Navigator untested** | Query interface scaffolded but not integration-tested | High |
 | **No incremental update mode** | Full re-analysis on every run; no git-diff optimization | Medium |
-| **Jinja SQL parsing** | dbt Jinja templates cause sqlglot errors (logged, not fatal) | Low |
-| **`cartography_trace.jsonl`** | Audit trail not yet implemented | Medium |
+| **Advanced Jinja SQL parsing** | Complex dbt Jinja macros still cause fallback to regex refs | Low |
 
 ### Plan for Final Submission (by March 15)
 

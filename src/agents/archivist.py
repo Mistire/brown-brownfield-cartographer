@@ -30,15 +30,37 @@ class Archivist:
                 f.write(f'    "{u}" --> "{v}"\n')
             f.write("```\n\n")
             
-            f.write("## 2. Module Purpose Index\n")
+            f.write("## 2. Critical Architectural Hubs (PageRank)\n")
+            hubs = sorted([m for m in nodes if m.get("is_hub")], key=lambda x: x.get("pagerank", 0), reverse=True)
+            for hub in hubs:
+                f.write(f"- **`{hub['path']}`**: Centrality Score {hub.get('pagerank', 0):.4f}\n")
+            f.write("\n")
+            
+            f.write("## 3. Architectural Debt & Risks\n")
+            circular = [m for m in nodes if m.get("in_circular_dep")]
+            if circular:
+                f.write("### 3.1 Circular Dependencies\n")
+                f.write("> [!WARNING]\n")
+                f.write("> These modules are part of circular import chains which can cause initialization issues.\n\n")
+                for c in circular:
+                    f.write(f"- `{c['path']}` (SCC ID: {c.get('scc_id')})\n")
+            
+            dead = [m for m in nodes if m.get("is_dead_candidate")]
+            if dead:
+                f.write("\n### 3.2 Dead Code Candidates\n")
+                f.write("> [!NOTE]\n")
+                f.write("> These modules have zero in-degree (no detected imports). Verify if they are entry points or unused.\n\n")
+                for d in dead:
+                    f.write(f"- `{d['path']}`\n")
+                    
+            f.write("\n## 4. Module Purpose Index\n")
             for mod in nodes:
-                # Some nodes might be external imports without metadata
                 path = mod.get('path', 'external_dependency')
                 f.write(f"### `{path}`\n")
                 f.write(f"**Purpose:** {mod.get('purpose_statement', 'No purpose generated.')}\n")
                 f.write(f"**Complexity:** {mod.get('complexity_score', 0.0)} | **Velocity:** {mod.get('change_velocity_30d', 0)} changes/30d\n\n")
                 
-            f.write("## 3. Data Lineage Summary\n")
+            f.write("## 5. System Statistics\n")
             f.write(f"Total Modules: {len(nodes)}\n")
             f.write(f"Total Dependencies: {graph.number_of_edges()}\n")
 
@@ -52,7 +74,15 @@ class Archivist:
         
         for n, data in graph.nodes(data=True):
             label = n.split("/")[-1] if "/" in n else n
-            title = f"Path: {n}\nComplexity: {data.get('complexity_score', 0)}\nPurpose: {data.get('purpose_statement', 'N/A')}"
+            title = (f"Path: {n}\n"
+                     f"Complexity: {data.get('complexity_score', 0)}\n"
+                     f"PageRank: {data.get('pagerank', 0):.4f}\n"
+                     f"Purpose: {data.get('purpose_statement', 'N/A')}\n")
+            
+            if data.get("in_circular_dep"):
+                title += "⚠️ CIRCULAR DEPENDENCY\n"
+            if data.get("is_dead_candidate"):
+                title += "👻 DEAD CODE CANDIDATE\n"
             
             # Premium color palette (Tailwind-like colors)
             complexity = data.get("complexity_score", 0)
@@ -60,7 +90,12 @@ class Archivist:
             if complexity > 10: color = "#f59e0b" # Amber 500
             if complexity > 25: color = "#ef4444" # Red 500
             
-            net.add_node(n, label=label, title=title, color=color, font={"size": 14, "face": "Inter, sans-serif"})
+            # Highlight hubs with a border
+            border_width = 4 if data.get("is_hub") else 2
+            
+            net.add_node(n, label=label, title=title, color=color, 
+                         borderWidth=border_width, 
+                         font={"size": 14, "face": "Inter, sans-serif"})
             
         for u, v, data in graph.edges(data=True):
             net.add_edge(u, v, color="#334155")
@@ -116,14 +151,16 @@ class Archivist:
                 f.write(f"{day_one_answers.get(f'q{i+1}', 'Analysis pending LLM synthesis.')}\n\n")
             
             f.write("## 2. High-Velocity Hotspots\n")
+            # Filter for nodes that actually have a path
+            valid_modules = [m for m in module_data if 'path' in m]
             # Sort modules by velocity
-            sorted_mods = sorted(module_data, key=lambda x: x.get('change_velocity_30d', 0), reverse=True)[:5]
+            sorted_mods = sorted(valid_modules, key=lambda x: x.get('change_velocity_30d', 0), reverse=True)[:5]
             for mod in sorted_mods:
                 f.write(f"- `{mod['path']}` ({mod.get('change_velocity_30d', 0)} changes/30d)\n")
             f.write("\n")
             
             f.write("## 3. Top Complexity Risks\n")
-            sorted_comp = sorted(module_data, key=lambda x: x.get('complexity_score', 0), reverse=True)[:5]
+            sorted_comp = sorted(valid_modules, key=lambda x: x.get('complexity_score', 0), reverse=True)[:5]
             for mod in sorted_comp:
                 f.write(f"- `{mod['path']}` (Complexity: {mod.get('complexity_score', 0)})\n")
 

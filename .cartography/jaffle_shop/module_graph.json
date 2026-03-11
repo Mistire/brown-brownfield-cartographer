@@ -8,10 +8,13 @@
       "language": "yaml",
       "purpose_statement": null,
       "domain_cluster": null,
-      "complexity_score": 0.0,
+      "complexity_score": 9.0,
       "change_velocity_30d": 0,
       "is_dead_code_candidate": false,
       "last_modified": null,
+      "pagerank": 0.03418817447476,
+      "is_hub": false,
+      "is_dead_candidate": true,
       "id": "dbt_project.yml"
     },
     {
@@ -19,32 +22,116 @@
       "language": "sql",
       "purpose_statement": null,
       "domain_cluster": null,
-      "complexity_score": 0.0,
+      "complexity_score": 1.0,
       "change_velocity_30d": 0,
       "is_dead_code_candidate": false,
       "last_modified": null,
+      "pagerank": 0.03418817447476,
+      "is_hub": false,
+      "is_dead_candidate": true,
       "id": "models/orders.sql"
+    },
+    {
+      "pagerank": 0.03833947842136,
+      "is_hub": false,
+      "id": "payment_methods"
+    },
+    {
+      "pagerank": 0.03833947842136,
+      "is_hub": false,
+      "id": "order_payments"
+    },
+    {
+      "pagerank": 0.05771223017215999,
+      "is_hub": false,
+      "id": "order_id"
+    },
+    {
+      "pagerank": 0.04802585429675999,
+      "is_hub": false,
+      "id": "payment_method"
+    },
+    {
+      "pagerank": 0.04076107239020999,
+      "is_hub": false,
+      "id": "total_amount"
+    },
+    {
+      "pagerank": 0.05771223017215999,
+      "is_hub": false,
+      "id": "customer_id"
+    },
+    {
+      "pagerank": 0.04802585429675999,
+      "is_hub": false,
+      "id": "order_date"
     },
     {
       "path": "models/customers.sql",
       "language": "sql",
       "purpose_statement": null,
       "domain_cluster": null,
-      "complexity_score": 0.0,
+      "complexity_score": 1.0,
       "change_velocity_30d": 0,
       "is_dead_code_candidate": false,
       "last_modified": null,
+      "pagerank": 0.03418817447476,
+      "is_hub": false,
+      "is_dead_candidate": true,
       "id": "models/customers.sql"
+    },
+    {
+      "pagerank": 0.03660976844361,
+      "is_hub": false,
+      "id": "customer_orders"
+    },
+    {
+      "pagerank": 0.03660976844361,
+      "is_hub": false,
+      "id": "first_order"
+    },
+    {
+      "pagerank": 0.03660976844361,
+      "is_hub": false,
+      "id": "most_recent_order"
+    },
+    {
+      "pagerank": 0.03660976844361,
+      "is_hub": false,
+      "id": "number_of_orders"
+    },
+    {
+      "pagerank": 0.03660976844361,
+      "is_hub": false,
+      "id": "customer_payments"
+    },
+    {
+      "pagerank": 0.046296144319009996,
+      "is_hub": false,
+      "id": "first_name"
+    },
+    {
+      "pagerank": 0.046296144319009996,
+      "is_hub": false,
+      "id": "last_name"
+    },
+    {
+      "pagerank": 0.03660976844361,
+      "is_hub": false,
+      "id": "customer_lifetime_value"
     },
     {
       "path": "models/schema.yml",
       "language": "yaml",
       "purpose_statement": null,
       "domain_cluster": null,
-      "complexity_score": 0.0,
+      "complexity_score": 6.5,
       "change_velocity_30d": 0,
       "is_dead_code_candidate": false,
       "last_modified": null,
+      "pagerank": 0.03418817447476,
+      "is_hub": false,
+      "is_dead_candidate": true,
       "id": "models/schema.yml"
     },
     {
@@ -52,21 +139,32 @@
       "language": "sql",
       "purpose_statement": null,
       "domain_cluster": null,
-      "complexity_score": 0.0,
+      "complexity_score": 1.0,
       "change_velocity_30d": 0,
       "is_dead_code_candidate": false,
       "last_modified": null,
+      "pagerank": 0.03418817447476,
+      "is_hub": false,
+      "is_dead_candidate": true,
       "id": "models/staging/stg_payments.sql"
+    },
+    {
+      "pagerank": 0.04387455035015999,
+      "is_hub": false,
+      "id": "payment_id"
     },
     {
       "path": "models/staging/stg_customers.sql",
       "language": "sql",
       "purpose_statement": null,
       "domain_cluster": null,
-      "complexity_score": 0.0,
+      "complexity_score": 1.0,
       "change_velocity_30d": 0,
       "is_dead_code_candidate": false,
       "last_modified": null,
+      "pagerank": 0.03418817447476,
+      "is_hub": false,
+      "is_dead_candidate": true,
       "id": "models/staging/stg_customers.sql"
     },
     {
@@ -74,10 +172,13 @@
       "language": "yaml",
       "purpose_statement": null,
       "domain_cluster": null,
-      "complexity_score": 0.0,
+      "complexity_score": 4.5,
       "change_velocity_30d": 0,
       "is_dead_code_candidate": false,
       "last_modified": null,
+      "pagerank": 0.03418817447476,
+      "is_hub": false,
+      "is_dead_candidate": true,
       "id": "models/staging/schema.yml"
     },
     {
@@ -85,12 +186,195 @@
       "language": "sql",
       "purpose_statement": null,
       "domain_cluster": null,
-      "complexity_score": 0.0,
+      "complexity_score": 1.0,
       "change_velocity_30d": 0,
       "is_dead_code_candidate": false,
       "last_modified": null,
+      "pagerank": 0.03418817447476,
+      "is_hub": false,
+      "is_dead_candidate": true,
       "id": "models/staging/stg_orders.sql"
+    },
+    {
+      "pagerank": 0.04145295638131,
+      "is_hub": false,
+      "id": "user_id"
     }
   ],
-  "edges": []
+  "edges": [
+    {
+      "type": "IMPORTS",
+      "raw_string": "payment_methods",
+      "source": "models/orders.sql",
+      "target": "payment_methods"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "order_payments",
+      "source": "models/orders.sql",
+      "target": "order_payments"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "order_id",
+      "source": "models/orders.sql",
+      "target": "order_id"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "payment_method",
+      "source": "models/orders.sql",
+      "target": "payment_method"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "total_amount",
+      "source": "models/orders.sql",
+      "target": "total_amount"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "customer_id",
+      "source": "models/orders.sql",
+      "target": "customer_id"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "order_date",
+      "source": "models/orders.sql",
+      "target": "order_date"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "customer_orders",
+      "source": "models/customers.sql",
+      "target": "customer_orders"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "customer_id",
+      "source": "models/customers.sql",
+      "target": "customer_id"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "order_date",
+      "source": "models/customers.sql",
+      "target": "order_date"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "first_order",
+      "source": "models/customers.sql",
+      "target": "first_order"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "most_recent_order",
+      "source": "models/customers.sql",
+      "target": "most_recent_order"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "order_id",
+      "source": "models/customers.sql",
+      "target": "order_id"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "number_of_orders",
+      "source": "models/customers.sql",
+      "target": "number_of_orders"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "customer_payments",
+      "source": "models/customers.sql",
+      "target": "customer_payments"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "total_amount",
+      "source": "models/customers.sql",
+      "target": "total_amount"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "first_name",
+      "source": "models/customers.sql",
+      "target": "first_name"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "last_name",
+      "source": "models/customers.sql",
+      "target": "last_name"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "customer_lifetime_value",
+      "source": "models/customers.sql",
+      "target": "customer_lifetime_value"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "payment_id",
+      "source": "models/staging/stg_payments.sql",
+      "target": "payment_id"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "order_id",
+      "source": "models/staging/stg_payments.sql",
+      "target": "order_id"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "payment_method",
+      "source": "models/staging/stg_payments.sql",
+      "target": "payment_method"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "customer_id",
+      "source": "models/staging/stg_customers.sql",
+      "target": "customer_id"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "first_name",
+      "source": "models/staging/stg_customers.sql",
+      "target": "first_name"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "last_name",
+      "source": "models/staging/stg_customers.sql",
+      "target": "last_name"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "order_id",
+      "source": "models/staging/stg_orders.sql",
+      "target": "order_id"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "user_id",
+      "source": "models/staging/stg_orders.sql",
+      "target": "user_id"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "customer_id",
+      "source": "models/staging/stg_orders.sql",
+      "target": "customer_id"
+    },
+    {
+      "type": "IMPORTS",
+      "raw_string": "order_date",
+      "source": "models/staging/stg_orders.sql",
+      "target": "order_date"
+    }
+  ]
 }
