@@ -121,11 +121,32 @@ class SurveyorAnalyzer:
             (class_definition body: (block (expression_statement (string) @doc)))
         """)
 
+        decorator_query = language.query("""
+            (decorator) @dec
+        """)
+
+        complexity_query = language.query("""
+            (if_statement) @if
+            (for_statement) @for
+            (while_statement) @while
+            (with_statement) @with
+            (try_statement) @try
+            (except_clause) @except
+            (boolean_operator) @logic
+        """)
+
+        type_hint_query = language.query("""
+            (type_hint) @hint
+            (type_alias) @alias
+        """)
+
         results = {
             "path": path,
             "imports": [],
             "functions": [],
             "classes": [],
+            "decorators": [],
+            "type_hints": [],
             "docstring": None,
             "complexity_score": 1.0,
             "language": "python"
@@ -158,6 +179,18 @@ class SurveyorAnalyzer:
         for node, tag in self._get_captures(class_query, tree.root_node):
             if tag == "name":
                 results["classes"].append(content[node.start_byte:node.end_byte].decode("utf-8"))
+
+        # Decorators
+        for node, _ in self._get_captures(decorator_query, tree.root_node):
+            dec_text = content[node.start_byte:node.end_byte].decode("utf-8").strip()
+            if dec_text not in results["decorators"]:
+                results["decorators"].append(dec_text)
+
+        # Type Hints
+        for node, _ in self._get_captures(type_hint_query, tree.root_node):
+            hint_text = content[node.start_byte:node.end_byte].decode("utf-8").strip()
+            if hint_text not in results["type_hints"]:
+                results["type_hints"].append(hint_text)
 
         # Complexity
         results["complexity_score"] += len(self._get_captures(complexity_query, tree.root_node))

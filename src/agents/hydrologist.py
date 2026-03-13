@@ -68,6 +68,7 @@ class Hydrologist:
                                 type="LINEAGE",
                                 transformation_type=item["type"],
                                 source_file=rel_path,
+                                columns=item.get("columns", []),
                                 logic_engine="sqlglot"
                             )
                                 

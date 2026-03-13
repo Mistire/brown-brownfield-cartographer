@@ -48,22 +48,24 @@ class SQLLineageAnalyzer:
                 for ref in dbt_refs:
                     sources.add(ref)
 
+                # Identify columns
+                columns = []
+                for projection in expression.find_all(exp.Alias):
+                    columns.append(projection.alias)
+                for projection in expression.find_all(exp.Column):
+                    if projection.name not in columns:
+                        columns.append(projection.name)
+                if expression.find(exp.Star):
+                    columns.append("*")
+
                 # Generate lineage items
                 for source in sources:
-                    for target in (targets if targets else ["unknown_sink"]):
+                    for target in (targets if targets else ["result_set"]):
                         lineage.append({
                             "source": source,
                             "target": target,
-                            "type": expression.key.upper() if expression.key else "UNKNOWN"
-                        })
-                        
-                # If no targets yet but we have sources (e.g., a simple SELECT)
-                if not targets and sources:
-                    for source in sources:
-                        lineage.append({
-                            "source": source,
-                            "target": "result_set",
-                            "type": "SELECT"
+                            "type": expression.key.upper() if expression.key else "SELECT",
+                            "columns": columns
                         })
 
         except Exception as e:

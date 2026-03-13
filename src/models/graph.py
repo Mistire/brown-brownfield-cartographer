@@ -11,6 +11,8 @@ class ModuleNode(BaseModel):
     change_velocity_30d: int = 0
     is_dead_code_candidate: bool = False
     docstring: Optional[str] = None
+    decorators: List[str] = Field(default_factory=list)
+    type_hints: List[str] = Field(default_factory=list)
     documentation_drift: Optional[Dict[str, Any]] = None
     last_modified: Optional[datetime] = None
 
