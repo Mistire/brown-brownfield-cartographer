@@ -65,19 +65,27 @@ class Orchestrator:
                         with open(full_path, "r") as f:
                             code = f.read()
                         
-                        purpose = await self.semanticist.generate_purpose(code)
+                        purpose, confidence = await self.semanticist.generate_purpose(code)
                         data["purpose_statement"] = purpose
+                        data["confidence"] = confidence
                         
                         # Master Thinker: Detect Documentation Drift
                         docstring = data.get("docstring")
                         if docstring:
                             drift = await self.semanticist.detect_drift(docstring, purpose)
                             data["documentation_drift"] = drift
+                            
+                        # Log semantic analysis in trace
+                        self.archivist.log_trace("semantic_analysis", {
+                            "node": node,
+                            "confidence": confidence,
+                            "drift_metrics": drift if docstring else None
+                        })
                     except Exception as e:
                         print(f"Error analyzing semantic purpose for {node}: {e}")
         
         # Cluster domains
-        domain_clusters = self.semanticist.cluster_into_domains(module_data)
+        domain_clusters = await self.semanticist.cluster_into_domains(module_data)
 
         # Generate Day-One answers
         day_one_answers = {}

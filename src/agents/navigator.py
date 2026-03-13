@@ -3,9 +3,12 @@ import networkx as nx
 import json
 import os
 from langgraph.graph import StateGraph, END
+from langgraph.prebuilt import ToolNode, tools_condition
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, ToolMessage
 from langchain_core.tools import tool
 from src.graph.knowledge_graph import KnowledgeGraph
+from src.agents.archivist import Archivist
 
 class AgentState(TypedDict):
     messages: List[BaseMessage]
@@ -17,7 +20,9 @@ class Navigator:
     """
     def __init__(self, repo_path: str):
         self.repo_path = repo_path
-        self.kg = KnowledgeGraph.load(os.path.join(".cartography", os.path.basename(repo_path.rstrip("/"))))
+        self.project_name = os.path.basename(repo_path.rstrip("/"))
+        self.kg = KnowledgeGraph.load(os.path.join(".cartography", self.project_name))
+        self.archivist = Archivist(self.project_name)
         
         self.api_key = os.getenv("OPENROUTER_API_KEY")
         if self.api_key:
@@ -95,46 +100,47 @@ class Navigator:
                     f"**Complexity:** {data.get('complexity_score', 0)}\n"
                     f"**Centrality (PageRank):** {data.get('pagerank', 0):.4f}")
 
-        self.tools = {
-            "find_implementation": find_implementation,
-            "trace_lineage": trace_lineage,
-            "blast_radius": blast_radius,
-            "explain_module": explain_module
-        }
+        self.tools_list = [find_implementation, trace_lineage, blast_radius, explain_module]
+        self.tools = {t.name: t for t in self.tools_list}
+        
+        if self.llm:
+            self.llm_with_tools = self.llm.bind_tools(self.tools_list)
+        else:
+            self.llm_with_tools = None
 
+        # StateGraph
         workflow = StateGraph(AgentState)
-        workflow.add_node("navigator", self.navigate)
-        workflow.set_entry_point("navigator")
-        workflow.add_edge("navigator", END)
+        
+        workflow.add_node("agent", self.agent)
+        workflow.add_node("tools", ToolNode(self.tools_list))
+        
+        workflow.set_entry_point("agent")
+        workflow.add_conditional_edges("agent", tools_condition)
+        workflow.add_edge("tools", "agent")
+        
         self.app = workflow.compile()
 
-    async def query(self, text: str):
-        inputs = {"messages": [HumanMessage(content=text)], "context": {}}
-        state = await self.app.ainvoke(inputs)
-        return state["messages"][-1].content
-
-    def navigate(self, state: AgentState):
-        query = state["messages"][-1].content.lower()
+    def agent(self, state: AgentState):
+        if not self.llm_with_tools:
+            return {"messages": [AIMessage(content="LLM is disabled. I cannot navigate the codebase.")]}
         
-        # Improved heuristic "router"
-        if any(kw in query for kw in ["lineage", "produce", "source", "sink", "upstream", "downstream"]):
-            # Find a path-like or table-like string
-            potential_targets = [word.strip("?.,") for word in query.split() if "_" in word or "/" in word or "." in word]
-            dataset = potential_targets[0] if potential_targets else "customers"
-            direction = "downstream" if "downstream" in query or "dependents" in query else "upstream"
-            response = self.tools["trace_lineage"].invoke({"dataset": dataset, "direction": direction})
-        elif any(kw in query for kw in ["break", "radius", "impact", "change"]):
-            potential_targets = [word.strip("?.,`/") for word in query.split() if "/" in word or ".sql" in word]
-            module = potential_targets[0] if potential_targets else "models/staging/stg_orders.sql"
-            response = self.tools["blast_radius"].invoke({"module_path": module})
-        elif any(kw in query for kw in ["where", "implementation", "find", "locate"]):
-            concept = query.split()[-1].strip("? .")
-            response = self.tools["find_implementation"].invoke({"concept": concept})
-        elif "explain" in query:
-            potential_targets = [word.strip("?.,`/") for word in query.split() if "/" in word or ".sql" in word]
-            path = potential_targets[0] if potential_targets else "models/customers.sql"
-            response = self.tools["explain_module"].invoke({"path": path})
-        else:
-            response = "I can help you navigate the codebase. Try asking:\n- 'What produces the customers table?'\n- 'What breaks if I change models/staging/stg_orders.sql?'\n- 'Explain models/customers.sql'"
+        response = self.llm_with_tools.invoke(state["messages"])
+        
+        # Log LLM's decision in trace
+        if response.tool_calls:
+            self.archivist.log_trace("navigator_tool_call", {
+                "tool": response.tool_calls[0]['name'],
+                "args": response.tool_calls[0]['args']
+            })
             
-        return {"messages": state["messages"] + [AIMessage(content=str(response))]}
+        return {"messages": [response]}
+
+    async def query(self, text: str):
+        self.archivist.log_trace("navigator_query", {"query": text})
+        inputs = {"messages": [HumanMessage(content=text)], "context": {}}
+        config = {"configurable": {"thread_id": "navigator_session"}}
+        state = await self.app.ainvoke(inputs, config=config)
+        
+        final_response = state["messages"][-1].content
+        self.archivist.log_trace("navigator_response", {"response_teaser": final_response[:100]})
+        return final_response

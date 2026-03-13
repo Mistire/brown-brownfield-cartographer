@@ -1,6 +1,7 @@
 from typing import List, Dict, Any, Optional
 import os
 import json
+from tenacity import retry, stop_after_attempt
 from langchain_openai import ChatOpenAI
 from src.models.graph import ModuleNode
 
@@ -44,23 +45,34 @@ class Semanticist:
         if not self.llm:
             return "LLM Analysis Disabled"
             
-        prompt = f"""
-        Analyze the following code and provide a 2-3 sentence 'Purpose Statement'.
-        Focus on WHAT the code does for the business/system, not HOW it is implemented.
-        Code:
-        {code[:4000]} 
-        """
-        try:
+        @retry(stop=stop_after_attempt(3))
+        async def _invoke():
+            prompt = f"""
+            Analyze the following code and provide a 2-3 sentence 'Purpose Statement'.
+            Focus on WHAT the code does for the business/system, not HOW it is implemented.
+            
+            Return JSON: {{"purpose": str, "confidence": 0.0-1.0}}
+            
+            Code:
+            {code[:4000]} 
+            """
             response = await self.llm.ainvoke(prompt)
             self.budget.record(response)
-            return response.content.strip()
+            text = response.content.strip()
+            if "```json" in text:
+                text = text.split("```json")[1].split("```")[0].strip()
+            return json.loads(text)
+            
+        try:
+            res = await _invoke()
+            return res.get("purpose", "LLM Analysis Failed"), res.get("confidence", 0.5)
         except Exception as e:
-            return f"Error generating purpose: {str(e)}"
+            return f"Error: {str(e)}", 0.0
 
     async def detect_drift(self, docstring: Optional[str], purpose: str) -> Dict[str, Any]:
         """Compares actual docstring with LLM-generated purpose to detect drift."""
         if not self.llm or not docstring:
-            return {"drift_detected": False, "score": 0.0}
+            return {"drift_detected": False, "score": 0.0, "confidence": 0.0}
             
         prompt = f"""
         Compare this CODE DOCSTRING with the ACTUAL IMPLEMENTATION PURPOSE.
@@ -68,7 +80,7 @@ class Semanticist:
         Actual Purpose: {purpose}
         
         Is there a significant discrepancy (drift)? 
-        Return JSON: {{"drift_detected": bool, "mismatch_reason": str, "score": 0.0-1.0}}
+        Return JSON: {{"drift_detected": bool, "mismatch_reason": str, "score": 0.0-1.0, "confidence": 0.0-1.0}}
         """
         try:
             response = await self.llm.ainvoke(prompt)
@@ -78,7 +90,7 @@ class Semanticist:
                 text = text.split("```json")[1].split("```")[0].strip()
             return json.loads(text)
         except:
-            return {"drift_detected": False, "score": 0.0}
+            return {"drift_detected": False, "score": 0.0, "confidence": 0.0}
 
     async def answer_day_one_questions(self, context: Dict[str, Any]) -> Dict[str, str]:
         if not self.llm:
@@ -99,29 +111,25 @@ class Semanticist:
         except Exception as e:
             return {f"q{i+1}": f"Error: {str(e)}" for i in range(5)}
 
-    def cluster_into_domains(self, nodes: List[Dict[str, Any]]) -> Dict[str, List[str]]:
-        # Heuristic-based clustering as a fallback if embeddings aren't used
-        # (A true Master Thinker would use embeddings, but this is a solid start)
-        domains = {
-            "ingestion": ["source", "loader", "stream", "api", "fetch"],
-            "transformation": ["transform", "stg_", "clean", "process", "sql"],
-            "core_logic": ["models", "schema", "logic", "calculator"],
-            "infra_config": ["dag", "pipeline", "config", "yml", "yaml", "env"],
-            "monitoring_tests": ["test", "audit", "trace", "log"]
-        }
+    async def cluster_into_domains(self, nodes: List[Dict[str, Any]]) -> Dict[str, List[str]]:
+        """Uses LLM to categorize modules into domains (ingestion, core, etc)."""
+        if not self.llm:
+            return {"unclassified": [m.get("path") for m in nodes]}
+            
+        paths = [m.get("path") for m in nodes if m.get("path")]
         
-        clusters = {d: [] for d in domains}
-        clusters["unclassified"] = []
+        prompt = f"""
+        Categorize these file paths into high-level business domains (e.g., 'ingestion', 'transformation', 'infra', 'logic').
+        Paths: {paths}
         
-        for node in nodes:
-            path = node.get("path", "").lower()
-            assigned = False
-            for domain, keywords in domains.items():
-                if any(kw in path for kw in keywords):
-                    clusters[domain].append(path)
-                    assigned = True
-                    break
-            if not assigned:
-                clusters["unclassified"].append(path)
-        
-        return clusters
+        Return ONLY a JSON object: {{"domain_name": ["path1", "path2"]}}
+        """
+        try:
+            response = await self.llm.ainvoke(prompt)
+            self.budget.record(response)
+            text = response.content.strip()
+            if "```json" in text:
+                text = text.split("```json")[1].split("```")[0].strip()
+            return json.loads(text)
+        except:
+            return {"unclassified": paths}
