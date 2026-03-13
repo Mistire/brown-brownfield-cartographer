@@ -1,6 +1,6 @@
 import pytest
 import os
-from src.analyzers.tree_sitter_analyzer import SurveyorAnalyzer
+from analyzers.tree_sitter_analyzer import SurveyorAnalyzer
 
 def test_python_analysis(tmp_path):
     code = """

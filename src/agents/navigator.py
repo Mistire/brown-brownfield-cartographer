@@ -8,10 +8,11 @@ from langchain_openai import ChatOpenAI
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, ToolMessage
 from langchain_core.tools import tool
 from dotenv import load_dotenv
-from src.graph.knowledge_graph import KnowledgeGraph
+from graph.knowledge_graph import KnowledgeGraph
+from utils.paths import get_cartography_dir
 
 load_dotenv()
-from src.agents.archivist import Archivist
+from agents.archivist import Archivist
 
 class AgentState(TypedDict):
     messages: List[BaseMessage]
@@ -24,7 +25,7 @@ class Navigator:
     def __init__(self, repo_path: str):
         self.repo_path = repo_path
         self.project_name = os.path.basename(repo_path.rstrip("/"))
-        self.kg = KnowledgeGraph.load(os.path.join(".cartography", self.project_name))
+        self.kg = KnowledgeGraph.load(os.path.join(get_cartography_dir(), self.project_name))
         self.archivist = Archivist(self.project_name)
         
         self.api_key = os.getenv("OPENROUTER_API_KEY")

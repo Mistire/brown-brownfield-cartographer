@@ -55,3 +55,15 @@
 {"timestamp": "2026-03-13T13:11:10.826334", "action": "semantic_analysis", "node": "models/staging/schema.yml", "confidence": 0.95, "drift_metrics": null}
 {"timestamp": "2026-03-13T13:11:13.956519", "action": "semantic_analysis", "node": "models/staging/stg_orders.sql", "confidence": 0.95, "drift_metrics": null}
 {"timestamp": "2026-03-13T13:11:27.208151", "action": "pipeline_complete", "artifacts_dir": ".cartography/jaffle_shop", "token_usage": {"prompt": 0, "completion": 0, "model": "google/gemma-3-27b-it:free"}}
+{"timestamp": "2026-03-13T13:32:39.825543", "action": "surveyor_start", "repo": "targets/jaffle_shop", "incremental": false}
+{"timestamp": "2026-03-13T13:32:40.090795", "action": "hydrologist_start"}
+{"timestamp": "2026-03-13T13:32:40.468294", "action": "semanticist_start", "enabled": true}
+{"timestamp": "2026-03-13T13:32:52.822100", "action": "semantic_analysis", "node": "dbt_project.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T13:32:54.920196", "action": "semantic_analysis", "node": "models/orders.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T13:33:00.651500", "action": "semantic_analysis", "node": "models/customers.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T13:33:02.736521", "action": "semantic_analysis", "node": "models/schema.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T13:33:07.874065", "action": "semantic_analysis", "node": "models/staging/stg_payments.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T13:33:09.487314", "action": "semantic_analysis", "node": "models/staging/stg_customers.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T13:33:17.099932", "action": "semantic_analysis", "node": "models/staging/schema.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T13:33:35.500365", "action": "semantic_analysis", "node": "models/staging/stg_orders.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T13:33:55.397391", "action": "pipeline_complete", "artifacts_dir": ".cartography/jaffle_shop", "token_usage": {"prompt": 0, "completion": 0, "model": "arcee-ai/trinity-large-preview:free"}}

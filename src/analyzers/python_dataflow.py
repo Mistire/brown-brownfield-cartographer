@@ -1,6 +1,6 @@
 import tree_sitter
 from typing import List, Dict, Any, Set
-from src.analyzers.tree_sitter_analyzer import LanguageRouter
+from analyzers.tree_sitter_analyzer import LanguageRouter
 from tree_sitter_languages import get_language
 
 class PythonDataFlowAnalyzer:

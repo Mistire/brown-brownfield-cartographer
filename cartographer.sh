@@ -34,7 +34,7 @@ case $COMMAND in
         fi
 
         echo "Running analysis on $FINAL_PATH..."
-        uv run python "$BASE_DIR/src/cli.py" "$FINAL_PATH"
+        uv run cartographer analyze "$FINAL_PATH"
         ;;
 
     "view")

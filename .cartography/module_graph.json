@@ -6,7 +6,7 @@
     {
       "path": "targets/better-auth/pnpm-workspace.yaml",
       "language": "yaml",
-      "purpose_statement": "This configuration manages package dependencies and workspace settings for a software project, ensuring consistent versions of libraries and tools across different environments.",
+      "purpose_statement": "This configuration manages package dependencies and workspace settings for a software project, ensuring consistent versions and proper linking of packages across different environments.",
       "domain_cluster": null,
       "complexity_score": 14.5,
       "change_velocity_30d": 0,
@@ -25,7 +25,7 @@
     {
       "path": "targets/better-auth/pnpm-lock.yaml",
       "language": "yaml",
-      "purpose_statement": "This code defines a package management configuration that specifies dependencies and versions for different catalogs and importers, ensuring consistent and reproducible builds across development environments.",
+      "purpose_statement": "This code defines a package management configuration that specifies exact versions of dependencies and their relationships for different parts of a software project, ensuring consistent and reproducible builds across development environments.",
       "domain_cluster": null,
       "complexity_score": 3405.5,
       "change_velocity_30d": 0,
@@ -44,7 +44,7 @@
     {
       "path": "targets/better-auth/docker-compose.yml",
       "language": "yaml",
-      "purpose_statement": "This code sets up and configures multiple database services (PostgreSQL, MySQL, MongoDB, Redis, and MSSQL) for testing and development purposes, ensuring each service is properly initialized and monitored for health.",
+      "purpose_statement": "This code defines a Docker Compose configuration that sets up multiple database services (PostgreSQL, MySQL, MongoDB, Redis, and MSSQL) for testing different database integrations with an authentication system, each with health checks to ensure they are ready before use.",
       "domain_cluster": null,
       "complexity_score": 23.0,
       "change_velocity_30d": 0,
@@ -63,7 +63,7 @@
     {
       "path": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql",
       "language": "sql",
-      "purpose_statement": "This code defines the database schema for a user authentication and identity management system, including tables for users, accounts, sessions, SSO providers, and verification processes. It establishes relationships between entities and ensures data integrity through foreign keys and unique constraints.",
+      "purpose_statement": "This code defines the database schema for a user authentication and authorization system, including tables for user accounts, sessions, SSO providers, and verification processes. It establishes relationships between entities and ensures data integrity through foreign keys and unique constraints.",
       "domain_cluster": null,
       "complexity_score": 1.0,
       "change_velocity_30d": 0,
@@ -221,7 +221,7 @@
     {
       "path": "targets/better-auth/demo/nextjs/pnpm-lock.yaml",
       "language": "yaml",
-      "purpose_statement": "This code defines the dependency configuration for a Node.js project, specifying which packages and versions should be installed to support the application's functionality.",
+      "purpose_statement": "This is a package lock file that manages dependencies for a React-based authentication system, ensuring consistent versions of UI components, authentication providers, and database libraries across the project.",
       "domain_cluster": null,
       "complexity_score": 550.0,
       "change_velocity_30d": 0,
@@ -240,7 +240,7 @@
     {
       "path": "targets/better-auth/demo/stateless/pnpm-workspace.yaml",
       "language": "yaml",
-      "purpose_statement": "The code appears to be designed to process and analyze data, likely for generating insights or reports that support business decision-making.",
+      "purpose_statement": "The code appears to be designed to process and analyze data for business insights, likely generating reports or dashboards to support decision-making.",
       "domain_cluster": null,
       "complexity_score": 1.0,
       "change_velocity_30d": 0,
@@ -259,7 +259,7 @@
     {
       "path": "targets/better-auth/demo/stateless/pnpm-lock.yaml",
       "language": "yaml",
-      "purpose_statement": "This code defines a package dependency configuration for a web application, specifying the required libraries and their versions for proper functionality.",
+      "purpose_statement": "This code defines a package dependency configuration for a web application, specifying required libraries and their versions for proper functionality.",
       "domain_cluster": null,
       "complexity_score": 114.0,
       "change_velocity_30d": 0,
@@ -297,7 +297,7 @@
     {
       "path": "targets/better-auth/demo/expo/pnpm-lock.yaml",
       "language": "yaml",
-      "purpose_statement": "This code defines the dependency configuration for a React Native/Expo project, specifying which packages and versions should be installed to build and run the application.",
+      "purpose_statement": "This code defines the dependency configuration for a React Native/Expo project, specifying which packages and versions are required for the application to function properly.",
       "domain_cluster": null,
       "complexity_score": 906.0,
       "change_velocity_30d": 0,
@@ -316,7 +316,7 @@
     {
       "path": "targets/better-auth/demo/oidc-client/pnpm-workspace.yaml",
       "language": "yaml",
-      "purpose_statement": "The code appears to be designed to process and analyze data, likely for generating insights or reports that support business decision-making. It may be used to automate data-driven tasks, improving efficiency and accuracy in operations.",
+      "purpose_statement": "The code appears to be designed to process and analyze data, likely for generating insights or reports that support business decision-making.",
       "domain_cluster": null,
       "complexity_score": 1.0,
       "change_velocity_30d": 0,
@@ -335,7 +335,7 @@
     {
       "path": "targets/better-auth/demo/oidc-client/pnpm-lock.yaml",
       "language": "yaml",
-      "purpose_statement": "This code defines the dependencies and development tools for a React-based web application, specifying the exact versions of libraries like React, Radix UI components, Tailwind CSS, and build tools needed to run and develop the project.",
+      "purpose_statement": "This code defines the dependencies and development tools for a React-based web application, including UI components, authentication, and build tools.",
       "domain_cluster": null,
       "complexity_score": 267.0,
       "change_velocity_30d": 0,
@@ -354,7 +354,7 @@
     {
       "path": "targets/better-auth/demo/electron/pnpm-workspace.yaml",
       "language": "yaml",
-      "purpose_statement": "The code specifies a list of dependencies that are only built, likely for a software project targeting Electron-based applications. This ensures that only the necessary components for Electron and related tools are compiled, optimizing the build process.",
+      "purpose_statement": "The code specifies a list of dependencies that are built exclusively for a particular system, likely to ensure compatibility and streamline the build process for specific components like Electron and its installer.",
       "domain_cluster": null,
       "complexity_score": 1.5,
       "change_velocity_30d": 0,
@@ -367,13 +367,13 @@
       "pagerank": 0.01370801246722723,
       "is_hub": false,
       "is_dead_candidate": true,
-      "confidence": 0.9,
+      "confidence": 0.85,
       "id": "targets/better-auth/demo/electron/pnpm-workspace.yaml"
     },
     {
       "path": "targets/better-auth/demo/electron/electron-builder.yml",
       "language": "yaml",
-      "purpose_statement": "This configuration defines the build settings for packaging an Electron application across multiple platforms (Windows, macOS, Linux), specifying file inclusions/exclusions, installer formats, and platform-specific permissions.",
+      "purpose_statement": "This configuration defines the build settings for packaging an Electron application into distributable formats across multiple platforms (Windows, macOS, and Linux). It specifies which files to include/exclude, application metadata, installer options, and platform-specific settings to create professional installers and packages for end users.",
       "domain_cluster": null,
       "complexity_score": 17.0,
       "change_velocity_30d": 0,
@@ -392,7 +392,7 @@
     {
       "path": "targets/better-auth/demo/electron/pnpm-lock.yaml",
       "language": "yaml",
-      "purpose_statement": "This code defines the dependency configuration for an Electron application, specifying the required packages and their versions for both development and production environments.",
+      "purpose_statement": "This code defines the dependency configuration for an Electron application, specifying both production and development dependencies required to build and run the application. It establishes the project's package management structure, linking local packages and external libraries to ensure proper compilation and execution of the Electron-based software.",
       "domain_cluster": null,
       "complexity_score": 528.5,
       "change_velocity_30d": 0,
@@ -411,7 +411,7 @@
     {
       "path": "targets/better-auth/packages/cli/test/__snapshots__/migrations-uuid.sql",
       "language": "sql",
-      "purpose_statement": "This code establishes the foundational database schema for a user authentication and management system, enabling secure user registration, session handling, and account linking with third-party providers.",
+      "purpose_statement": "This code establishes the foundational database schema for a user authentication and account management system, enabling secure user registration, session handling, and third-party account integration.",
       "domain_cluster": null,
       "complexity_score": 1.0,
       "change_velocity_30d": 0,
@@ -430,7 +430,7 @@
     {
       "path": "targets/better-auth/packages/cli/test/__snapshots__/migrations.sql",
       "language": "sql",
-      "purpose_statement": "This code establishes the database schema for a user authentication and session management system, including tables for users, sessions, accounts, and verification processes. It enables secure user registration, login, and account linking with third-party providers, while also supporting session tracking and email verification functionalities.",
+      "purpose_statement": "This code establishes the database schema for a user authentication and session management system, including tables for users, sessions, accounts, and verification tokens. It enables secure user registration, login, and account linking with third-party providers while maintaining session state and verification processes.",
       "domain_cluster": null,
       "complexity_score": 1.0,
       "change_velocity_30d": 0,
@@ -454,7 +454,7 @@
     {
       "path": "targets/jaffle_shop/dbt_project.yml",
       "language": "yaml",
-      "purpose_statement": "This configuration file sets up the jaffle_shop project for data transformation using dbt, defining paths for models, seeds, tests, and macros, and specifying the target directory for compiled artifacts.",
+      "purpose_statement": "This configuration file sets up the structure and behavior of a data transformation project, defining paths for models, seeds, tests, and other components, and specifying how data should be materialized in the database.",
       "domain_cluster": null,
       "complexity_score": 9.0,
       "change_velocity_30d": 0,
@@ -527,7 +527,7 @@
     {
       "path": "targets/jaffle_shop/models/customers.sql",
       "language": "sql",
-      "purpose_statement": "This code aggregates customer data to provide a comprehensive view of customer behavior and value, including their first and most recent order dates, total number of orders, and lifetime value. It serves as a foundation for customer analytics and business intelligence, enabling data-driven decision-making around customer retention and marketing strategies.",
+      "purpose_statement": "This code aggregates customer data to provide a comprehensive view of customer behavior and value, including their first and most recent order dates, total number of orders, and lifetime value. It serves as a foundation for customer analytics and business intelligence, enabling data-driven decisions to enhance customer relationships and optimize marketing strategies.",
       "domain_cluster": null,
       "complexity_score": 1.0,
       "change_velocity_30d": 0,
@@ -586,7 +586,7 @@
     {
       "path": "targets/jaffle_shop/models/schema.yml",
       "language": "yaml",
-      "purpose_statement": "This code defines the structure and relationships for customer and order data, enabling the tracking of customer information, order history, and payment details. It supports business operations by ensuring data integrity and providing insights into customer behavior and order patterns.",
+      "purpose_statement": "This code defines the structure of a customer and order database, capturing essential information such as customer details, order history, and payment methods. It serves as a foundation for tracking customer interactions, order statuses, and financial transactions within the system.",
       "domain_cluster": null,
       "complexity_score": 6.5,
       "change_velocity_30d": 0,
@@ -629,7 +629,7 @@
     {
       "path": "targets/jaffle_shop/models/staging/stg_customers.sql",
       "language": "sql",
-      "purpose_statement": "The code transforms raw customer data by selecting specific fields and renaming them for clarity and consistency. It serves to prepare customer information for downstream processes or reporting by standardizing the data structure.",
+      "purpose_statement": "The code transforms raw customer data by selecting specific fields and renaming them for clarity, preparing it for further analysis or reporting.",
       "domain_cluster": null,
       "complexity_score": 1.0,
       "change_velocity_30d": 0,
@@ -648,7 +648,7 @@
     {
       "path": "targets/jaffle_shop/models/staging/schema.yml",
       "language": "yaml",
-      "purpose_statement": "This code defines data quality tests for staging tables in a data warehouse, ensuring data integrity for customer, order, and payment information. It validates unique identifiers, non-null constraints, and acceptable values for key fields to maintain reliable data for downstream analytics and reporting.",
+      "purpose_statement": "The code defines data quality tests for staging tables to ensure data integrity in a business system, such as verifying unique and non-null customer IDs, order IDs, and payment IDs, and validating accepted values for order statuses and payment methods.",
       "domain_cluster": null,
       "complexity_score": 4.5,
       "change_velocity_30d": 0,
@@ -667,7 +667,7 @@
     {
       "path": "targets/jaffle_shop/models/staging/stg_orders.sql",
       "language": "sql",
-      "purpose_statement": "The code transforms raw order data by renaming columns to more meaningful names, such as changing 'id' to 'order_id' and 'user_id' to 'customer_id', to improve data clarity and consistency for downstream analysis.",
+      "purpose_statement": "The code transforms raw order data by selecting specific fields and renaming them for clarity, such as changing 'id' to 'order_id' and 'user_id' to 'customer_id'. This ensures the data is structured in a way that aligns with business reporting and analysis needs.",
       "domain_cluster": null,
       "complexity_score": 1.0,
       "change_velocity_30d": 0,

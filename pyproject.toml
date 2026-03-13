@@ -28,8 +28,15 @@ dependencies = [
 ]
 
 [project.scripts]
-cartographer = "brownfield_cartographer.cli:main"
+cartographer = "src.cli:run_main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
 
 [build-system]
-requires = ["uv_build>=0.10.8,<0.11.0"]
-build-backend = "uv_build"
+requires = ["hatchling"]
+build-backend = "hatchling.build"

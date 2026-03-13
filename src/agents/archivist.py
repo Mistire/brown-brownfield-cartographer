@@ -1,15 +1,19 @@
 import os
 import json
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 import networkx as nx
 from pyvis.network import Network
+
+from utils.paths import get_cartography_dir
 
 class Archivist:
     """
     Generates and maintains the living context (CODEBASE.md) and other artifacts.
     """
-    def __init__(self, project_name: str, base_dir: str = ".cartography"):
+    def __init__(self, project_name: str, base_dir: Optional[str] = None):
+        if base_dir is None:
+            base_dir = get_cartography_dir()
         self.output_dir = os.path.join(base_dir, project_name)
         os.makedirs(self.output_dir, exist_ok=True)
 
@@ -33,7 +37,7 @@ class Archivist:
             f.write("## 2. Critical Architectural Hubs (PageRank)\n")
             hubs = sorted([m for m in nodes if m.get("is_hub")], key=lambda x: x.get("pagerank", 0), reverse=True)
             for hub in hubs:
-                f.write(f"- **`{hub['path']}`**: Centrality Score {hub.get('pagerank', 0):.4f}\n")
+                f.write(f"- **`{hub.get('path', 'external_dependency')}`**: Centrality Score {hub.get('pagerank', 0):.4f}\n")
             f.write("\n")
             
             f.write("## 3. Architectural Debt & Risks\n")
@@ -43,7 +47,7 @@ class Archivist:
                 f.write("> [!WARNING]\n")
                 f.write("> These modules are part of circular import chains which can cause initialization issues.\n\n")
                 for c in circular:
-                    f.write(f"- `{c['path']}` (SCC ID: {c.get('scc_id')})\n")
+                    f.write(f"- `{c.get('path', 'external_dependency')}` (SCC ID: {c.get('scc_id')})\n")
             
             dead = [m for m in nodes if m.get("is_dead_candidate")]
             if dead:
@@ -51,7 +55,7 @@ class Archivist:
                 f.write("> [!NOTE]\n")
                 f.write("> These modules have zero in-degree (no detected imports). Verify if they are entry points or unused.\n\n")
                 for d in dead:
-                    f.write(f"- `{d['path']}`\n")
+                    f.write(f"- `{d.get('path', 'external_dependency')}`\n")
                     
             f.write("\n## 4. Module Purpose Index\n")
             for mod in nodes:
@@ -68,7 +72,31 @@ class Archivist:
                 
                 f.write(f"**Complexity:** {mod.get('complexity_score', 0.0)} | **Velocity:** {mod.get('change_velocity_30d', 0)} changes/30d\n\n")
                 
-            f.write("## 5. System Statistics\n")
+            f.write("## 5. Data Sources & Sinks\n")
+            sources = [n for n, d in graph.nodes(data=True) if d.get("type") == "dataset" and graph.in_degree(n) == 0]
+            sinks = [n for n, d in graph.nodes(data=True) if d.get("type") == "dataset" and graph.out_degree(n) == 0]
+            
+            f.write("### 5.1 Primary Sources (Ingestion)\n")
+            if sources:
+                for s in sources: f.write(f"- `{s}`\n")
+            else:
+                f.write("No distinct sources identified.\n")
+                
+            f.write("\n### 5.2 Primary Sinks (Output)\n")
+            if sinks:
+                for s in sinks: f.write(f"- `{s}`\n")
+            else:
+                f.write("No distinct sinks identified.\n")
+            
+            f.write("\n## 6. High-Velocity Core (Maintenance Hotspots)\n")
+            f.write("> [!TIP]\n")
+            f.write("> These files have the highest change frequency in the last 30 days.\n\n")
+            hotspots = list(sorted(nodes, key=lambda x: x.get("change_velocity_30d", 0), reverse=True))[:5]
+            for h in hotspots:
+                if h.get("change_velocity_30d", 0) > 0:
+                    f.write(f"- `{h.get('path')}`: **{h.get('change_velocity_30d')}** changes\n")
+
+            f.write("\n## 7. System Statistics\n")
             f.write(f"Total Modules: {len(nodes)}\n")
             f.write(f"Total Dependencies: {graph.number_of_edges()}\n")
 

@@ -1,6 +1,6 @@
 import pytest
 import os
-from src.analyzers.python_dataflow import PythonDataFlowAnalyzer
+from analyzers.python_dataflow import PythonDataFlowAnalyzer
 
 def test_scikit_learn_detection(tmp_path):
     # Create a mock python file with ML patterns

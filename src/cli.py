@@ -2,14 +2,15 @@ import argparse
 import asyncio
 import os
 import sys
+
+# Add the src directory to sys.path for CLI execution
+# Since cli.py is at src/cli.py, we need to go up one level to get to src/
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from orchestrator import Orchestrator
+from agents.navigator import Navigator
 from dotenv import load_dotenv
 
-load_dotenv()
-
-# Add the project root to sys.path for CLI execution
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from src.orchestrator import Orchestrator
 
 
 async def main():
@@ -31,7 +32,6 @@ async def main():
         orchestrator = Orchestrator(args.repo_path)
         await orchestrator.run_full_pipeline(incremental=args.incremental)
     elif args.command == "query":
-        from src.agents.navigator import Navigator
         navigator = Navigator(args.repo_path)
         print(f"Entering Navigator mode for {args.repo_path}. Type 'exit' to quit.")
         while True:
@@ -47,8 +47,13 @@ async def main():
         parser.print_help()
 
 
-if __name__ == "__main__":
+def run_main():
+    """Entry point for project.scripts in pyproject.toml"""
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
         pass
+
+
+if __name__ == "__main__":
+    run_main()

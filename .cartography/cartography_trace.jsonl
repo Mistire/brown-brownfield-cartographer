@@ -26,3 +26,126 @@
 {"timestamp": "2026-03-13T13:15:17.979092", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/staging/stg_customers.sql", "confidence": 0.95, "drift_metrics": null}
 {"timestamp": "2026-03-13T13:15:19.820039", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/staging/schema.yml", "confidence": 0.95, "drift_metrics": null}
 {"timestamp": "2026-03-13T13:15:21.378377", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/staging/stg_orders.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:10:25.650441", "action": "surveyor_start", "repo": ".", "incremental": false}
+{"timestamp": "2026-03-13T23:10:29.723458", "action": "hydrologist_start"}
+{"timestamp": "2026-03-13T23:11:13.617728", "action": "semanticist_start", "enabled": true}
+{"timestamp": "2026-03-13T23:11:16.174349", "action": "semantic_analysis", "node": "targets/better-auth/pnpm-workspace.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:11:17.568363", "action": "semantic_analysis", "node": "targets/better-auth/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:11:21.371944", "action": "semantic_analysis", "node": "targets/better-auth/docker-compose.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:11:23.226962", "action": "semantic_analysis", "node": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:11:24.753621", "action": "semantic_analysis", "node": "targets/better-auth/demo/nextjs/pnpm-workspace.yaml", "confidence": 0.8, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:11:30.386979", "action": "semantic_analysis", "node": "targets/better-auth/demo/nextjs/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:11:34.148582", "action": "semantic_analysis", "node": "targets/better-auth/demo/stateless/pnpm-workspace.yaml", "confidence": 0.7, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:11:36.939951", "action": "semantic_analysis", "node": "targets/better-auth/demo/stateless/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:11:38.471764", "action": "semantic_analysis", "node": "targets/better-auth/demo/expo/pnpm-workspace.yaml", "confidence": 0.8, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:11:44.313328", "action": "semantic_analysis", "node": "targets/better-auth/demo/expo/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:11:50.046716", "action": "semantic_analysis", "node": "targets/better-auth/demo/oidc-client/pnpm-workspace.yaml", "confidence": 0.8, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:11:51.887175", "action": "semantic_analysis", "node": "targets/better-auth/demo/oidc-client/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:11:53.325231", "action": "semantic_analysis", "node": "targets/better-auth/demo/electron/pnpm-workspace.yaml", "confidence": 0.85, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:11:54.860184", "action": "semantic_analysis", "node": "targets/better-auth/demo/electron/electron-builder.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:11:58.748149", "action": "semantic_analysis", "node": "targets/better-auth/demo/electron/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:12:01.005545", "action": "semantic_analysis", "node": "targets/better-auth/packages/cli/test/__snapshots__/migrations-uuid.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:12:03.040810", "action": "semantic_analysis", "node": "targets/better-auth/packages/cli/test/__snapshots__/migrations.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:12:04.556791", "action": "semantic_analysis", "node": "targets/jaffle_shop/dbt_project.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:12:06.633189", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/orders.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:12:10.114738", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/customers.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:12:14.214183", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/schema.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:12:35.514094", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/staging/stg_payments.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:12:37.762794", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/staging/stg_customers.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:12:40.221240", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/staging/schema.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-13T23:12:43.077809", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/staging/stg_orders.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:09:22.503120", "action": "surveyor_start", "repo": ".", "incremental": false}
+{"timestamp": "2026-03-14T00:09:26.094863", "action": "hydrologist_start"}
+{"timestamp": "2026-03-14T00:10:09.790356", "action": "semanticist_start", "enabled": true}
+{"timestamp": "2026-03-14T00:10:22.497693", "action": "semantic_analysis", "node": "targets/better-auth/pnpm-workspace.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:10:25.351783", "action": "semantic_analysis", "node": "targets/better-auth/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:10:32.929451", "action": "semantic_analysis", "node": "targets/better-auth/docker-compose.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:10:35.868106", "action": "semantic_analysis", "node": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:10:41.577390", "action": "semantic_analysis", "node": "targets/better-auth/demo/nextjs/pnpm-workspace.yaml", "confidence": 0.8, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:10:43.681298", "action": "semantic_analysis", "node": "targets/better-auth/demo/nextjs/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:10:47.157331", "action": "semantic_analysis", "node": "targets/better-auth/demo/stateless/pnpm-workspace.yaml", "confidence": 0.7, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:10:50.952364", "action": "semantic_analysis", "node": "targets/better-auth/demo/stateless/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:10:52.908090", "action": "semantic_analysis", "node": "targets/better-auth/demo/expo/pnpm-workspace.yaml", "confidence": 0.8, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:10:54.945495", "action": "semantic_analysis", "node": "targets/better-auth/demo/expo/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:10:57.369254", "action": "semantic_analysis", "node": "targets/better-auth/demo/oidc-client/pnpm-workspace.yaml", "confidence": 0.7, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:10:59.416292", "action": "semantic_analysis", "node": "targets/better-auth/demo/oidc-client/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:11:01.130049", "action": "semantic_analysis", "node": "targets/better-auth/demo/electron/pnpm-workspace.yaml", "confidence": 0.85, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:11:03.179090", "action": "semantic_analysis", "node": "targets/better-auth/demo/electron/electron-builder.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:11:09.326794", "action": "semantic_analysis", "node": "targets/better-auth/demo/electron/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:11:11.346655", "action": "semantic_analysis", "node": "targets/better-auth/packages/cli/test/__snapshots__/migrations-uuid.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:11:14.299971", "action": "semantic_analysis", "node": "targets/better-auth/packages/cli/test/__snapshots__/migrations.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:11:17.101336", "action": "semantic_analysis", "node": "targets/jaffle_shop/dbt_project.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:11:19.521974", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/orders.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:11:22.480115", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/customers.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:11:26.587742", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/schema.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:11:28.533588", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/staging/stg_payments.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:11:33.302615", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/staging/stg_customers.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:11:36.642503", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/staging/schema.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:11:42.460055", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/staging/stg_orders.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:24:02.695740", "action": "surveyor_start", "repo": ".", "incremental": false}
+{"timestamp": "2026-03-14T00:24:06.713867", "action": "hydrologist_start"}
+{"timestamp": "2026-03-14T00:24:50.137892", "action": "semanticist_start", "enabled": true}
+{"timestamp": "2026-03-14T00:24:54.784707", "action": "semantic_analysis", "node": "targets/better-auth/pnpm-workspace.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:24:56.760127", "action": "semantic_analysis", "node": "targets/better-auth/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:25:05.383602", "action": "semantic_analysis", "node": "targets/better-auth/docker-compose.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:25:11.559715", "action": "semantic_analysis", "node": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:25:15.656199", "action": "semantic_analysis", "node": "targets/better-auth/demo/nextjs/pnpm-workspace.yaml", "confidence": 0.8, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:25:18.372776", "action": "semantic_analysis", "node": "targets/better-auth/demo/nextjs/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:25:20.509424", "action": "semantic_analysis", "node": "targets/better-auth/demo/stateless/pnpm-workspace.yaml", "confidence": 0.7, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:25:22.504513", "action": "semantic_analysis", "node": "targets/better-auth/demo/stateless/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:25:24.960627", "action": "semantic_analysis", "node": "targets/better-auth/demo/expo/pnpm-workspace.yaml", "confidence": 0.8, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:25:27.008760", "action": "semantic_analysis", "node": "targets/better-auth/demo/expo/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:25:29.011598", "action": "semantic_analysis", "node": "targets/better-auth/demo/oidc-client/pnpm-workspace.yaml", "confidence": 0.7, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:25:30.959709", "action": "semantic_analysis", "node": "targets/better-auth/demo/oidc-client/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:25:36.506296", "action": "semantic_analysis", "node": "targets/better-auth/demo/electron/pnpm-workspace.yaml", "confidence": 0.85, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:25:40.087670", "action": "semantic_analysis", "node": "targets/better-auth/demo/electron/electron-builder.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:25:42.939197", "action": "semantic_analysis", "node": "targets/better-auth/demo/electron/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:25:44.698270", "action": "semantic_analysis", "node": "targets/better-auth/packages/cli/test/__snapshots__/migrations-uuid.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:25:49.511227", "action": "semantic_analysis", "node": "targets/better-auth/packages/cli/test/__snapshots__/migrations.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:25:51.849861", "action": "semantic_analysis", "node": "targets/jaffle_shop/dbt_project.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:25:55.743814", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/orders.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:25:59.032570", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/customers.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:26:01.227612", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/schema.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:26:03.122583", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/staging/stg_payments.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:26:09.142598", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/staging/stg_customers.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:26:14.981667", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/staging/schema.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:26:20.561704", "action": "semantic_analysis", "node": "targets/jaffle_shop/models/staging/stg_orders.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T00:26:54.081428", "action": "pipeline_complete", "artifacts_dir": "/home/mistire/Projects/10Academy/course/week-4/brownfield-cartographer/.cartography/.", "token_usage": {"prompt": 0, "completion": 0, "model": "arcee-ai/trinity-large-preview:free"}}
+{"timestamp": "2026-03-14T01:35:38.106826", "action": "surveyor_start", "repo": ".", "incremental": false}
+{"timestamp": "2026-03-14T01:35:43.769188", "action": "hydrologist_start"}
+{"timestamp": "2026-03-14T01:35:44.997342", "action": "semanticist_start", "enabled": true}
+{"timestamp": "2026-03-14T01:35:53.041885", "action": "semantic_analysis", "node": "tests/test_resolver.py", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:35:57.795321", "action": "semantic_analysis", "node": "tests/test_hydrologist_ml.py", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:35:59.749556", "action": "semantic_analysis", "node": "tests/test_analyzer.py", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:36:11.190764", "action": "semantic_analysis", "node": "scripts/verify_context_injection.py", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:36:13.823753", "action": "semantic_analysis", "node": "src/__init__.py", "confidence": 0.8, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:36:16.714581", "action": "semantic_analysis", "node": "src/orchestrator.py", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:36:19.093276", "action": "semantic_analysis", "node": "src/cli.py", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:36:23.365626", "action": "semantic_analysis", "node": "src/graph/knowledge_graph.py", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:36:37.781493", "action": "semantic_analysis", "node": "src/agents/surveyor.py", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:36:41.162395", "action": "semantic_analysis", "node": "src/agents/semanticist.py", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:36:43.928608", "action": "semantic_analysis", "node": "src/agents/hydrologist.py", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:36:46.523005", "action": "semantic_analysis", "node": "src/agents/archivist.py", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:36:51.824731", "action": "semantic_analysis", "node": "src/agents/navigator.py", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:36:55.854899", "action": "semantic_analysis", "node": "src/analyzers/sql_lineage.py", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:37:00.131881", "action": "semantic_analysis", "node": "src/analyzers/python_dataflow.py", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:37:10.912357", "action": "semantic_analysis", "node": "src/analyzers/tree_sitter_analyzer.py", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:37:14.543062", "action": "semantic_analysis", "node": "src/analyzers/dag_config_parser.py", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:37:17.746304", "action": "semantic_analysis", "node": "src/utils/paths.py", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:37:20.038273", "action": "semantic_analysis", "node": "src/utils/resolver.py", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:37:23.518880", "action": "semantic_analysis", "node": "src/models/__init__.py", "confidence": 0.3, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:37:26.126171", "action": "semantic_analysis", "node": "src/models/graph.py", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:37:28.838975", "action": "semantic_analysis", "node": "targets/better-auth/pnpm-workspace.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:37:31.145123", "action": "semantic_analysis", "node": "targets/better-auth/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:37:39.551439", "action": "semantic_analysis", "node": "targets/better-auth/docker-compose.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:37:41.588494", "action": "semantic_analysis", "node": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:37:47.679293", "action": "semantic_analysis", "node": "targets/better-auth/demo/nextjs/pnpm-workspace.yaml", "confidence": 0.8, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:37:50.071168", "action": "semantic_analysis", "node": "targets/better-auth/demo/nextjs/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:37:54.525116", "action": "semantic_analysis", "node": "targets/better-auth/demo/stateless/pnpm-workspace.yaml", "confidence": 0.3, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:37:56.896038", "action": "semantic_analysis", "node": "targets/better-auth/demo/stateless/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:37:59.966863", "action": "semantic_analysis", "node": "targets/better-auth/demo/expo/pnpm-workspace.yaml", "confidence": 0.9, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:38:10.154680", "action": "semantic_analysis", "node": "targets/better-auth/demo/expo/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:38:14.262337", "action": "semantic_analysis", "node": "targets/better-auth/demo/oidc-client/pnpm-workspace.yaml", "confidence": 0.3, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:38:16.313919", "action": "semantic_analysis", "node": "targets/better-auth/demo/oidc-client/pnpm-lock.yaml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:38:18.196537", "action": "semantic_analysis", "node": "targets/better-auth/demo/electron/pnpm-workspace.yaml", "confidence": 0.8, "drift_metrics": null}
+{"timestamp": "2026-03-14T01:38:20.582025", "action": "semantic_analysis", "node": "targets/better-auth/demo/electron/electron-builder.yml", "confidence": 0.95, "drift_metrics": null}

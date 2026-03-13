@@ -135,12 +135,14 @@ class SurveyorAnalyzer:
             (boolean_operator) @logic
         """)
 
-        type_hint_query = language.query("""
-            (type_hint) @hint
-            (type_alias) @alias
-        """)
+        try:
+            type_hint_query = language.query("""
+                (type) @hint
+            """)
+        except Exception:
+            type_hint_query = None
 
-        results = {
+        results: Dict[str, Any] = {
             "path": path,
             "imports": [],
             "functions": [],
@@ -187,10 +189,11 @@ class SurveyorAnalyzer:
                 results["decorators"].append(dec_text)
 
         # Type Hints
-        for node, _ in self._get_captures(type_hint_query, tree.root_node):
-            hint_text = content[node.start_byte:node.end_byte].decode("utf-8").strip()
-            if hint_text not in results["type_hints"]:
-                results["type_hints"].append(hint_text)
+        if type_hint_query:
+            for node, _ in self._get_captures(type_hint_query, tree.root_node):
+                hint_text = content[node.start_byte:node.end_byte].decode("utf-8").strip()
+                if hint_text not in results["type_hints"]:
+                    results["type_hints"].append(hint_text)
 
         # Complexity
         results["complexity_score"] += len(self._get_captures(complexity_query, tree.root_node))
@@ -205,7 +208,7 @@ class SurveyorAnalyzer:
             (identifier) @id
         """)
         
-        results = {
+        results: Dict[str, Any] = {
             "path": path,
             "imports": [], 
             "ctes": [],
@@ -232,7 +235,7 @@ class SurveyorAnalyzer:
             (block_mapping_pair key: (_) @key)
         """)
         
-        results = {
+        results: Dict[str, Any] = {
             "path": path,
             "keys": [],
             "imports": [],
@@ -245,5 +248,5 @@ class SurveyorAnalyzer:
             if key not in results["keys"]:
                 results["keys"].append(key)
         
-        results["complexity_score"] += len(results["keys"]) * 0.5
+        results["complexity_score"] = float(results["complexity_score"]) + (len(results["keys"]) * 0.5)
         return results

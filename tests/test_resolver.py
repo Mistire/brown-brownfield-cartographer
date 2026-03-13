@@ -1,6 +1,6 @@
 import pytest
 import os
-from src.utils.resolver import PathResolver
+from utils.resolver import PathResolver
 
 def test_resolve_absolute_import(tmp_path):
     # Setup mock repo

@@ -1,0 +1,321 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script>function neighbourhoodHighlight(params) {
+  // console.log("in nieghbourhoodhighlight");
+  allNodes = nodes.get({ returnType: "Object" });
+  // originalNodes = JSON.parse(JSON.stringify(allNodes));
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    highlightActive = true;
+    var i, j;
+    var selectedNode = params.nodes[0];
+    var degrees = 2;
+
+    // mark all nodes as hard to read.
+    for (let nodeId in allNodes) {
+      // nodeColors[nodeId] = allNodes[nodeId].color;
+      allNodes[nodeId].color = "rgba(200,200,200,0.5)";
+      if (allNodes[nodeId].hiddenLabel === undefined) {
+        allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+    var connectedNodes = network.getConnectedNodes(selectedNode);
+    var allConnectedNodes = [];
+
+    // get the second degree nodes
+    for (i = 1; i < degrees; i++) {
+      for (j = 0; j < connectedNodes.length; j++) {
+        allConnectedNodes = allConnectedNodes.concat(
+          network.getConnectedNodes(connectedNodes[j])
+        );
+      }
+    }
+
+    // all second degree nodes get a different color and their label back
+    for (i = 0; i < allConnectedNodes.length; i++) {
+      // allNodes[allConnectedNodes[i]].color = "pink";
+      allNodes[allConnectedNodes[i]].color = "rgba(150,150,150,0.75)";
+      if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[allConnectedNodes[i]].label =
+          allNodes[allConnectedNodes[i]].hiddenLabel;
+        allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // all first degree nodes get their own color and their label back
+    for (i = 0; i < connectedNodes.length; i++) {
+      // allNodes[connectedNodes[i]].color = undefined;
+      allNodes[connectedNodes[i]].color = nodeColors[connectedNodes[i]];
+      if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[connectedNodes[i]].label =
+          allNodes[connectedNodes[i]].hiddenLabel;
+        allNodes[connectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // the main node gets its own color and its label back.
+    // allNodes[selectedNode].color = undefined;
+    allNodes[selectedNode].color = nodeColors[selectedNode];
+    if (allNodes[selectedNode].hiddenLabel !== undefined) {
+      allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
+      allNodes[selectedNode].hiddenLabel = undefined;
+    }
+  } else if (highlightActive === true) {
+    // console.log("highlightActive was true");
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      // allNodes[nodeId].color = "purple";
+      allNodes[nodeId].color = nodeColors[nodeId];
+      // delete allNodes[nodeId].color;
+      if (allNodes[nodeId].hiddenLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
+        allNodes[nodeId].hiddenLabel = undefined;
+      }
+    }
+    highlightActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    // console.log("Nothing was selected");
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        // allNodes[nodeId].color = {};
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function filterHighlight(params) {
+  allNodes = nodes.get({ returnType: "Object" });
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    filterActive = true;
+    let selectedNodes = params.nodes;
+
+    // hiding all nodes and saving the label
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = true;
+      if (allNodes[nodeId].savedLabel === undefined) {
+        allNodes[nodeId].savedLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+
+    for (let i=0; i < selectedNodes.length; i++) {
+      allNodes[selectedNodes[i]].hidden = false;
+      if (allNodes[selectedNodes[i]].savedLabel !== undefined) {
+        allNodes[selectedNodes[i]].label = allNodes[selectedNodes[i]].savedLabel;
+        allNodes[selectedNodes[i]].savedLabel = undefined;
+      }
+    }
+
+  } else if (filterActive === true) {
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = false;
+      if (allNodes[nodeId].savedLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].savedLabel;
+        allNodes[nodeId].savedLabel = undefined;
+      }
+    }
+    filterActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function selectNode(nodes) {
+  network.selectNodes(nodes);
+  neighbourhoodHighlight({ nodes: nodes });
+  return nodes;
+}
+
+function selectNodes(nodes) {
+  network.selectNodes(nodes);
+  filterHighlight({nodes: nodes});
+  return nodes;
+}
+
+function highlightFilter(filter) {
+  let selectedNodes = []
+  let selectedProp = filter['property']
+  if (filter['item'] === 'node') {
+    let allNodes = nodes.get({ returnType: "Object" });
+    for (let nodeId in allNodes) {
+      if (allNodes[nodeId][selectedProp] && filter['value'].includes((allNodes[nodeId][selectedProp]).toString())) {
+        selectedNodes.push(nodeId)
+      }
+    }
+  }
+  else if (filter['item'] === 'edge'){
+    let allEdges = edges.get({returnType: 'object'});
+    // check if the selected property exists for selected edge and select the nodes connected to the edge
+    for (let edge in allEdges) {
+      if (allEdges[edge][selectedProp] && filter['value'].includes((allEdges[edge][selectedProp]).toString())) {
+        selectedNodes.push(allEdges[edge]['from'])
+        selectedNodes.push(allEdges[edge]['to'])
+      }
+    }
+  }
+  selectNodes(selectedNodes)
+}</script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+            
+            
+            
+            
+            
+
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 100vh;
+                 background-color: #0f172a;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"borderWidth": 2, "color": "#f59e0b", "font": {"color": "white"}, "id": "targets/better-auth/pnpm-workspace.yaml", "label": "pnpm-workspace.yaml", "shape": "dot", "title": "Path: targets/better-auth/pnpm-workspace.yaml\nComplexity: 14.5\nPageRank: 0.0137\nPurpose: This configuration manages package dependencies and workspace settings for a software project, ensuring consistent versions and proper linking of packages across different environments.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#ef4444", "font": {"color": "white"}, "id": "targets/better-auth/pnpm-lock.yaml", "label": "pnpm-lock.yaml", "shape": "dot", "title": "Path: targets/better-auth/pnpm-lock.yaml\nComplexity: 3405.5\nPageRank: 0.0137\nPurpose: This code defines a package management configuration that specifies exact versions of dependencies and their relationships for different parts of a software project, ensuring consistent and reproducible builds across development environments.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#f59e0b", "font": {"color": "white"}, "id": "targets/better-auth/docker-compose.yml", "label": "docker-compose.yml", "shape": "dot", "title": "Path: targets/better-auth/docker-compose.yml\nComplexity: 23.0\nPageRank: 0.0137\nPurpose: This code defines a Docker Compose configuration that sets up multiple database services (PostgreSQL, MySQL, MongoDB, Redis, and MSSQL) for testing different database integrations with an authentication system, each with health checks to ensure they are ready before use.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "label": "0000_lively_paladin.sql", "shape": "dot", "title": "Path: targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql\nComplexity: 1.0\nPageRank: 0.0137\nPurpose: This code defines the database schema for a user authentication and authorization system, including tables for user accounts, sessions, SSO providers, and verification processes. It establishes relationships between entities and ensures data integrity through foreign keys and unique constraints.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`account_id`", "label": "`account_id`", "shape": "dot", "title": "Path: `account_id`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`provider_id`", "label": "`provider_id`", "shape": "dot", "title": "Path: `provider_id`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`user_id`", "label": "`user_id`", "shape": "dot", "title": "Path: `user_id`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`access_token`", "label": "`access_token`", "shape": "dot", "title": "Path: `access_token`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`refresh_token`", "label": "`refresh_token`", "shape": "dot", "title": "Path: `refresh_token`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`id_token`", "label": "`id_token`", "shape": "dot", "title": "Path: `id_token`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`access_token_expires_at`", "label": "`access_token_expires_at`", "shape": "dot", "title": "Path: `access_token_expires_at`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`refresh_token_expires_at`", "label": "`refresh_token_expires_at`", "shape": "dot", "title": "Path: `refresh_token_expires_at`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`created_at`", "label": "`created_at`", "shape": "dot", "title": "Path: `created_at`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`updated_at`", "label": "`updated_at`", "shape": "dot", "title": "Path: `updated_at`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`public_key`", "label": "`public_key`", "shape": "dot", "title": "Path: `public_key`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`private_key`", "label": "`private_key`", "shape": "dot", "title": "Path: `private_key`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`expires_at`", "label": "`expires_at`", "shape": "dot", "title": "Path: `expires_at`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`ip_address`", "label": "`ip_address`", "shape": "dot", "title": "Path: `ip_address`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`user_agent`", "label": "`user_agent`", "shape": "dot", "title": "Path: `user_agent`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`session_token_unique`", "label": "`session_token_unique`", "shape": "dot", "title": "Path: `session_token_unique`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`sso_provider`", "label": "`sso_provider`", "shape": "dot", "title": "Path: `sso_provider`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`oidc_config`", "label": "`oidc_config`", "shape": "dot", "title": "Path: `oidc_config`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`saml_config`", "label": "`saml_config`", "shape": "dot", "title": "Path: `saml_config`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`organization_id`", "label": "`organization_id`", "shape": "dot", "title": "Path: `organization_id`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`sso_provider_provider_id_unique`", "label": "`sso_provider_provider_id_unique`", "shape": "dot", "title": "Path: `sso_provider_provider_id_unique`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`email_verified`", "label": "`email_verified`", "shape": "dot", "title": "Path: `email_verified`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`user_email_unique`", "label": "`user_email_unique`", "shape": "dot", "title": "Path: `user_email_unique`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "`verification_identifier_idx`", "label": "`verification_identifier_idx`", "shape": "dot", "title": "Path: `verification_identifier_idx`\nComplexity: 0\nPageRank: 0.0142\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "targets/better-auth/demo/nextjs/pnpm-workspace.yaml", "label": "pnpm-workspace.yaml", "shape": "dot", "title": "Path: targets/better-auth/demo/nextjs/pnpm-workspace.yaml\nComplexity: 1.5\nPageRank: 0.0137\nPurpose: The code specifies that only the \u0027sharp\u0027 dependency should be built, likely to optimize build processes by excluding unnecessary dependencies.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#ef4444", "font": {"color": "white"}, "id": "targets/better-auth/demo/nextjs/pnpm-lock.yaml", "label": "pnpm-lock.yaml", "shape": "dot", "title": "Path: targets/better-auth/demo/nextjs/pnpm-lock.yaml\nComplexity: 550.0\nPageRank: 0.0137\nPurpose: This is a package lock file that manages dependencies for a React-based authentication system, ensuring consistent versions of UI components, authentication providers, and database libraries across the project.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "targets/better-auth/demo/stateless/pnpm-workspace.yaml", "label": "pnpm-workspace.yaml", "shape": "dot", "title": "Path: targets/better-auth/demo/stateless/pnpm-workspace.yaml\nComplexity: 1.0\nPageRank: 0.0137\nPurpose: The code appears to be designed to process and analyze data for business insights, likely generating reports or dashboards to support decision-making.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#ef4444", "font": {"color": "white"}, "id": "targets/better-auth/demo/stateless/pnpm-lock.yaml", "label": "pnpm-lock.yaml", "shape": "dot", "title": "Path: targets/better-auth/demo/stateless/pnpm-lock.yaml\nComplexity: 114.0\nPageRank: 0.0137\nPurpose: This code defines a package dependency configuration for a web application, specifying required libraries and their versions for proper functionality.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "targets/better-auth/demo/expo/pnpm-workspace.yaml", "label": "pnpm-workspace.yaml", "shape": "dot", "title": "Path: targets/better-auth/demo/expo/pnpm-workspace.yaml\nComplexity: 1.5\nPageRank: 0.0137\nPurpose: The code specifies that only the \u0027better-sqlite3\u0027 dependency should be built, likely to optimize the build process by excluding unnecessary dependencies.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#ef4444", "font": {"color": "white"}, "id": "targets/better-auth/demo/expo/pnpm-lock.yaml", "label": "pnpm-lock.yaml", "shape": "dot", "title": "Path: targets/better-auth/demo/expo/pnpm-lock.yaml\nComplexity: 906.0\nPageRank: 0.0137\nPurpose: This code defines the dependency configuration for a React Native/Expo project, specifying which packages and versions are required for the application to function properly.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "targets/better-auth/demo/oidc-client/pnpm-workspace.yaml", "label": "pnpm-workspace.yaml", "shape": "dot", "title": "Path: targets/better-auth/demo/oidc-client/pnpm-workspace.yaml\nComplexity: 1.0\nPageRank: 0.0137\nPurpose: The code appears to be designed to process and analyze data, likely for generating insights or reports that support business decision-making.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#ef4444", "font": {"color": "white"}, "id": "targets/better-auth/demo/oidc-client/pnpm-lock.yaml", "label": "pnpm-lock.yaml", "shape": "dot", "title": "Path: targets/better-auth/demo/oidc-client/pnpm-lock.yaml\nComplexity: 267.0\nPageRank: 0.0137\nPurpose: This code defines the dependencies and development tools for a React-based web application, including UI components, authentication, and build tools.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "targets/better-auth/demo/electron/pnpm-workspace.yaml", "label": "pnpm-workspace.yaml", "shape": "dot", "title": "Path: targets/better-auth/demo/electron/pnpm-workspace.yaml\nComplexity: 1.5\nPageRank: 0.0137\nPurpose: The code specifies a list of dependencies that are built exclusively for a particular system, likely to ensure compatibility and streamline the build process for specific components like Electron and its installer.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#f59e0b", "font": {"color": "white"}, "id": "targets/better-auth/demo/electron/electron-builder.yml", "label": "electron-builder.yml", "shape": "dot", "title": "Path: targets/better-auth/demo/electron/electron-builder.yml\nComplexity: 17.0\nPageRank: 0.0137\nPurpose: This configuration defines the build settings for packaging an Electron application into distributable formats across multiple platforms (Windows, macOS, and Linux). It specifies which files to include/exclude, application metadata, installer options, and platform-specific settings to create professional installers and packages for end users.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#ef4444", "font": {"color": "white"}, "id": "targets/better-auth/demo/electron/pnpm-lock.yaml", "label": "pnpm-lock.yaml", "shape": "dot", "title": "Path: targets/better-auth/demo/electron/pnpm-lock.yaml\nComplexity: 528.5\nPageRank: 0.0137\nPurpose: This code defines the dependency configuration for an Electron application, specifying both production and development dependencies required to build and run the application. It establishes the project\u0027s package management structure, linking local packages and external libraries to ensure proper compilation and execution of the Electron-based software.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "targets/better-auth/packages/cli/test/__snapshots__/migrations-uuid.sql", "label": "migrations-uuid.sql", "shape": "dot", "title": "Path: targets/better-auth/packages/cli/test/__snapshots__/migrations-uuid.sql\nComplexity: 1.0\nPageRank: 0.0137\nPurpose: This code establishes the foundational database schema for a user authentication and account management system, enabling secure user registration, session handling, and third-party account integration.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "targets/better-auth/packages/cli/test/__snapshots__/migrations.sql", "label": "migrations.sql", "shape": "dot", "title": "Path: targets/better-auth/packages/cli/test/__snapshots__/migrations.sql\nComplexity: 1.0\nPageRank: 0.0137\nPurpose: This code establishes the database schema for a user authentication and session management system, including tables for users, sessions, accounts, and verification tokens. It enables secure user registration, login, and account linking with third-party providers while maintaining session state and verification processes.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 4, "color": "#10b981", "font": {"color": "white"}, "id": "\"verification_identifier_idx\"", "label": "\"verification_identifier_idx\"", "shape": "dot", "title": "Path: \"verification_identifier_idx\"\nComplexity: 0\nPageRank: 0.0254\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "targets/jaffle_shop/dbt_project.yml", "label": "dbt_project.yml", "shape": "dot", "title": "Path: targets/jaffle_shop/dbt_project.yml\nComplexity: 9.0\nPageRank: 0.0137\nPurpose: This configuration file sets up the structure and behavior of a data transformation project, defining paths for models, seeds, tests, and other components, and specifying how data should be materialized in the database.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "targets/jaffle_shop/models/orders.sql", "label": "orders.sql", "shape": "dot", "title": "Path: targets/jaffle_shop/models/orders.sql\nComplexity: 1.0\nPageRank: 0.0137\nPurpose: This code aggregates payment data by order, breaking down the total amount by payment method (credit card, coupon, bank transfer, gift card) and calculating the overall total for each order. It then joins this payment information with order details to provide a comprehensive view of each order\u0027s payment breakdown and total amount.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "payment_methods", "label": "payment_methods", "shape": "dot", "title": "Path: payment_methods\nComplexity: 0\nPageRank: 0.0154\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "order_payments", "label": "order_payments", "shape": "dot", "title": "Path: order_payments\nComplexity: 0\nPageRank: 0.0154\nPurpose: N/A\n"}, {"borderWidth": 4, "color": "#10b981", "font": {"color": "white"}, "id": "order_id", "label": "order_id", "shape": "dot", "title": "Path: order_id\nComplexity: 0\nPageRank: 0.0231\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "payment_method", "label": "payment_method", "shape": "dot", "title": "Path: payment_method\nComplexity: 0\nPageRank: 0.0193\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "total_amount", "label": "total_amount", "shape": "dot", "title": "Path: total_amount\nComplexity: 0\nPageRank: 0.0163\nPurpose: N/A\n"}, {"borderWidth": 4, "color": "#10b981", "font": {"color": "white"}, "id": "customer_id", "label": "customer_id", "shape": "dot", "title": "Path: customer_id\nComplexity: 0\nPageRank: 0.0231\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "order_date", "label": "order_date", "shape": "dot", "title": "Path: order_date\nComplexity: 0\nPageRank: 0.0193\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "targets/jaffle_shop/models/customers.sql", "label": "customers.sql", "shape": "dot", "title": "Path: targets/jaffle_shop/models/customers.sql\nComplexity: 1.0\nPageRank: 0.0137\nPurpose: This code aggregates customer data to provide a comprehensive view of customer behavior and value, including their first and most recent order dates, total number of orders, and lifetime value. It serves as a foundation for customer analytics and business intelligence, enabling data-driven decisions to enhance customer relationships and optimize marketing strategies.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "customer_orders", "label": "customer_orders", "shape": "dot", "title": "Path: customer_orders\nComplexity: 0\nPageRank: 0.0147\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "first_order", "label": "first_order", "shape": "dot", "title": "Path: first_order\nComplexity: 0\nPageRank: 0.0147\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "most_recent_order", "label": "most_recent_order", "shape": "dot", "title": "Path: most_recent_order\nComplexity: 0\nPageRank: 0.0147\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "number_of_orders", "label": "number_of_orders", "shape": "dot", "title": "Path: number_of_orders\nComplexity: 0\nPageRank: 0.0147\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "customer_payments", "label": "customer_payments", "shape": "dot", "title": "Path: customer_payments\nComplexity: 0\nPageRank: 0.0147\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "first_name", "label": "first_name", "shape": "dot", "title": "Path: first_name\nComplexity: 0\nPageRank: 0.0186\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "last_name", "label": "last_name", "shape": "dot", "title": "Path: last_name\nComplexity: 0\nPageRank: 0.0186\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "customer_lifetime_value", "label": "customer_lifetime_value", "shape": "dot", "title": "Path: customer_lifetime_value\nComplexity: 0\nPageRank: 0.0147\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "targets/jaffle_shop/models/schema.yml", "label": "schema.yml", "shape": "dot", "title": "Path: targets/jaffle_shop/models/schema.yml\nComplexity: 6.5\nPageRank: 0.0137\nPurpose: This code defines the structure of a customer and order database, capturing essential information such as customer details, order history, and payment methods. It serves as a foundation for tracking customer interactions, order statuses, and financial transactions within the system.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "targets/jaffle_shop/models/staging/stg_payments.sql", "label": "stg_payments.sql", "shape": "dot", "title": "Path: targets/jaffle_shop/models/staging/stg_payments.sql\nComplexity: 1.0\nPageRank: 0.0137\nPurpose: The code transforms raw payment data by converting the amount from cents to dollars and renaming columns for clarity, preparing it for further analysis or reporting.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "payment_id", "label": "payment_id", "shape": "dot", "title": "Path: payment_id\nComplexity: 0\nPageRank: 0.0176\nPurpose: N/A\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "targets/jaffle_shop/models/staging/stg_customers.sql", "label": "stg_customers.sql", "shape": "dot", "title": "Path: targets/jaffle_shop/models/staging/stg_customers.sql\nComplexity: 1.0\nPageRank: 0.0137\nPurpose: The code transforms raw customer data by selecting specific fields and renaming them for clarity, preparing it for further analysis or reporting.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "targets/jaffle_shop/models/staging/schema.yml", "label": "schema.yml", "shape": "dot", "title": "Path: targets/jaffle_shop/models/staging/schema.yml\nComplexity: 4.5\nPageRank: 0.0137\nPurpose: The code defines data quality tests for staging tables to ensure data integrity in a business system, such as verifying unique and non-null customer IDs, order IDs, and payment IDs, and validating accepted values for order statuses and payment methods.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "targets/jaffle_shop/models/staging/stg_orders.sql", "label": "stg_orders.sql", "shape": "dot", "title": "Path: targets/jaffle_shop/models/staging/stg_orders.sql\nComplexity: 1.0\nPageRank: 0.0137\nPurpose: The code transforms raw order data by selecting specific fields and renaming them for clarity, such as changing \u0027id\u0027 to \u0027order_id\u0027 and \u0027user_id\u0027 to \u0027customer_id\u0027. This ensures the data is structured in a way that aligns with business reporting and analysis needs.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "user_id", "label": "user_id", "shape": "dot", "title": "Path: user_id\nComplexity: 0\nPageRank: 0.0166\nPurpose: N/A\n"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`account_id`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`provider_id`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`user_id`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`access_token`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`refresh_token`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`id_token`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`access_token_expires_at`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`refresh_token_expires_at`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`created_at`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`updated_at`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`public_key`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`private_key`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`expires_at`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`ip_address`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`user_agent`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`session_token_unique`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`sso_provider`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`oidc_config`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`saml_config`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`organization_id`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`sso_provider_provider_id_unique`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`email_verified`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`user_email_unique`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql", "to": "`verification_identifier_idx`"}, {"arrows": "to", "color": "#334155", "from": "targets/better-auth/packages/cli/test/__snapshots__/migrations.sql", "to": "\"verification_identifier_idx\""}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/orders.sql", "to": "payment_methods"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/orders.sql", "to": "order_payments"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/orders.sql", "to": "order_id"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/orders.sql", "to": "payment_method"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/orders.sql", "to": "total_amount"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/orders.sql", "to": "customer_id"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/orders.sql", "to": "order_date"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/customers.sql", "to": "customer_orders"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/customers.sql", "to": "customer_id"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/customers.sql", "to": "order_date"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/customers.sql", "to": "first_order"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/customers.sql", "to": "most_recent_order"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/customers.sql", "to": "order_id"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/customers.sql", "to": "number_of_orders"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/customers.sql", "to": "customer_payments"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/customers.sql", "to": "total_amount"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/customers.sql", "to": "first_name"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/customers.sql", "to": "last_name"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/customers.sql", "to": "customer_lifetime_value"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/staging/stg_payments.sql", "to": "payment_id"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/staging/stg_payments.sql", "to": "order_id"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/staging/stg_payments.sql", "to": "payment_method"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/staging/stg_customers.sql", "to": "customer_id"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/staging/stg_customers.sql", "to": "first_name"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/staging/stg_customers.sql", "to": "last_name"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/staging/stg_orders.sql", "to": "order_id"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/staging/stg_orders.sql", "to": "user_id"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/staging/stg_orders.sql", "to": "customer_id"}, {"arrows": "to", "color": "#334155", "from": "targets/jaffle_shop/models/staging/stg_orders.sql", "to": "order_date"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"physics": {"enabled": false, "stabilization": false}, "interaction": {"hover": true, "navigationButtons": true, "multiselect": true}, "nodes": {"borderWidth": 2, "borderWidthSelected": 4, "shadow": true}, "edges": {"color": {"inherit": true}, "smooth": {"type": "continuous"}, "shadow": true}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

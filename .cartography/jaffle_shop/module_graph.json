@@ -6,7 +6,7 @@
     {
       "path": "dbt_project.yml",
       "language": "yaml",
-      "purpose_statement": "Error: RetryError[<Future at 0x77c3be170b10 state=finished raised RateLimitError>]",
+      "purpose_statement": "The code defines the configuration for a dbt project named 'jaffle_shop', specifying paths for models, seeds, tests, analysis, and macros, as well as target directories and version requirements. It also sets the materialization strategy for models and staging tables, ensuring efficient data transformation and storage.",
       "domain_cluster": null,
       "complexity_score": 9.0,
       "change_velocity_30d": 0,
@@ -19,13 +19,13 @@
       "pagerank": 0.03418817447476,
       "is_hub": false,
       "is_dead_candidate": true,
-      "confidence": 0.0,
+      "confidence": 0.95,
       "id": "dbt_project.yml"
     },
     {
       "path": "models/orders.sql",
       "language": "sql",
-      "purpose_statement": "Error: RetryError[<Future at 0x77c3bc278d10 state=finished raised RateLimitError>]",
+      "purpose_statement": "This code aggregates payment data by order, breaking down the total amount by payment method (credit card, coupon, bank transfer, gift card) and calculating the overall total for each order. It then joins this payment information with order details to provide a comprehensive view of each order's payment breakdown and total amount.",
       "domain_cluster": null,
       "complexity_score": 1.0,
       "change_velocity_30d": 0,
@@ -38,7 +38,7 @@
       "pagerank": 0.03418817447476,
       "is_hub": false,
       "is_dead_candidate": true,
-      "confidence": 0.0,
+      "confidence": 0.95,
       "id": "models/orders.sql"
     },
     {
@@ -79,7 +79,7 @@
     {
       "path": "models/customers.sql",
       "language": "sql",
-      "purpose_statement": "Error: RetryError[<Future at 0x77c3bc29c390 state=finished raised RateLimitError>]",
+      "purpose_statement": "This code aggregates customer data to provide a comprehensive view of customer behavior and value, including their first and most recent order dates, total number of orders, and lifetime value. It serves as a foundation for customer analytics and segmentation, enabling businesses to understand customer purchasing patterns and identify high-value customers.",
       "domain_cluster": null,
       "complexity_score": 1.0,
       "change_velocity_30d": 0,
@@ -92,7 +92,7 @@
       "pagerank": 0.03418817447476,
       "is_hub": false,
       "is_dead_candidate": true,
-      "confidence": 0.0,
+      "confidence": 0.95,
       "id": "models/customers.sql"
     },
     {
@@ -138,7 +138,7 @@
     {
       "path": "models/schema.yml",
       "language": "yaml",
-      "purpose_statement": "Error: RetryError[<Future at 0x77c3bc278bd0 state=finished raised RateLimitError>]",
+      "purpose_statement": "This code defines the structure of two database tables, 'customers' and 'orders', to store and manage customer and order information for a business system. It ensures data integrity and relationships between tables, enabling efficient tracking of customer orders, order statuses, and payment methods.",
       "domain_cluster": null,
       "complexity_score": 6.5,
       "change_velocity_30d": 0,
@@ -151,13 +151,13 @@
       "pagerank": 0.03418817447476,
       "is_hub": false,
       "is_dead_candidate": true,
-      "confidence": 0.0,
+      "confidence": 0.95,
       "id": "models/schema.yml"
     },
     {
       "path": "models/staging/stg_payments.sql",
       "language": "sql",
-      "purpose_statement": "Error: RetryError[<Future at 0x77c3bc2bc250 state=finished raised RateLimitError>]",
+      "purpose_statement": "The code transforms raw payment data by converting the amount from cents to dollars and renaming columns for clarity, preparing it for further analysis or reporting.",
       "domain_cluster": null,
       "complexity_score": 1.0,
       "change_velocity_30d": 0,
@@ -170,7 +170,7 @@
       "pagerank": 0.03418817447476,
       "is_hub": false,
       "is_dead_candidate": true,
-      "confidence": 0.0,
+      "confidence": 0.95,
       "id": "models/staging/stg_payments.sql"
     },
     {
@@ -181,7 +181,7 @@
     {
       "path": "models/staging/stg_customers.sql",
       "language": "sql",
-      "purpose_statement": "Error: RetryError[<Future at 0x77c3bc2d0190 state=finished raised RateLimitError>]",
+      "purpose_statement": "The code transforms raw customer data by selecting specific fields and renaming them for clarity and consistency. It serves to prepare customer information for downstream use in the system, ensuring data is structured and labeled appropriately for business processes.",
       "domain_cluster": null,
       "complexity_score": 1.0,
       "change_velocity_30d": 0,
@@ -194,13 +194,13 @@
       "pagerank": 0.03418817447476,
       "is_hub": false,
       "is_dead_candidate": true,
-      "confidence": 0.0,
+      "confidence": 0.95,
       "id": "models/staging/stg_customers.sql"
     },
     {
       "path": "models/staging/schema.yml",
       "language": "yaml",
-      "purpose_statement": "This code defines data quality rules for core business entities \u2013 customers, orders, and payments \u2013 ensuring data integrity and reliability for downstream analytics and operational processes. By enforcing uniqueness, null constraints, and valid value lists, it guarantees consistent and trustworthy data for reporting and decision-making.",
+      "purpose_statement": "This code defines data quality tests for staging tables in a data warehouse, ensuring data integrity and consistency for downstream analytics and reporting.",
       "domain_cluster": null,
       "complexity_score": 4.5,
       "change_velocity_30d": 0,
@@ -219,7 +219,7 @@
     {
       "path": "models/staging/stg_orders.sql",
       "language": "sql",
-      "purpose_statement": "This code extracts and prepares order data for downstream analysis by selecting relevant fields and renaming them to standardized conventions. It provides a clean, consistent view of order information, enabling reporting and business intelligence on customer orders and their status.",
+      "purpose_statement": "The code transforms raw order data by renaming columns to more meaningful names and selecting specific fields for further processing or analysis.",
       "domain_cluster": null,
       "complexity_score": 1.0,
       "change_velocity_30d": 0,

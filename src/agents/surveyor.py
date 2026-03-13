@@ -2,11 +2,11 @@ import subprocess
 import os
 import json
 from datetime import datetime, timedelta
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 import networkx as nx
-from src.models.graph import ModuleNode, Edge
-from src.analyzers.tree_sitter_analyzer import SurveyorAnalyzer
-from src.utils.resolver import PathResolver
+from models.graph import ModuleNode, Edge
+from analyzers.tree_sitter_analyzer import SurveyorAnalyzer
+from utils.resolver import PathResolver
 
 class GitVelocityAnalyzer:
     """
@@ -39,56 +39,56 @@ class Surveyor:
         self.resolver = PathResolver(repo_path)
         self.graph = graph if graph is not None else nx.DiGraph()
 
-    def run(self):
+    def run(self, files_to_scan: Optional[List[str]] = None):
+        """
+        Executes the survey phase. If files_to_scan is provided, only those are analyzed (incremental mode).
+        """
         velocity = self.velocity_analyzer.get_velocity()
         
-        # Count files for progress tracking
-        total_files = 0
-        for root, _, files in os.walk(self.repo_path):
-            if any(d in root for d in [".git", ".venv", "__pycache__", ".cartography"]): continue
-            total_files += len([f for f in files if f.endswith((".py", ".sql", ".yaml", ".yml", ".ipynb"))])
-        
+        if files_to_scan:
+             print(f"Incremental scan: Analyzing {len(files_to_scan)} changed files.")
+             total_files = len(files_to_scan)
+             iterate_over = files_to_scan
+        else:
+            total_files = 0
+            iterate_over = []
+            for root, _, files in os.walk(self.repo_path):
+                if any(d in root for d in [".git", ".venv", "__pycache__", ".cartography"]): continue
+                for f in files:
+                    if f.endswith((".py", ".sql", ".yaml", ".yml", ".ipynb")):
+                        total_files += 1
+                        iterate_over.append(os.path.join(root, f))
+            
         processed_count = 0
         print(f"Index scan: Found {total_files} relevant files.")
 
-        for root, _, files in os.walk(self.repo_path):
-            if any(d in root for d in [".git", ".venv", "__pycache__", ".cartography"]):
-                continue
-            for file in files:
-                if file.endswith((".py", ".sql", ".yaml", ".yml", ".ipynb")):
-                    full_path = os.path.join(root, file)
-                    rel_path = os.path.relpath(full_path, self.repo_path)
-                    
-                    processed_count += 1
-                    if processed_count % 10 == 0 or processed_count == total_files:
-                        print(f"[{processed_count}/{total_files}] Surveying {rel_path}...")
+        for full_path in iterate_over:
+            rel_path = os.path.relpath(full_path, self.repo_path)
+            processed_count += 1
+            
+            if processed_count % 10 == 0 or processed_count == total_files:
+                print(f"[{processed_count}/{total_files}] Surveying {rel_path}...")
 
-                    try:
-                        analysis = self.analyzer.analyze_module(full_path)
-                        if "error" in analysis:
-                            print(f"Warning: Skipping {rel_path} - {analysis['error']}")
-                            continue
-                            
-                        node = ModuleNode(
-                            path=rel_path,
-                            language=analysis.get("language", "unknown"),
-                            complexity_score=analysis.get("complexity_score", 0.0),
-                            change_velocity_30d=velocity.get(rel_path, 0),
-                            docstring=analysis.get("docstring"),
-                            decorators=analysis.get("decorators", []),
-                            type_hints=analysis.get("type_hints", [])
-                        )
-                        
-                        self.graph.add_node(rel_path, **node.model_dump())
-                        
-                        # Resolve imports semantically
-                        for imp_str in analysis.get("imports", []):
-                            resolved_path = self.resolver.resolve_import(imp_str, full_path)
-                            target = resolved_path if resolved_path else imp_str
-                            self.graph.add_edge(rel_path, target, type="IMPORTS", raw_string=imp_str)
-                    except Exception as e:
-                        print(f"Error analyzing {rel_path}: {e}")
-                        continue
+            try:
+                analysis = self.analyzer.analyze_module(full_path)
+                if "error" in analysis:
+                    continue
+                
+                # Add node to graph
+                self.graph.add_node(rel_path, **analysis)
+                
+                # Add import edges
+                for imp in analysis.get("imports", []):
+                    resolved_path = self.resolver.resolve_import(imp, full_path)
+                    if resolved_path:
+                        self.graph.add_edge(rel_path, resolved_path, type="dependency")
+                
+                # Enrich with velocity
+                if rel_path in velocity:
+                    self.graph.nodes[rel_path]["change_velocity_30d"] = velocity[rel_path]
+                    
+            except Exception as e:
+                print(f"Error surveying {rel_path}: {e}")
 
     def save_graph(self, output_path: str):
         os.makedirs(os.path.dirname(output_path), exist_ok=True)

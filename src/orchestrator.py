@@ -2,13 +2,13 @@ import asyncio
 import os
 import json
 
-from src.agents.surveyor import Surveyor
-from src.agents.hydrologist import Hydrologist
-from src.agents.semanticist import Semanticist
-from src.agents.archivist import Archivist
+from agents.surveyor import Surveyor
+from agents.hydrologist import Hydrologist
+from agents.semanticist import Semanticist
+from agents.archivist import Archivist
 
 
-from src.graph.knowledge_graph import KnowledgeGraph
+from graph.knowledge_graph import KnowledgeGraph
 
 class Orchestrator:
     """
@@ -41,12 +41,11 @@ class Orchestrator:
         print("Starting Surveyor...")
         self.archivist.log_trace("surveyor_start", {"repo": self.repo_path, "incremental": incremental})
         # Note: Surveyor needs to be aware of changed_files if we want true incremental performance
-        # For this implementation, we still run the skeleton but could optimize individual file analysis
-        self.surveyor.run()
+        self.surveyor.run(files_to_scan=changed_files)
         
         print("Starting Hydrologist...")
         self.archivist.log_trace("hydrologist_start", {})
-        self.hydrologist.run()
+        self.hydrologist.run(files_to_scan=changed_files)
         
         print("Computing advanced analytics (PageRank, Circularities, Dead Code)...")
         self.kg.enrich_metadata()
@@ -95,10 +94,14 @@ class Orchestrator:
         if self.semanticist.enabled:
             print("Synthesizing Day-One Onboarding Brief...")
             # Context for synthesis: Hubs, Lineage hotspots, Velocity
+            hubs_list = [n for n, d in self.kg.module_graph.nodes(data=True) if d.get("is_hub")]
+            sources_list = self.kg.find_sources()
+            sinks_list = self.kg.find_sinks()
+            
             synthesis_context = {
-                "top_hubs": [n for n, d in self.kg.module_graph.nodes(data=True) if d.get("is_hub")][:3],
-                "sources": self.kg.find_sources()[:3],
-                "sinks": self.kg.find_sinks()[:3],
+                "top_hubs": list(hubs_list)[:3],
+                "sources": list(sources_list)[:3],
+                "sinks": list(sinks_list)[:3],
                 "domain_map": domain_clusters
             }
             day_one_answers = await self.semanticist.answer_day_one_questions(synthesis_context)

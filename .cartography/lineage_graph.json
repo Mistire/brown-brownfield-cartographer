@@ -88,7 +88,7 @@
     {
       "type": "dataset",
       "subtype": "dbt_model",
-      "id": "stg_payments"
+      "id": "stg_orders"
     },
     {
       "type": "dataset",
@@ -97,7 +97,7 @@
     {
       "type": "dataset",
       "subtype": "dbt_model",
-      "id": "stg_orders"
+      "id": "stg_payments"
     },
     {
       "type": "dataset",
@@ -271,7 +271,7 @@
       "source_file": "targets/jaffle_shop/models/customers.sql",
       "columns": [],
       "logic_engine": "sqlglot",
-      "source": "stg_payments",
+      "source": "stg_orders",
       "target": "inferred_sink"
     },
     {
@@ -280,7 +280,7 @@
       "source_file": "targets/jaffle_shop/models/customers.sql",
       "columns": [],
       "logic_engine": "sqlglot",
-      "source": "stg_orders",
+      "source": "stg_payments",
       "target": "inferred_sink"
     },
     {
