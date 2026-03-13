@@ -1,0 +1,4 @@
+{"timestamp": "2026-03-13T10:40:20.118047", "action": "surveyor_start", "repo": "targets/jaffle_shop", "incremental": false}
+{"timestamp": "2026-03-13T10:40:20.386969", "action": "hydrologist_start"}
+{"timestamp": "2026-03-13T10:40:20.850778", "action": "semanticist_start", "enabled": false}
+{"timestamp": "2026-03-13T10:40:20.881401", "action": "pipeline_complete", "artifacts_dir": ".cartography/jaffle_shop"}

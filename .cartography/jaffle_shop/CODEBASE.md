@@ -1,7 +1,7 @@
 # CODEBASE.md: System Architecture Map
 
 ## 1. Architecture Overview
-Generated on: 2026-03-11 17:28
+Generated on: 2026-03-13 10:40
 
 ### 1.1 System Map (Mermaid)
 ```mermaid
