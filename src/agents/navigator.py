@@ -19,6 +19,17 @@ class Navigator:
         self.repo_path = repo_path
         self.kg = KnowledgeGraph.load(os.path.join(".cartography", os.path.basename(repo_path.rstrip("/"))))
         
+        self.api_key = os.getenv("OPENROUTER_API_KEY")
+        if self.api_key:
+            self.llm = ChatOpenAI(
+                model="liquid/lfm-7b-creative",
+                openai_api_key=self.api_key,
+                openai_api_base=os.getenv("OPENROUTER_API_BASE", "https://openrouter.ai/api/v1"),
+                temperature=0
+            )
+        else:
+            self.llm = None
+
         # Tools
         @tool
         def find_implementation(concept: str) -> str:

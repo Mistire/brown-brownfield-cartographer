@@ -1,70 +1,60 @@
 from typing import List, Dict, Any, Optional
 import os
 import json
-from google import generativeai as genai
+from langchain_openai import ChatOpenAI
 from src.models.graph import ModuleNode
 
 class Semanticist:
     """
-    Uses LLMs to generate purpose statements and cluster domains.
+    Uses LLMs (via OpenRouter) to generate purpose statements and cluster domains.
     """
     def __init__(self, api_key: Optional[str] = None):
-        self.api_key = api_key or os.getenv("GEMINI_API_KEY")
+        self.api_key = api_key or os.getenv("OPENROUTER_API_KEY")
         if self.api_key:
-            genai.configure(api_key=self.api_key)
-            self.model = genai.GenerativeModel("gemini-1.5-flash")
+            self.llm = ChatOpenAI(
+                model="liquid/lfm-7b-creative", # Default free model
+                openai_api_key=self.api_key,
+                openai_api_base=os.getenv("OPENROUTER_API_BASE", "https://openrouter.ai/api/v1"),
+                temperature=0.1
+            )
         else:
-            self.model = None
-            print("Warning: GEMINI_API_KEY not set. Semanticist will be disabled.")
+            self.llm = None
+            print("Warning: OPENROUTER_API_KEY not set. Semanticist will be disabled.")
 
     @property
     def enabled(self) -> bool:
-        return self.model is not None
+        return self.llm is not None
 
     async def generate_purpose(self, code: str) -> str:
-        if not self.model:
+        if not self.llm:
             return "LLM Analysis Disabled"
             
         prompt = f"""
         Analyze the following code and provide a 2-3 sentence 'Purpose Statement'.
         Focus on WHAT the code does for the business/system, not HOW it is implemented.
-        Do not use technical jargon if possible.
-        
         Code:
-        {code[:5000]} 
+        {code[:4000]} 
         """
         try:
-            response = await self.model.generate_content_async(prompt)
-            return response.text.strip()
+            response = await self.llm.ainvoke(prompt)
+            return response.content.strip()
         except Exception as e:
             return f"Error generating purpose: {str(e)}"
 
     async def answer_day_one_questions(self, context: Dict[str, Any]) -> Dict[str, str]:
-        if not self.model:
+        if not self.llm:
             return {f"q{i+1}": "Analysis pending: LLM disabled." for i in range(5)}
             
         prompt = f"""
-        Act as a Senior Forward Deployed Engineer (FDE). 
-        Based on the following codebase analysis data, answer the 'Five FDE Day-One Questions'.
-        
-        Analysis Data:
-        {json.dumps(context, indent=2, default=str)}
-        
-        The Questions:
-        1. What is the primary data ingestion path?
-        2. What are the 3-5 most critical output datasets/endpoints?
-        3. What is the blast radius if the most critical module fails?
-        4. Where is the business logic concentrated vs. distributed?
-        5. What has changed most frequently in the last 90 days?
-        
-        Provide concise, evidence-based answers for each. Format as a JSON object with keys q1-q5.
+        Answer the 'Five FDE Day-One Questions' based on this data: {json.dumps(context)}.
+        1. Ingestion path? 2. Critical outputs? 3. Blast radius? 4. Logic distribution? 5. Change hotspots?
+        Return only a JSON object with keys q1-q5.
         """
         try:
-            response = await self.model.generate_content_async(prompt)
-            # Basic cleaning if LLM returns markdown blocks
-            text = response.text.strip()
-            if text.startswith("```json"):
-                text = text[7:-3].strip()
+            response = await self.llm.ainvoke(prompt)
+            text = response.content.strip()
+            if "```json" in text:
+                text = text.split("```json")[1].split("```")[0].strip()
             return json.loads(text)
         except Exception as e:
             return {f"q{i+1}": f"Error: {str(e)}" for i in range(5)}
