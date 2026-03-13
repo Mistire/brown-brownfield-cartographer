@@ -22,7 +22,7 @@ class Navigator:
         self.api_key = os.getenv("OPENROUTER_API_KEY")
         if self.api_key:
             self.llm = ChatOpenAI(
-                model="liquid/lfm-7b-creative",
+                model=os.getenv("LLM_MODEL", "qwen/qwen-2.5-72b-instruct:free"),
                 openai_api_key=self.api_key,
                 openai_api_base=os.getenv("OPENROUTER_API_BASE", "https://openrouter.ai/api/v1"),
                 temperature=0

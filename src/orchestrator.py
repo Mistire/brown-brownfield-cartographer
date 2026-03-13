@@ -59,16 +59,22 @@ class Orchestrator:
         if self.semanticist.enabled:
             for node, data in self.kg.module_graph.nodes(data=True):
                 if not data.get("purpose_statement") or data.get("purpose_statement") == "No purpose generated.":
-                    # For demo purposes, we limit to 3 actual calls to save tokens or if no API key
-                    # In production, this would process all.
                     print(f"Analyzing purpose for {node}...")
-                    # We need the code content
                     try:
-                        with open(node, "r") as f:
+                        full_path = os.path.join(self.repo_path, node)
+                        with open(full_path, "r") as f:
                             code = f.read()
-                        data["purpose_statement"] = await self.semanticist.generate_purpose(code)
-                    except:
-                        pass
+                        
+                        purpose = await self.semanticist.generate_purpose(code)
+                        data["purpose_statement"] = purpose
+                        
+                        # Master Thinker: Detect Documentation Drift
+                        docstring = data.get("docstring")
+                        if docstring:
+                            drift = await self.semanticist.detect_drift(docstring, purpose)
+                            data["documentation_drift"] = drift
+                    except Exception as e:
+                        print(f"Error analyzing semantic purpose for {node}: {e}")
         
         # Cluster domains
         domain_clusters = self.semanticist.cluster_into_domains(module_data)
@@ -94,5 +100,12 @@ class Orchestrator:
         self.archivist.generate_interactive_graph(self.kg.module_graph)
         self.archivist.generate_onboarding_brief(module_data, day_one_answers)
 
-        self.archivist.log_trace("pipeline_complete", {"artifacts_dir": self.archivist.output_dir})
+        self.archivist.log_trace("pipeline_complete", {
+            "artifacts_dir": self.archivist.output_dir,
+            "token_usage": {
+                "prompt": self.semanticist.budget.total_prompt_tokens,
+                "completion": self.semanticist.budget.total_completion_tokens,
+                "model": self.semanticist.model_name
+            }
+        })
         print(f"Analysis complete. Artifacts in {self.archivist.output_dir}")

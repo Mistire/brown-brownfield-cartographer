@@ -73,7 +73,8 @@ class Surveyor:
                             path=rel_path,
                             language=analysis.get("language", "unknown"),
                             complexity_score=analysis.get("complexity_score", 0.0),
-                            change_velocity_30d=velocity.get(rel_path, 0)
+                            change_velocity_30d=velocity.get(rel_path, 0),
+                            docstring=analysis.get("docstring")
                         )
                         
                         self.graph.add_node(rel_path, **node.model_dump())

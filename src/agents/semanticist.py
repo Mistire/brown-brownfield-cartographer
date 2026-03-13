@@ -4,15 +4,30 @@ import json
 from langchain_openai import ChatOpenAI
 from src.models.graph import ModuleNode
 
+class ContextWindowBudget:
+    """Tracks token usage and cost for LLM operations."""
+    def __init__(self):
+        self.total_prompt_tokens = 0
+        self.total_completion_tokens = 0
+        self.total_cost = 0.0
+
+    def record(self, response: Any):
+        if hasattr(response, 'usage_metadata'):
+             self.total_prompt_tokens += response.usage_metadata.get('prompt_tokens', 0)
+             self.total_completion_tokens += response.usage_metadata.get('completion_tokens', 0)
+
 class Semanticist:
     """
-    Uses LLMs (via OpenRouter) to generate purpose statements and cluster domains.
+    Uses LLMs (via OpenRouter) to generate purpose statements, cluster domains, and detect drift.
     """
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or os.getenv("OPENROUTER_API_KEY")
+        self.model_name = os.getenv("LLM_MODEL", "qwen/qwen-2.5-72b-instruct:free")
+        self.budget = ContextWindowBudget()
+        
         if self.api_key:
             self.llm = ChatOpenAI(
-                model="liquid/lfm-7b-creative", # Default free model
+                model=self.model_name,
                 openai_api_key=self.api_key,
                 openai_api_base=os.getenv("OPENROUTER_API_BASE", "https://openrouter.ai/api/v1"),
                 temperature=0.1
@@ -37,9 +52,33 @@ class Semanticist:
         """
         try:
             response = await self.llm.ainvoke(prompt)
+            self.budget.record(response)
             return response.content.strip()
         except Exception as e:
             return f"Error generating purpose: {str(e)}"
+
+    async def detect_drift(self, docstring: Optional[str], purpose: str) -> Dict[str, Any]:
+        """Compares actual docstring with LLM-generated purpose to detect drift."""
+        if not self.llm or not docstring:
+            return {"drift_detected": False, "score": 0.0}
+            
+        prompt = f"""
+        Compare this CODE DOCSTRING with the ACTUAL IMPLEMENTATION PURPOSE.
+        Docstring: {docstring}
+        Actual Purpose: {purpose}
+        
+        Is there a significant discrepancy (drift)? 
+        Return JSON: {{"drift_detected": bool, "mismatch_reason": str, "score": 0.0-1.0}}
+        """
+        try:
+            response = await self.llm.ainvoke(prompt)
+            self.budget.record(response)
+            text = response.content.strip()
+            if "```json" in text:
+                text = text.split("```json")[1].split("```")[0].strip()
+            return json.loads(text)
+        except:
+            return {"drift_detected": False, "score": 0.0}
 
     async def answer_day_one_questions(self, context: Dict[str, Any]) -> Dict[str, str]:
         if not self.llm:
@@ -52,6 +91,7 @@ class Semanticist:
         """
         try:
             response = await self.llm.ainvoke(prompt)
+            self.budget.record(response)
             text = response.content.strip()
             if "```json" in text:
                 text = text.split("```json")[1].split("```")[0].strip()

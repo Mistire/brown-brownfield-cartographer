@@ -115,14 +115,10 @@ class SurveyorAnalyzer:
             (class_definition name: (identifier) @name) @class
         """)
         
-        complexity_query = language.query("""
-            (if_statement) @if
-            (for_statement) @for
-            (while_statement) @while
-            (with_statement) @with
-            (try_statement) @try
-            (except_clause) @except
-            (boolean_operator) @logic
+        docstring_query = language.query("""
+            (module (expression_statement (string) @doc))
+            (function_definition body: (block (expression_statement (string) @doc)))
+            (class_definition body: (block (expression_statement (string) @doc)))
         """)
 
         results = {
@@ -130,9 +126,16 @@ class SurveyorAnalyzer:
             "imports": [],
             "functions": [],
             "classes": [],
+            "docstring": None,
             "complexity_score": 1.0,
             "language": "python"
         }
+
+        # Docstring (just the module-level one for now)
+        for node, _ in self._get_captures(docstring_query, tree.root_node):
+            if node.parent.type == "module":
+                results["docstring"] = content[node.start_byte:node.end_byte].decode("utf-8").strip('"\' \n')
+                break
 
         # Imports
         for node, _ in self._get_captures(import_query, tree.root_node):

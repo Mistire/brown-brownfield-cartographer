@@ -58,6 +58,14 @@ class Archivist:
                 path = mod.get('path', 'external_dependency')
                 f.write(f"### `{path}`\n")
                 f.write(f"**Purpose:** {mod.get('purpose_statement', 'No purpose generated.')}\n")
+                
+                # Master Thinker: Report Documentation Drift
+                drift = mod.get("documentation_drift")
+                if drift and drift.get("drift_detected"):
+                    f.write(f"> [!WARNING]\n")
+                    f.write(f"> **Documentation Drift Detected!**\n")
+                    f.write(f"> Reason: {drift.get('mismatch_reason')}\n\n")
+                
                 f.write(f"**Complexity:** {mod.get('complexity_score', 0.0)} | **Velocity:** {mod.get('change_velocity_30d', 0)} changes/30d\n\n")
                 
             f.write("## 5. System Statistics\n")

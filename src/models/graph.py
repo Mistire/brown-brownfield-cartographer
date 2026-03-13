@@ -10,6 +10,8 @@ class ModuleNode(BaseModel):
     complexity_score: float = 0.0
     change_velocity_30d: int = 0
     is_dead_code_candidate: bool = False
+    docstring: Optional[str] = None
+    documentation_drift: Optional[Dict[str, Any]] = None
     last_modified: Optional[datetime] = None
 
 class DatasetNode(BaseModel):
