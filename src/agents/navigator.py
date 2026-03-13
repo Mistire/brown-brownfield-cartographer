@@ -124,13 +124,26 @@ class Navigator:
         if not self.llm_with_tools:
             return {"messages": [AIMessage(content="LLM is disabled. I cannot navigate the codebase.")]}
         
-        response = self.llm_with_tools.invoke(state["messages"])
+        # System instructions for "Master Thinker" quality
+        system_msg = {
+            "role": "system",
+            "content": "You are the Navigator, a master software architect. Analyze the codebase using tools. "
+                       "EXPLICITLY cite the modules or datasets you find. "
+                       "If information is missing, admit it. Be precise and technical."
+        }
+        
+        # Insert system msg at the start if not present
+        messages = state["messages"]
+        if not any(m.type == "system" for m in messages):
+             messages = [AIMessage(content=system_msg["content"])] + messages
+
+        response = self.llm_with_tools.invoke(messages)
         
         # Log LLM's decision in trace
-        if response.tool_calls:
+        if hasattr(response, 'tool_calls') and response.tool_calls:
             self.archivist.log_trace("navigator_tool_call", {
-                "tool": response.tool_calls[0]['name'],
-                "args": response.tool_calls[0]['args']
+                "tool": response.tool_calls[0].get('name'),
+                "args": response.tool_calls[0].get('args')
             })
             
         return {"messages": [response]}
