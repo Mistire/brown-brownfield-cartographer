@@ -7,7 +7,10 @@ from langgraph.prebuilt import ToolNode, tools_condition
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, ToolMessage
 from langchain_core.tools import tool
+from dotenv import load_dotenv
 from src.graph.knowledge_graph import KnowledgeGraph
+
+load_dotenv()
 from src.agents.archivist import Archivist
 
 class AgentState(TypedDict):

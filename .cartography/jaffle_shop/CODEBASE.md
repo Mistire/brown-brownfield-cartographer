@@ -1,7 +1,7 @@
 # CODEBASE.md: System Architecture Map
 
 ## 1. Architecture Overview
-Generated on: 2026-03-13 10:40
+Generated on: 2026-03-13 13:11
 
 ### 1.1 System Map (Mermaid)
 ```mermaid
@@ -56,11 +56,11 @@ graph TD
 
 ## 4. Module Purpose Index
 ### `dbt_project.yml`
-**Purpose:** None
+**Purpose:** Error: RetryError[<Future at 0x77c3be170b10 state=finished raised RateLimitError>]
 **Complexity:** 9.0 | **Velocity:** 0 changes/30d
 
 ### `models/orders.sql`
-**Purpose:** None
+**Purpose:** Error: RetryError[<Future at 0x77c3bc278d10 state=finished raised RateLimitError>]
 **Complexity:** 1.0 | **Velocity:** 0 changes/30d
 
 ### `external_dependency`
@@ -92,7 +92,7 @@ graph TD
 **Complexity:** 0.0 | **Velocity:** 0 changes/30d
 
 ### `models/customers.sql`
-**Purpose:** None
+**Purpose:** Error: RetryError[<Future at 0x77c3bc29c390 state=finished raised RateLimitError>]
 **Complexity:** 1.0 | **Velocity:** 0 changes/30d
 
 ### `external_dependency`
@@ -128,11 +128,11 @@ graph TD
 **Complexity:** 0.0 | **Velocity:** 0 changes/30d
 
 ### `models/schema.yml`
-**Purpose:** None
+**Purpose:** Error: RetryError[<Future at 0x77c3bc278bd0 state=finished raised RateLimitError>]
 **Complexity:** 6.5 | **Velocity:** 0 changes/30d
 
 ### `models/staging/stg_payments.sql`
-**Purpose:** None
+**Purpose:** Error: RetryError[<Future at 0x77c3bc2bc250 state=finished raised RateLimitError>]
 **Complexity:** 1.0 | **Velocity:** 0 changes/30d
 
 ### `external_dependency`
@@ -140,15 +140,15 @@ graph TD
 **Complexity:** 0.0 | **Velocity:** 0 changes/30d
 
 ### `models/staging/stg_customers.sql`
-**Purpose:** None
+**Purpose:** Error: RetryError[<Future at 0x77c3bc2d0190 state=finished raised RateLimitError>]
 **Complexity:** 1.0 | **Velocity:** 0 changes/30d
 
 ### `models/staging/schema.yml`
-**Purpose:** None
+**Purpose:** This code defines data quality rules for core business entities – customers, orders, and payments – ensuring data integrity and reliability for downstream analytics and operational processes. By enforcing uniqueness, null constraints, and valid value lists, it guarantees consistent and trustworthy data for reporting and decision-making.
 **Complexity:** 4.5 | **Velocity:** 0 changes/30d
 
 ### `models/staging/stg_orders.sql`
-**Purpose:** None
+**Purpose:** This code extracts and prepares order data for downstream analysis by selecting relevant fields and renaming them to standardized conventions. It provides a clean, consistent view of order information, enabling reporting and business intelligence on customer orders and their status.
 **Complexity:** 1.0 | **Velocity:** 0 changes/30d
 
 ### `external_dependency`

@@ -1,6 +1,9 @@
 from typing import List, Dict, Any, Optional
 import os
 import json
+from dotenv import load_dotenv
+
+load_dotenv()
 from tenacity import retry, stop_after_attempt
 from langchain_openai import ChatOpenAI
 from src.models.graph import ModuleNode

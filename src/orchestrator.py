@@ -62,6 +62,9 @@ class Orchestrator:
                     print(f"Analyzing purpose for {node}...")
                     try:
                         full_path = os.path.join(self.repo_path, node)
+                        if not os.path.isfile(full_path):
+                            continue
+                            
                         with open(full_path, "r") as f:
                             code = f.read()
                         
