@@ -14,7 +14,7 @@ class Hydrologist:
         self.config_parser = DAGConfigParser()
         self.lineage_graph = graph if graph is not None else nx.DiGraph()
 
-    def run(self, files_to_scan: Optional[List[str]] = None):
+    def run(self, files_to_scan: Optional[List[str]] = None, on_progress: Optional[callable] = None):
         """
         Executes the lineage phase. If files_to_scan is provided, only those are analyzed (incremental mode).
         """
@@ -26,7 +26,7 @@ class Hydrologist:
             total_files = 0
             iterate_over = []
             for root, _, files in os.walk(self.repo_path):
-                if any(d in root for d in [".git", ".venv", "__pycache__", ".cartography"]): continue
+                if any(d in root for d in [".git", ".venv", "__pycache__", ".cartography", "node_modules", "dist", "build", ".next", ".dbt"]): continue
                 for f in files:
                     if f.endswith((".py", ".sql", ".yml", ".yaml")):
                         total_files += 1
@@ -40,6 +40,9 @@ class Hydrologist:
             file_name = os.path.basename(full_path)
             
             processed_count += 1
+            if on_progress:
+                on_progress("hydrologist_progress", f"[{processed_count}/{total_files}] Mapping lineage in {rel_path}...")
+
             if processed_count % 10 == 0 or processed_count == total_files:
                 print(f"[{processed_count}/{total_files}] Mapping lineage in {rel_path}...")
                 
@@ -49,11 +52,19 @@ class Hydrologist:
                     for io in ios:
                         dataset_name = io.get("path")
                         if not dataset_name: continue
-                        self.lineage_graph.add_node(dataset_name, type="dataset")
+                        
+                        # Add DatasetNode
+                        self.lineage_graph.add_node(
+                            dataset_name, 
+                            type="dataset", 
+                            storage_type="file" if "." in dataset_name else "table"
+                        )
+                        
+                        # Add Transformation metadata
                         if io.get("type") == "source":
-                            self.lineage_graph.add_edge(dataset_name, rel_path, type="CONSUMES")
+                            self.lineage_graph.add_edge(dataset_name, rel_path, type="CONSUMES", line=io.get("line"))
                         else:
-                            self.lineage_graph.add_edge(rel_path, dataset_name, type="PRODUCES")
+                            self.lineage_graph.add_edge(rel_path, dataset_name, type="PRODUCES", line=io.get("line"))
                 
                 elif file_name.endswith(".sql"):
                     with open(full_path, "r") as f:
@@ -63,9 +74,14 @@ class Hydrologist:
                         source = item.get("source")
                         target = item.get("target")
                         if source and target:
-                            self.lineage_graph.add_node(source, type="dataset")
-                            self.lineage_graph.add_node(target, type="dataset")
-                            self.lineage_graph.add_edge(source, target, type="LINEAGE", source_file=rel_path)
+                            self.lineage_graph.add_node(source, type="dataset", storage_type="table")
+                            self.lineage_graph.add_node(target, type="dataset", storage_type="table")
+                            self.lineage_graph.add_edge(
+                                source, target, 
+                                type="LINEAGE", 
+                                source_file=rel_path,
+                                transformation_type="SQL"
+                            )
                         
                 elif file_name.endswith((".yml", ".yaml")):
                     if file_name in ("schema.yml", "schema.yaml"):
@@ -73,9 +89,7 @@ class Hydrologist:
                         for model in models:
                             sink = model.get("name")
                             if sink:
-                                self.lineage_graph.add_node(sink, type="dataset")
-                                # Sources in dbt schema are harder to trace without project-level context,
-                                # but usually they are defined in 'sources' or 'ref' in models.
+                                self.lineage_graph.add_node(sink, type="dataset", storage_type="table", owner=model.get("owner"))
                                 
             except Exception as e:
                 print(f"Error mapping lineage in {rel_path}: {e}")

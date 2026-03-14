@@ -1,0 +1,306 @@
+[
+  {
+    "path": "src/__init__.py",
+    "purpose": "The code defines a simple function that returns a greeting message, likely serving as a basic health check or placeholder for a larger system."
+  },
+  {
+    "path": "src/orchestrator.py",
+    "purpose": "Orchestrates a multi-stage software analysis pipeline that analyzes codebases to extract architectural insights, detect dependencies, and generate documentation artifacts including onboarding briefs and interactive graphs."
+  },
+  {
+    "path": "src/cli.py",
+    "purpose": "This code provides a command-line interface for analyzing and querying software repositories, enabling users to either perform a full analysis of a repository to generate artifacts or interactively query previously analyzed repositories for insights."
+  },
+  {
+    "path": "src/graph/knowledge_graph.py",
+    "purpose": "The KnowledgeGraph class manages and analyzes two interconnected graphs: a module dependency graph and a data lineage graph, enabling the tracking of software module relationships and data flow. It provides methods to add nodes and edges, compute graph analytics like PageRank and strongly connected components, identify dead code and data sources/sinks, and serialize/deserialize the graphs for persistence."
+  },
+  {
+    "path": "src/agents/surveyor.py",
+    "purpose": "This code analyzes a software repository to build a dependency graph of modules, capturing their relationships and change frequency. It scans source files, extracts import dependencies using a tree-sitter analyzer, and enriches nodes with git velocity data to identify frequently changing files."
+  },
+  {
+    "path": "src/agents/semanticist.py",
+    "purpose": "The Semanticist class orchestrates LLM-powered analysis of brownfield codebases, generating purpose statements, detecting documentation drift, clustering modules into domains, and synthesizing onboarding insights by invoking an LLM API with structured prompts and tracking token usage/costs."
+  },
+  {
+    "path": "src/agents/archivist.py",
+    "purpose": "Generates comprehensive architectural documentation and interactive visualizations for a software system, including a structured CODEBASE.md file with system maps, critical paths, data flows, technical debt analysis, and module purpose indexes, plus an interactive HTML graph for exploration."
+  },
+  {
+    "path": "src/agents/semantic_index.py",
+    "purpose": "This code implements a semantic search index that stores and retrieves module purpose statements based on vector embeddings, enabling similarity-based lookup of code components by their semantic meaning."
+  },
+  {
+    "path": "src/agents/navigator.py",
+    "purpose": "The Navigator class provides a query interface to a codebase knowledge graph, enabling semantic search for code concepts, data lineage tracing, blast radius analysis, and module explanations through a LangGraph agent with LLM integration."
+  },
+  {
+    "path": "src/analyzers/sql_lineage.py",
+    "purpose": "Analyzes SQL queries to extract data lineage and table dependencies, identifying sources, targets, transformation types, and columns involved in data flows."
+  },
+  {
+    "path": "src/analyzers/python_dataflow.py",
+    "purpose": "Extracts data flow patterns from Python code by analyzing AST to identify I/O operations (file/database reads/writes) and machine learning transformations, capturing method names, file paths, and operation types (source/sink/transformation) with line numbers."
+  },
+  {
+    "path": "src/analyzers/dag_config_parser.py",
+    "purpose": "Extracts and consolidates pipeline topology metadata from dbt schema files and Airflow DAG definitions to enable analysis of data pipeline structure and dependencies."
+  },
+  {
+    "path": "docker-compose.yml",
+    "purpose": "Defines and orchestrates a Docker Compose configuration for a two-service application consisting of an API backend and a dashboard frontend, enabling local development and deployment with shared volumes and environment configuration."
+  },
+  {
+    "path": "tests/test_resolver.py",
+    "purpose": "The code tests a path resolution utility that resolves module import paths to file system paths within a repository, handling both absolute and relative imports. It verifies that the resolver correctly maps import strings to their corresponding file paths or returns None for non-existent modules."
+  },
+  {
+    "path": "tests/test_hydrologist_ml.py",
+    "purpose": "The code tests a Python data flow analyzer's ability to detect and classify input/output operations in a machine learning script, specifically verifying that it correctly identifies data sources, transformations, and sinks like CSV reading, model fitting, prediction, and CSV writing."
+  },
+  {
+    "path": "tests/test_analyzer.py",
+    "purpose": "The code tests a Python code analyzer by creating a temporary Python file, analyzing its contents to extract language metadata, imports, classes, and functions, and verifying the results against expected values."
+  },
+  {
+    "path": "scripts/verify_context_injection.py",
+    "purpose": "This code verifies context injection by loading a codebase documentation file, priming an AI agent with its contents, and querying it about circular dependencies and associated risks. It serves as a validation mechanism to ensure the AI can accurately analyze architectural patterns from provided context."
+  },
+  {
+    "path": "src/__init__.py",
+    "purpose": "The code defines a simple function that returns a greeting message, likely serving as a basic health check or placeholder for a larger system."
+  },
+  {
+    "path": "src/orchestrator.py",
+    "purpose": "Orchestrates a multi-stage software analysis pipeline that analyzes codebases to extract structural knowledge, compute advanced metrics, generate semantic insights, and produce onboarding documentation and interactive artifacts."
+  },
+  {
+    "path": "src/cli.py",
+    "purpose": "This code provides a command-line interface for analyzing and querying software repositories, enabling users to either perform comprehensive analysis of a repository to generate artifacts or interactively query previously analyzed repositories through a navigator interface."
+  },
+  {
+    "path": "src/graph/knowledge_graph.py",
+    "purpose": "The KnowledgeGraph class manages and analyzes two interconnected dependency graphs: a module dependency graph and a data lineage graph. It provides methods to add nodes and edges, compute graph analytics like PageRank and strongly connected components, identify dead code and data sources/sinks, and serialize/deserialize the graphs for persistence."
+  },
+  {
+    "path": "src/agents/surveyor.py",
+    "purpose": "This code analyzes a software repository to build a dependency graph of modules, capturing their relationships and change frequency. It scans source files, extracts import dependencies, and enriches nodes with git velocity data to identify frequently changing files."
+  },
+  {
+    "path": "src/agents/semanticist.py",
+    "purpose": "This code implements a semantic analysis system that uses LLMs to extract architectural context from codebases, detect documentation drift, and generate onboarding insights for brownfield projects."
+  },
+  {
+    "path": "src/agents/hydrologist.py",
+    "purpose": "The code analyzes Python, SQL, and YAML files in a repository to extract data lineage information, building a directed graph that maps how datasets flow between sources, transformations, and sinks. It supports both full and incremental scans, parsing file contents to identify data dependencies and relationships, then stores the resulting lineage graph for downstream analysis."
+  },
+  {
+    "path": "src/agents/archivist.py",
+    "purpose": "Generates comprehensive documentation artifacts for a software system, including a static architecture map (CODEBASE.md), an interactive dependency graph, and structured onboarding materials, by analyzing a network graph of modules and their relationships."
+  },
+  {
+    "path": "src/agents/semantic_index.py",
+    "purpose": "This code implements a semantic search index that stores and retrieves vector embeddings along with associated metadata (file paths and purpose statements). It provides functionality to add new entries, persist the index to disk, and perform cosine similarity searches to find the most relevant entries based on a query embedding."
+  },
+  {
+    "path": "src/agents/navigator.py",
+    "purpose": "Provides a query interface to a codebase knowledge graph using LangGraph, enabling semantic search, data lineage tracing, blast radius analysis, and module explanations through LLM-powered tools."
+  },
+  {
+    "path": "src/analyzers/sql_lineage.py",
+    "purpose": "Analyzes SQL queries to extract data lineage and table dependencies, identifying sources, targets, transformation types, and columns involved in data flows."
+  },
+  {
+    "path": "src/analyzers/python_dataflow.py",
+    "purpose": "Extracts data flow patterns from Python code by analyzing AST to identify I/O operations (file/database reads/writes) and machine learning transformations (fit, predict, transform), capturing method names, file paths, and operation types (source/sink/transformation) with line numbers."
+  },
+  {
+    "path": "src/analyzers/tree_sitter_analyzer.py",
+    "purpose": "This code analyzes source code files to extract structural and semantic information such as imports, functions, classes, decorators, type hints, and complexity metrics using tree-sitter parsers for multiple programming languages."
+  },
+  {
+    "path": "src/analyzers/dag_config_parser.py",
+    "purpose": "Extracts and consolidates pipeline topology metadata from dbt schema files and Airflow DAG definitions to enable analysis of data pipeline structure and dependencies."
+  },
+  {
+    "path": "src/utils/paths.py",
+    "purpose": "This module provides utility functions to determine key directory paths within the project structure, specifically the project root and a .cartography subdirectory. It enables consistent path resolution for other components that need to access these locations."
+  },
+  {
+    "path": "src/utils/resolver.py",
+    "purpose": "The PathResolver class resolves import strings and relative paths to absolute filesystem paths within a repository, supporting both absolute imports (e.g., src.utils.auth) and relative imports (e.g., ..common.utils) by converting dot notation to path separators and checking for .py, .sql, or directory/__init__.py files."
+  },
+  {
+    "path": "src/models/__init__.py",
+    "purpose": "The code appears to be a configuration or setup file for a software project, likely defining dependencies, build settings, or project structure. It does not contain executable logic or data transformations, so its purpose is to establish the foundation for the application's development and deployment."
+  },
+  {
+    "path": "src/models/graph.py",
+    "purpose": "Defines data models for representing software architecture components and their relationships in a codebase analysis system, including modules, functions, datasets, transformations, and edges between them."
+  },
+  {
+    "path": "src/ui/api/main.py",
+    "purpose": "Provides a REST API for exploring and querying brownfield software projects by serving stored dependency graphs, project metadata, and handling search queries."
+  },
+  {
+    "path": "targets/better-auth/pnpm-workspace.yaml",
+    "purpose": "This configuration file defines package dependencies and workspace settings for a monorepo project, specifying version constraints for various packages and enabling workspace linking for development."
+  },
+  {
+    "path": "targets/better-auth/pnpm-lock.yaml",
+    "purpose": "This is a package management configuration file that defines dependency catalogs and version specifications for a React-based project, organizing libraries into logical groups (React 19, Tailwind, Vitest) and specifying exact versions for development and documentation dependencies."
+  },
+  {
+    "path": "targets/better-auth/docker-compose.yml",
+    "purpose": "This code defines a Docker Compose configuration that orchestrates multiple database services (MongoDB, Redis, PostgreSQL, MySQL, and MSSQL) for testing different database integrations with an authentication system. Each service includes health checks to ensure database availability before application startup, with specific configurations for different ORMs and testing scenarios."
+  },
+  {
+    "path": "targets/better-auth/e2e/smoke/test/fixtures/cloudflare/drizzle/0000_lively_paladin.sql",
+    "purpose": "Defines the database schema for a user authentication and single sign-on (SSO) system, including tables for users, accounts, sessions, SSO providers, verification tokens, and JSON Web Key Sets (JWKS)."
+  },
+  {
+    "path": "targets/better-auth/demo/nextjs/pnpm-workspace.yaml",
+    "purpose": "This configuration specifies that only the 'sharp' dependency should be built, likely as part of a build process or dependency management system."
+  },
+  {
+    "path": "targets/better-auth/demo/nextjs/pnpm-lock.yaml",
+    "purpose": "This is a package-lock.json file that defines the exact versions of all dependencies for a React-based application, ensuring reproducible builds by locking dependency versions and their transitive dependencies."
+  },
+  {
+    "path": "targets/better-auth/demo/stateless/pnpm-workspace.yaml",
+    "purpose": "The code appears to be a configuration or setup module for a larger system, likely defining constants, default values, or initialization parameters for other components."
+  },
+  {
+    "path": "targets/better-auth/demo/stateless/pnpm-lock.yaml",
+    "purpose": "This is a package-lock.json file that defines the exact versions and dependencies for a Next.js React application, including development tools like TypeScript and Tailwind CSS, ensuring reproducible builds across environments."
+  },
+  {
+    "path": "targets/better-auth/demo/expo/pnpm-workspace.yaml",
+    "purpose": "This configuration specifies that only the 'better-sqlite3' dependency should be built, likely to optimize build processes by excluding unnecessary dependencies."
+  },
+  {
+    "path": "targets/better-auth/demo/expo/pnpm-lock.yaml",
+    "purpose": "This is a package-lock.json file that defines the exact versions and dependency tree of all npm packages required for a React Native/Expo application, ensuring reproducible builds across environments."
+  },
+  {
+    "path": "targets/better-auth/demo/oidc-client/pnpm-workspace.yaml",
+    "purpose": "The code appears to be a configuration or setup component for a larger system, likely defining parameters or initializing services for a pipeline or application."
+  },
+  {
+    "path": "targets/better-auth/demo/oidc-client/pnpm-lock.yaml",
+    "purpose": "This is a package-lock.json file that defines the exact versions and dependencies for a React-based web application, including UI libraries (Radix UI, Geist), authentication (better-auth), and build tools (Vite, TypeScript), ensuring reproducible installations across different environments."
+  },
+  {
+    "path": "targets/better-auth/demo/electron/pnpm-workspace.yaml",
+    "purpose": "This configuration specifies a build pipeline that only processes the 'electron', 'electron-winstaller', and 'esbuild' dependencies, likely to optimize build times by excluding unnecessary components."
+  },
+  {
+    "path": "targets/better-auth/demo/electron/electron-builder.yml",
+    "purpose": "This configuration defines the build settings for packaging an Electron application across multiple platforms (Windows, macOS, Linux), specifying file inclusions/exclusions, build artifacts, and platform-specific configurations like entitlements and installer options."
+  },
+  {
+    "path": "targets/better-auth/demo/electron/pnpm-lock.yaml",
+    "purpose": "This is a package-lock.json file that defines the exact versions and dependencies for an Electron-based React application, ensuring reproducible builds by locking dependency versions and their transitive dependencies."
+  },
+  {
+    "path": "targets/better-auth/packages/cli/test/__snapshots__/migrations-uuid.sql",
+    "purpose": "Defines the database schema for a user authentication and account management system, including tables for users, sessions, accounts, and verification tokens."
+  },
+  {
+    "path": "targets/better-auth/packages/cli/test/__snapshots__/migrations.sql",
+    "purpose": "Defines the database schema for a user authentication and session management system, including tables for users, sessions, accounts, and verification tokens with appropriate relationships and indexes."
+  },
+  {
+    "path": "targets/automaton-auditor/main.py",
+    "purpose": "This code orchestrates an automated audit system that analyzes GitHub repositories and architectural PDF reports against predefined rubric criteria, collecting evidence and generating forensic summaries. It loads rubric definitions, executes a graph-based analysis pipeline, and produces detailed reports showing evidence findings with confidence scores and rationales."
+  },
+  {
+    "path": "targets/automaton-auditor/test_local.py",
+    "purpose": "This code initiates a local audit process that evaluates a software project against a predefined rubric, generating a comprehensive report with scores and summaries. It loads the rubric configuration, sets up the initial audit state for the current working directory, and invokes a graph-based analysis pipeline to produce an overall score and detailed findings."
+  },
+  {
+    "path": "targets/automaton-auditor/test_llm.py",
+    "purpose": "Tests connectivity to an LLM service by sending a prompt and verifying the response, ensuring the system can communicate with the LLM provider."
+  },
+  {
+    "path": "targets/automaton-auditor/src/__init__.py",
+    "purpose": "The code appears to be a configuration or setup component for a larger system, likely defining parameters or initializing resources needed for subsequent operations."
+  },
+  {
+    "path": "targets/automaton-auditor/src/graph.py",
+    "purpose": "This code orchestrates a multi-phase investigative workflow that collects evidence through parallel detective nodes, aggregates findings, and routes them to a judicial review system for final verdict generation."
+  },
+  {
+    "path": "targets/automaton-auditor/src/state.py",
+    "purpose": "This code defines a comprehensive audit framework for analyzing software repositories, specifically designed to evaluate architectural soundness through a judicial metaphor where multiple 'judges' (Prosecutor, Defense, TechLead) examine evidence collected by 'detectives' and produce a final audit report with remediation recommendations."
+  },
+  {
+    "path": "targets/automaton-auditor/src/tools/safety.py",
+    "purpose": "Validates GitHub repository URLs and sanitizes file paths to prevent security vulnerabilities, then executes shell commands safely while parsing git errors into standardized failure modes."
+  },
+  {
+    "path": "targets/automaton-auditor/src/tools/__init__.py",
+    "purpose": "The code appears to be a configuration or setup script for a software system, likely initializing components or defining parameters for a larger application."
+  },
+  {
+    "path": "targets/automaton-auditor/src/tools/repo_tools.py",
+    "purpose": "This code performs automated forensic analysis of software repositories by cloning them, extracting git commit history, and analyzing code structure for specific patterns like state management, security practices, and graph orchestration using AST inspection."
+  },
+  {
+    "path": "targets/automaton-auditor/src/tools/llm_tools.py",
+    "purpose": "Provides a factory function to initialize and configure large language model (LLM) clients based on environment settings, supporting both Google Gemini and OpenAI-compatible models through OpenRouter. The function selects the appropriate LLM provider and model configuration, handling API key authentication and parameter settings like temperature and token limits."
+  },
+  {
+    "path": "targets/automaton-auditor/src/tools/doc_tools.py",
+    "purpose": "This code provides a comprehensive PDF analysis pipeline that extracts text content, identifies file paths, verifies architectural concept depth using LLM analysis, extracts images, and cross-references reported paths against actual repository structure. It serves as a forensic tool for auditing technical documents by combining document parsing, pattern matching, AI-powered semantic analysis, and file system validation."
+  },
+  {
+    "path": "targets/automaton-auditor/src/nodes/justice.py",
+    "purpose": "This code implements a judicial validation overlay that evaluates LLM-generated scores against forensic evidence and applies deterministic business rules to override scores when security violations, hallucinations, or insufficient citations are detected. It processes multiple dimensions of a software audit, calculates final scores with potential overrides, generates a comprehensive audit report, and saves it as a formatted Markdown file in the appropriate audit directory."
+  },
+  {
+    "path": "targets/automaton-auditor/src/nodes/__init__.py",
+    "purpose": "The code appears to be a configuration or setup module for a larger system, likely defining constants, default values, or initialization parameters for other components to use."
+  },
+  {
+    "path": "targets/automaton-auditor/src/nodes/judges.py",
+    "purpose": "This code creates specialized judge nodes that evaluate evidence against rubric dimensions using different personas (Prosecutor, Defense, Tech Lead), each applying their unique philosophical lens to score and argue about the evidence's quality and compliance."
+  },
+  {
+    "path": "targets/automaton-auditor/src/nodes/detectives.py",
+    "purpose": "This code implements a multi-stage forensic analysis pipeline that dynamically investigates GitHub repositories and their associated PDF reports based on rubric dimensions, extracting evidence about code quality, architectural patterns, and report accuracy through specialized tools and adaptive fallback mechanisms."
+  },
+  {
+    "path": "targets/jaffle_shop/dbt_project.yml",
+    "purpose": "This configuration file defines the structure and settings for a dbt project named 'jaffle_shop', specifying paths for models, seeds, tests, and other components, as well as materialization strategies for different model types."
+  },
+  {
+    "path": "targets/jaffle_shop/models/orders.sql",
+    "purpose": "Aggregates payment amounts by payment method for each order and joins this data with order details to provide a comprehensive view of order payments and totals."
+  },
+  {
+    "path": "targets/jaffle_shop/models/customers.sql",
+    "purpose": "This code aggregates customer data by joining customer information with their order history and payment records to provide a comprehensive view of each customer's lifetime value and order activity. It calculates metrics such as first order date, most recent order date, number of orders, and total amount paid for each customer."
+  },
+  {
+    "path": "targets/jaffle_shop/models/schema.yml",
+    "purpose": "Defines the schema for two core business entities - customers and orders - including their attributes, relationships, and data integrity constraints. Establishes a data model that tracks customer information, order details, payment breakdowns, and derived metrics like total order value and order counts."
+  },
+  {
+    "path": "targets/jaffle_shop/models/staging/stg_payments.sql",
+    "purpose": "Transforms raw payment data by converting amounts from cents to dollars and standardizing column names for downstream use."
+  },
+  {
+    "path": "targets/jaffle_shop/models/staging/stg_customers.sql",
+    "purpose": "The code extracts customer data from a raw source table, renames the 'id' column to 'customer_id', and selects specific customer attributes (first_name, last_name) for downstream use."
+  },
+  {
+    "path": "targets/jaffle_shop/models/staging/schema.yml",
+    "purpose": "Defines data quality tests for staging tables to ensure data integrity and validity in a data warehouse pipeline."
+  },
+  {
+    "path": "targets/jaffle_shop/models/staging/stg_orders.sql",
+    "purpose": "The code extracts and transforms raw order data by selecting specific fields from a source table and renaming them for downstream use."
+  }
+]

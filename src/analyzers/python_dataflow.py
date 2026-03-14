@@ -16,10 +16,16 @@ class PythonDataFlowAnalyzer:
             (call
                 function: (attribute
                     object: (identifier) @obj
-                    attribute: (identifier) @method
+                    attribute: (identifier) @method (#match? @method "^(read_|to_|load|save|read|write)")
                 )
                 arguments: (argument_list
-                    (string) @path
+                    [
+                        (string) @path
+                        (pair
+                            key: (identifier) @arg_name (#match? @arg_name "^(path|filepath|uri|url|table_name)$")
+                            value: (string) @path
+                        )
+                    ]
                 )
             ) @call
 
@@ -42,35 +48,51 @@ class PythonDataFlowAnalyzer:
             
         ios = []
         if hasattr(self.io_query, "captures"):
-            captures = self.io_query.captures(tree.root_node)
+            all_captures = self.io_query.captures(tree.root_node)
         else:
             from tree_sitter import QueryCursor
-            captures = QueryCursor().captures(self.io_query, tree.root_node)
+            all_captures = QueryCursor().captures(self.io_query, tree.root_node)
         
         # Group captures by call
         calls = {}
-        ml_calls = []
-        for node, tag in captures:
+        processed_ml = set()
+        
+        for node, tag in all_captures:
             if tag == "ml_call":
-                method = content[node.child_by_field_name("function").child_by_field_name("attribute").start_byte:node.child_by_field_name("function").child_by_field_name("attribute").end_byte].decode("utf-8")
-                ml_calls.append({"method": method, "type": "transformation"})
+                if node.id in processed_ml: continue
+                processed_ml.add(node.id)
+                method_node = node.child_by_field_name("function").child_by_field_name("attribute")
+                method = content[method_node.start_byte:method_node.end_byte].decode("utf-8")
+                ios.append({"method": method, "type": "transformation", "line": node.start_point[0] + 1})
                 continue
                 
-            call_id = id(node) if tag == "call" else id(node.parent)
+            call_node = node if tag == "call" else node.parent
+            while call_node and call_node.type != "call":
+                call_node = call_node.parent
+            if not call_node: continue
+            
+            call_id = call_node.id
             if call_id not in calls: calls[call_id] = {}
             calls[call_id][tag] = node
 
         for call_id, nodes in calls.items():
             if "method" not in nodes or "path" not in nodes: continue
-            method = content[nodes["method"].start_byte:nodes["method"].end_byte].decode("utf-8")
-            path = content[nodes["path"].start_byte:nodes["path"].end_byte].decode("utf-8").strip("'\"")
+            method_node = nodes["method"]
+            path_node = nodes["path"]
             
-            if method.startswith(("read_", "to_", "load", "save")):
-                ios.append({
-                    "method": method,
-                    "path": path,
-                    "type": "source" if method.startswith("read_") else "sink"
-                })
+            method = content[method_node.start_byte:method_node.end_byte].decode("utf-8")
+            path = content[path_node.start_byte:path_node.end_byte].decode("utf-8").strip("'\"")
+            
+            # Heuristic for source vs sink
+            io_type = "source"
+            if method.startswith(("to_", "save", "write")) or "write" in method:
+                io_type = "sink"
+            
+            ios.append({
+                "method": method,
+                "path": path,
+                "type": io_type,
+                "line": path_node.start_point[0] + 1
+            })
         
-        ios.extend(ml_calls)
         return ios

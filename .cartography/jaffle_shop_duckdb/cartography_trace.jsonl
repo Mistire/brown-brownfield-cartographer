@@ -1,0 +1,50 @@
+{"timestamp": "2026-03-14T20:40:33.512276", "action": "semantic_analysis", "node": "dbt_project.yml", "confidence": 0.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T20:40:41.778510", "action": "semantic_analysis", "node": "profiles.yml", "confidence": 0.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T20:40:49.349444", "action": "semantic_analysis", "node": "models/orders.sql", "confidence": 0.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T20:40:59.183217", "action": "semantic_analysis", "node": "models/customers.sql", "confidence": 0.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T20:41:07.899218", "action": "semantic_analysis", "node": "models/schema.yml", "confidence": 0.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T20:41:15.973053", "action": "semantic_analysis", "node": "models/staging/stg_payments.sql", "confidence": 0.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T20:41:23.046746", "action": "semantic_analysis", "node": "models/staging/stg_customers.sql", "confidence": 0.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T20:41:29.977577", "action": "semantic_analysis", "node": "models/staging/schema.yml", "confidence": 0.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T20:41:36.767737", "action": "semantic_analysis", "node": "models/staging/stg_orders.sql", "confidence": 0.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T20:41:41.046782", "action": "pipeline_complete", "artifacts_dir": "/app/.cartography/jaffle_shop_duckdb", "token_usage": {"model": "qwen/qwen-2.5-72b-instruct:free", "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0, "estimated_cost_usd": 0.0}}
+{"timestamp": "2026-03-14T20:45:30.340726", "action": "semantic_analysis", "node": "dbt_project.yml", "confidence": 0.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T20:45:38.636221", "action": "semantic_analysis", "node": "profiles.yml", "confidence": 0.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T20:45:46.521479", "action": "semantic_analysis", "node": "models/orders.sql", "confidence": 0.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T20:45:54.815887", "action": "semantic_analysis", "node": "models/customers.sql", "confidence": 0.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T20:46:03.114312", "action": "semantic_analysis", "node": "models/schema.yml", "confidence": 0.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T20:46:11.722721", "action": "semantic_analysis", "node": "models/staging/stg_payments.sql", "confidence": 0.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T20:46:19.423122", "action": "semantic_analysis", "node": "models/staging/stg_customers.sql", "confidence": 0.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T20:46:27.789431", "action": "semantic_analysis", "node": "models/staging/schema.yml", "confidence": 0.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T20:46:35.780083", "action": "semantic_analysis", "node": "models/staging/stg_orders.sql", "confidence": 0.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T20:46:40.542123", "action": "pipeline_complete", "artifacts_dir": "/app/.cartography/jaffle_shop_duckdb", "token_usage": {"model": "qwen/qwen-2.5-72b-instruct:free", "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0, "estimated_cost_usd": 0.0}}
+{"timestamp": "2026-03-14T22:33:37.952294", "action": "semantic_analysis", "node": "dbt_project.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T22:33:44.650831", "action": "semantic_analysis", "node": "profiles.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T22:33:48.714744", "action": "semantic_analysis", "node": "models/orders.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T22:33:51.921465", "action": "semantic_analysis", "node": "models/customers.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T22:33:56.852618", "action": "semantic_analysis", "node": "models/schema.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T22:34:04.838920", "action": "semantic_analysis", "node": "models/staging/stg_payments.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T22:34:15.043039", "action": "semantic_analysis", "node": "models/staging/stg_customers.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T22:34:18.074172", "action": "semantic_analysis", "node": "models/staging/schema.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T22:34:22.433444", "action": "semantic_analysis", "node": "models/staging/stg_orders.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T22:34:46.418705", "action": "pipeline_complete", "artifacts_dir": "/app/.cartography/jaffle_shop_duckdb", "token_usage": {"model": "qwen/qwen-2.5-72b-instruct:free", "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0, "estimated_cost_usd": 0.0}}
+{"timestamp": "2026-03-14T22:43:39.926486", "action": "semantic_analysis", "node": "dbt_project.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T22:43:43.388252", "action": "semantic_analysis", "node": "profiles.yml", "confidence": 0.9, "drift_metrics": null}
+{"timestamp": "2026-03-14T22:43:46.368287", "action": "semantic_analysis", "node": "models/orders.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T22:43:53.083144", "action": "semantic_analysis", "node": "models/customers.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T22:43:56.118102", "action": "semantic_analysis", "node": "models/schema.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T22:43:58.900100", "action": "semantic_analysis", "node": "models/staging/stg_payments.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T22:44:01.629969", "action": "semantic_analysis", "node": "models/staging/stg_customers.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T22:44:08.268070", "action": "semantic_analysis", "node": "models/staging/schema.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T22:44:11.599763", "action": "semantic_analysis", "node": "models/staging/stg_orders.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T22:44:39.381548", "action": "pipeline_complete", "artifacts_dir": "/app/.cartography/jaffle_shop_duckdb", "token_usage": {"model": "qwen/qwen-2.5-72b-instruct:free", "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0, "estimated_cost_usd": 0.0}}
+{"timestamp": "2026-03-14T23:00:13.819617", "action": "semantic_analysis", "node": "dbt_project.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T23:00:25.077969", "action": "semantic_analysis", "node": "profiles.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T23:00:34.909535", "action": "semantic_analysis", "node": "models/orders.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T23:00:43.821820", "action": "semantic_analysis", "node": "models/customers.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T23:00:57.743844", "action": "semantic_analysis", "node": "models/schema.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T23:01:07.960834", "action": "semantic_analysis", "node": "models/staging/stg_payments.sql", "confidence": 1.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T23:01:17.416636", "action": "semantic_analysis", "node": "models/staging/stg_customers.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T23:01:27.117255", "action": "semantic_analysis", "node": "models/staging/schema.yml", "confidence": 1.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T23:01:42.992674", "action": "semantic_analysis", "node": "models/staging/stg_orders.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T23:02:32.066089", "action": "pipeline_complete", "artifacts_dir": "/app/.cartography/jaffle_shop_duckdb", "token_usage": {"model": "qwen/qwen-2.5-72b-instruct:free", "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0, "estimated_cost_usd": 0.0}}

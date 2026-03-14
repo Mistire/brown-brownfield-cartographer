@@ -5,100 +5,109 @@
   "nodes": [
     {
       "type": "dataset",
-      "subtype": "dbt_model",
-      "id": "stg_orders"
-    },
-    {
-      "type": "dataset",
-      "id": "inferred_sink"
-    },
-    {
-      "type": "dataset",
-      "subtype": "dbt_model",
+      "storage_type": "table",
+      "owner": null,
       "id": "stg_payments"
     },
     {
       "type": "dataset",
-      "subtype": "dbt_model",
+      "storage_type": "table",
+      "id": "result_set"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "TEMPLATE_VAR"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "owner": null,
+      "id": "stg_orders"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "owner": null,
       "id": "stg_customers"
     },
     {
       "type": "dataset",
-      "subtype": "dbt_model",
+      "storage_type": "table",
+      "owner": null,
       "id": "customers"
     },
     {
       "type": "dataset",
-      "subtype": "dbt_model",
+      "storage_type": "table",
+      "owner": null,
       "id": "orders"
     },
     {
       "type": "dataset",
+      "storage_type": "table",
       "id": "raw_payments"
     },
     {
       "type": "dataset",
+      "storage_type": "table",
       "id": "raw_customers"
     },
     {
       "type": "dataset",
+      "storage_type": "table",
       "id": "raw_orders"
     }
   ],
   "edges": [
     {
       "type": "LINEAGE",
-      "transformation_type": "REGEX_FALLBACK",
       "source_file": "models/customers.sql",
-      "columns": [],
-      "logic_engine": "sqlglot",
-      "source": "stg_orders",
-      "target": "inferred_sink"
-    },
-    {
-      "type": "LINEAGE",
-      "transformation_type": "REGEX_FALLBACK",
-      "source_file": "models/customers.sql",
-      "columns": [],
-      "logic_engine": "sqlglot",
+      "transformation_type": "SQL",
       "source": "stg_payments",
-      "target": "inferred_sink"
+      "target": "result_set"
     },
     {
       "type": "LINEAGE",
-      "transformation_type": "REGEX_FALLBACK",
-      "source_file": "models/customers.sql",
-      "columns": [],
-      "logic_engine": "sqlglot",
-      "source": "stg_customers",
-      "target": "inferred_sink"
-    },
-    {
-      "type": "LINEAGE",
-      "transformation_type": "REGEX_FALLBACK",
-      "source_file": "models/staging/stg_payments.sql",
-      "columns": [],
-      "logic_engine": "sqlglot",
-      "source": "raw_payments",
-      "target": "inferred_sink"
-    },
-    {
-      "type": "LINEAGE",
-      "transformation_type": "REGEX_FALLBACK",
-      "source_file": "models/staging/stg_customers.sql",
-      "columns": [],
-      "logic_engine": "sqlglot",
-      "source": "raw_customers",
-      "target": "inferred_sink"
-    },
-    {
-      "type": "LINEAGE",
-      "transformation_type": "REGEX_FALLBACK",
       "source_file": "models/staging/stg_orders.sql",
-      "columns": [],
-      "logic_engine": "sqlglot",
+      "transformation_type": "SQL",
+      "source": "TEMPLATE_VAR",
+      "target": "result_set"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "models/customers.sql",
+      "transformation_type": "SQL",
+      "source": "stg_orders",
+      "target": "result_set"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "models/customers.sql",
+      "transformation_type": "SQL",
+      "source": "stg_customers",
+      "target": "result_set"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "models/staging/stg_payments.sql",
+      "transformation_type": "SQL",
+      "source": "raw_payments",
+      "target": "result_set"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "models/staging/stg_customers.sql",
+      "transformation_type": "SQL",
+      "source": "raw_customers",
+      "target": "result_set"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "models/staging/stg_orders.sql",
+      "transformation_type": "SQL",
       "source": "raw_orders",
-      "target": "inferred_sink"
+      "target": "result_set"
     }
   ]
 }

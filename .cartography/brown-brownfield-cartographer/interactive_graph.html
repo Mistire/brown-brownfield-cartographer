@@ -1,0 +1,321 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script>function neighbourhoodHighlight(params) {
+  // console.log("in nieghbourhoodhighlight");
+  allNodes = nodes.get({ returnType: "Object" });
+  // originalNodes = JSON.parse(JSON.stringify(allNodes));
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    highlightActive = true;
+    var i, j;
+    var selectedNode = params.nodes[0];
+    var degrees = 2;
+
+    // mark all nodes as hard to read.
+    for (let nodeId in allNodes) {
+      // nodeColors[nodeId] = allNodes[nodeId].color;
+      allNodes[nodeId].color = "rgba(200,200,200,0.5)";
+      if (allNodes[nodeId].hiddenLabel === undefined) {
+        allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+    var connectedNodes = network.getConnectedNodes(selectedNode);
+    var allConnectedNodes = [];
+
+    // get the second degree nodes
+    for (i = 1; i < degrees; i++) {
+      for (j = 0; j < connectedNodes.length; j++) {
+        allConnectedNodes = allConnectedNodes.concat(
+          network.getConnectedNodes(connectedNodes[j])
+        );
+      }
+    }
+
+    // all second degree nodes get a different color and their label back
+    for (i = 0; i < allConnectedNodes.length; i++) {
+      // allNodes[allConnectedNodes[i]].color = "pink";
+      allNodes[allConnectedNodes[i]].color = "rgba(150,150,150,0.75)";
+      if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[allConnectedNodes[i]].label =
+          allNodes[allConnectedNodes[i]].hiddenLabel;
+        allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // all first degree nodes get their own color and their label back
+    for (i = 0; i < connectedNodes.length; i++) {
+      // allNodes[connectedNodes[i]].color = undefined;
+      allNodes[connectedNodes[i]].color = nodeColors[connectedNodes[i]];
+      if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[connectedNodes[i]].label =
+          allNodes[connectedNodes[i]].hiddenLabel;
+        allNodes[connectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // the main node gets its own color and its label back.
+    // allNodes[selectedNode].color = undefined;
+    allNodes[selectedNode].color = nodeColors[selectedNode];
+    if (allNodes[selectedNode].hiddenLabel !== undefined) {
+      allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
+      allNodes[selectedNode].hiddenLabel = undefined;
+    }
+  } else if (highlightActive === true) {
+    // console.log("highlightActive was true");
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      // allNodes[nodeId].color = "purple";
+      allNodes[nodeId].color = nodeColors[nodeId];
+      // delete allNodes[nodeId].color;
+      if (allNodes[nodeId].hiddenLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
+        allNodes[nodeId].hiddenLabel = undefined;
+      }
+    }
+    highlightActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    // console.log("Nothing was selected");
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        // allNodes[nodeId].color = {};
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function filterHighlight(params) {
+  allNodes = nodes.get({ returnType: "Object" });
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    filterActive = true;
+    let selectedNodes = params.nodes;
+
+    // hiding all nodes and saving the label
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = true;
+      if (allNodes[nodeId].savedLabel === undefined) {
+        allNodes[nodeId].savedLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+
+    for (let i=0; i < selectedNodes.length; i++) {
+      allNodes[selectedNodes[i]].hidden = false;
+      if (allNodes[selectedNodes[i]].savedLabel !== undefined) {
+        allNodes[selectedNodes[i]].label = allNodes[selectedNodes[i]].savedLabel;
+        allNodes[selectedNodes[i]].savedLabel = undefined;
+      }
+    }
+
+  } else if (filterActive === true) {
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = false;
+      if (allNodes[nodeId].savedLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].savedLabel;
+        allNodes[nodeId].savedLabel = undefined;
+      }
+    }
+    filterActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function selectNode(nodes) {
+  network.selectNodes(nodes);
+  neighbourhoodHighlight({ nodes: nodes });
+  return nodes;
+}
+
+function selectNodes(nodes) {
+  network.selectNodes(nodes);
+  filterHighlight({nodes: nodes});
+  return nodes;
+}
+
+function highlightFilter(filter) {
+  let selectedNodes = []
+  let selectedProp = filter['property']
+  if (filter['item'] === 'node') {
+    let allNodes = nodes.get({ returnType: "Object" });
+    for (let nodeId in allNodes) {
+      if (allNodes[nodeId][selectedProp] && filter['value'].includes((allNodes[nodeId][selectedProp]).toString())) {
+        selectedNodes.push(nodeId)
+      }
+    }
+  }
+  else if (filter['item'] === 'edge'){
+    let allEdges = edges.get({returnType: 'object'});
+    // check if the selected property exists for selected edge and select the nodes connected to the edge
+    for (let edge in allEdges) {
+      if (allEdges[edge][selectedProp] && filter['value'].includes((allEdges[edge][selectedProp]).toString())) {
+        selectedNodes.push(allEdges[edge]['from'])
+        selectedNodes.push(allEdges[edge]['to'])
+      }
+    }
+  }
+  selectNodes(selectedNodes)
+}</script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+            
+            
+            
+            
+            
+
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 100vh;
+                 background-color: #0f172a;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "tests/test_resolver.py", "label": "test_resolver.py", "shape": "dot", "title": "Path: tests/test_resolver.py\nComplexity: 1.0\nPageRank: 0.0476\nPurpose: The code tests a path resolution utility that resolves module import paths to file system paths within a repository, handling both absolute and relative imports.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "tests/test_hydrologist_ml.py", "label": "test_hydrologist_ml.py", "shape": "dot", "title": "Path: tests/test_hydrologist_ml.py\nComplexity: 1.0\nPageRank: 0.0476\nPurpose: The code tests a Python data flow analyzer\u0027s ability to detect and classify input/output operations in a machine learning script, specifically verifying that it correctly identifies data sources, transformations, and sinks like CSV reads/writes and model training/prediction calls.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "tests/test_analyzer.py", "label": "test_analyzer.py", "shape": "dot", "title": "Path: tests/test_analyzer.py\nComplexity: 1.0\nPageRank: 0.0476\nPurpose: The code tests a Python code analysis tool by verifying it correctly identifies language, imports, classes, and functions in a given Python module.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "scripts/verify_context_injection.py", "label": "verify_context_injection.py", "shape": "dot", "title": "Path: scripts/verify_context_injection.py\nComplexity: 5.0\nPageRank: 0.0476\nPurpose: This code verifies context injection by loading a codebase documentation file, priming an AI agent with its contents, and querying it about circular dependencies and associated risks in the architecture. It serves as a validation tool to ensure the AI can accurately analyze and provide insights on the system\u0027s structural integrity.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "src/__init__.py", "label": "__init__.py", "shape": "dot", "title": "Path: src/__init__.py\nComplexity: 1.0\nPageRank: 0.0476\nPurpose: The code defines a simple function that returns a greeting message, likely serving as a basic health check or placeholder for a larger system.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#f59e0b", "font": {"color": "white"}, "id": "src/orchestrator.py", "label": "orchestrator.py", "shape": "dot", "title": "Path: src/orchestrator.py\nComplexity: 14.0\nPageRank: 0.0476\nPurpose: The Orchestrator class coordinates a multi-stage software analysis pipeline that processes code repositories through sequential agents (Surveyor, Hydrologist, Semanticist, Archivist) to extract structural, semantic, and documentation insights, then generates comprehensive artifacts including knowledge graphs, onboarding briefs, and interactive visualizations.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "src/cli.py", "label": "cli.py", "shape": "dot", "title": "Path: src/cli.py\nComplexity: 9.0\nPageRank: 0.0476\nPurpose: This code provides a command-line interface for analyzing and querying software repositories, enabling users to generate artifacts from repository analysis or interactively query previously analyzed repositories. It orchestrates the analysis pipeline through an Orchestrator class and facilitates repository querying via a Navigator class.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#f59e0b", "font": {"color": "white"}, "id": "src/graph/knowledge_graph.py", "label": "knowledge_graph.py", "shape": "dot", "title": "Path: src/graph/knowledge_graph.py\nComplexity: 13.0\nPageRank: 0.0476\nPurpose: The KnowledgeGraph class manages and analyzes module dependencies and data lineage using NetworkX graphs, providing methods to add nodes and edges, compute centrality metrics like PageRank, identify circular dependencies and dead code, and serialize/deserialize the graph state for persistence.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#f59e0b", "font": {"color": "white"}, "id": "src/agents/surveyor.py", "label": "surveyor.py", "shape": "dot", "title": "Path: src/agents/surveyor.py\nComplexity: 20.0\nPageRank: 0.0476\nPurpose: This code analyzes a software repository to build a dependency graph of modules, capturing their relationships and change frequency. It scans source files, extracts import dependencies, and enriches nodes with git velocity data to identify frequently changing files.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#f59e0b", "font": {"color": "white"}, "id": "src/agents/semanticist.py", "label": "semanticist.py", "shape": "dot", "title": "Path: src/agents/semanticist.py\nComplexity: 21.0\nPageRank: 0.0476\nPurpose: The Semanticist class orchestrates LLM-powered analysis of brownfield codebases, generating purpose statements, detecting documentation drift, clustering modules into domains, and synthesizing onboarding briefs. It acts as an intelligent analysis layer that uses OpenAI-compatible APIs to extract architectural insights from code evidence.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#f59e0b", "font": {"color": "white"}, "id": "src/agents/hydrologist.py", "label": "hydrologist.py", "shape": "dot", "title": "Path: src/agents/hydrologist.py\nComplexity: 24.0\nPageRank: 0.0476\nPurpose: The code analyzes Python, SQL, and YAML files in a repository to extract data lineage information, building a directed graph that maps how datasets flow between files and transformations. It identifies data sources, sinks, and dependencies, then provides methods to query blast radius, sources, and sinks, and save the lineage graph.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#ef4444", "font": {"color": "white"}, "id": "src/agents/archivist.py", "label": "archivist.py", "shape": "dot", "title": "Path: src/agents/archivist.py\nComplexity: 31.0\nPageRank: 0.0476\nPurpose: Generates comprehensive architectural documentation and interactive visualizations from a dependency graph, including a structured CODEBASE.md report with system maps, debt analysis, and module metadata, plus an interactive HTML graph for exploration.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#f59e0b", "font": {"color": "white"}, "id": "src/agents/navigator.py", "label": "navigator.py", "shape": "dot", "title": "Path: src/agents/navigator.py\nComplexity: 19.0\nPageRank: 0.0476\nPurpose: The Navigator class provides a query interface to a codebase knowledge graph, allowing users to semantically search for implementations, trace data lineage, identify module dependencies, and explain specific modules using a LangGraph agent with LLM-powered tool selection.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#f59e0b", "font": {"color": "white"}, "id": "src/analyzers/sql_lineage.py", "label": "sql_lineage.py", "shape": "dot", "title": "Path: src/analyzers/sql_lineage.py\nComplexity: 17.0\nPageRank: 0.0476\nPurpose: Extracts table dependencies and transformation lineage from SQL queries by parsing the query structure to identify source tables, target tables, and transformation types, then returns this information as structured data for downstream analysis.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#f59e0b", "font": {"color": "white"}, "id": "src/analyzers/python_dataflow.py", "label": "python_dataflow.py", "shape": "dot", "title": "Path: src/analyzers/python_dataflow.py\nComplexity: 11.0\nPageRank: 0.0476\nPurpose: Extracts data flow patterns from Python source code by analyzing ASTs to identify I/O operations (file reads/writes, data loading/saving) and machine learning method calls (fit, predict, score, transform). The analyzer parses Python files, queries the AST for specific patterns using tree-sitter, and returns structured information about data sources, sinks, and transformations found in the code.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#ef4444", "font": {"color": "white"}, "id": "src/analyzers/tree_sitter_analyzer.py", "label": "tree_sitter_analyzer.py", "shape": "dot", "title": "Path: src/analyzers/tree_sitter_analyzer.py\nComplexity: 42.0\nPageRank: 0.0476\nPurpose: Analyzes source code files to extract structural and semantic information such as imports, functions, classes, decorators, type hints, and complexity metrics using tree-sitter parsers, supporting Python, SQL, YAML, and Jupyter notebooks.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#ef4444", "font": {"color": "white"}, "id": "src/analyzers/dag_config_parser.py", "label": "dag_config_parser.py", "shape": "dot", "title": "Path: src/analyzers/dag_config_parser.py\nComplexity: 30.0\nPageRank: 0.0476\nPurpose: Extracts and consolidates pipeline topology metadata from dbt schema.yml files and Airflow DAG Python files to enable analysis of data pipeline structure and dependencies.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "src/utils/paths.py", "label": "paths.py", "shape": "dot", "title": "Path: src/utils/paths.py\nComplexity: 1.0\nPageRank: 0.0476\nPurpose: This module provides utility functions to determine key directory paths within the project structure, specifically the project root and a .cartography subdirectory.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "src/utils/resolver.py", "label": "resolver.py", "shape": "dot", "title": "Path: src/utils/resolver.py\nComplexity: 9.0\nPageRank: 0.0476\nPurpose: Resolves import strings and relative paths to absolute filesystem paths within a repository, supporting both absolute imports (e.g., src.utils.auth) and relative imports (e.g., ..common.utils) by converting them to valid file paths and checking for .py, .sql, or __init__.py files.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "src/models/__init__.py", "label": "__init__.py", "shape": "dot", "title": "Path: src/models/__init__.py\nComplexity: 1.0\nPageRank: 0.0476\nPurpose: The code appears to be a configuration or setup component for a larger system, likely defining parameters or initializing services for a pipeline or application.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "src/models/graph.py", "label": "graph.py", "shape": "dot", "title": "Path: src/models/graph.py\nComplexity: 1.0\nPageRank: 0.0476\nPurpose: Defines data models for representing software architecture components and their relationships in a codebase analysis system, including modules, functions, datasets, transformations, and connections between them.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}]);
+                  edges = new vis.DataSet([]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"physics": {"enabled": false, "stabilization": false}, "interaction": {"hover": true, "navigationButtons": true, "multiselect": true}, "nodes": {"borderWidth": 2, "borderWidthSelected": 4, "shadow": true}, "edges": {"color": {"inherit": true}, "smooth": {"type": "continuous"}, "shadow": true}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

@@ -13,30 +13,29 @@ class SQLLineageAnalyzer:
     def extract_lineage(self, sql: str) -> List[Dict[str, Any]]:
         """
         Extracts structured lineage from a SQL string.
-        Returns a list of dictionaries with:
-        - source: table name (input)
-        - target: table name (output)
-        - type: transformation type (e.g., SELECT, INSERT, CREATE)
+        Returns a list of dictionaries with source, target, type, and columns.
         """
         lineage = []
         try:
-            # First, extract dbt-only patterns that might not parse perfectly in standard dialects
+            # Pre-processing for common dbt/template patterns
+            processed_sql = self._preprocess_sql(sql)
             dbt_refs = self.extract_dbt_refs(sql)
             
-            # Use sqlglot for structured parsing
-            for expression in sqlglot.parse(sql, read=self.dialect):
+            # Use sqlglot to parse and analyze
+            for expression in sqlglot.parse(processed_sql, read=self.dialect):
                 if not expression: continue
                 
-                # Identify targets (e.g., CREATE TABLE X, INSERT INTO Y)
+                # Identify targets
                 targets = []
                 if isinstance(expression, exp.Create):
-                    targets.append(expression.this.this.name)
+                    if expression.this and hasattr(expression.this, 'this') and hasattr(expression.this.this, 'name'):
+                        targets.append(expression.this.this.name)
                 elif isinstance(expression, exp.Insert):
-                    targets.append(expression.this.this.name)
+                    if expression.this and hasattr(expression.this, 'this') and hasattr(expression.this.this, 'name'):
+                        targets.append(expression.this.this.name)
                 
-                # Identify sources (e.g., FROM A, JOIN B)
+                # Identify sources
                 sources = set()
-                # Exclude CTEs from sources
                 ctes = {cte.alias: True for cte in expression.find_all(exp.CTE)}
                 
                 for table in expression.find_all(exp.Table):
@@ -44,32 +43,33 @@ class SQLLineageAnalyzer:
                     if table_name and table_name not in ctes:
                         sources.add(table_name)
                 
-                # Merge dbt refs into sources
+                # Merge dbt refs
                 for ref in dbt_refs:
                     sources.add(ref)
 
-                # Identify columns
+                # Identify columns (projections)
                 columns = []
-                for projection in expression.find_all(exp.Alias):
-                    columns.append(projection.alias)
-                for projection in expression.find_all(exp.Column):
-                    if projection.name not in columns:
-                        columns.append(projection.name)
-                if expression.find(exp.Star):
-                    columns.append("*")
+                for select in expression.find_all(exp.Select):
+                    for projection in select.expressions:
+                        if isinstance(projection, exp.Alias):
+                            columns.append(projection.alias)
+                        elif isinstance(projection, exp.Column):
+                            columns.append(projection.name)
+                        elif isinstance(projection, exp.Star):
+                            columns.append("*")
 
                 # Generate lineage items
+                final_targets = targets if targets else ["result_set"]
                 for source in sources:
-                    for target in (targets if targets else ["result_set"]):
+                    for target in final_targets:
                         lineage.append({
                             "source": source,
                             "target": target,
                             "type": expression.key.upper() if expression.key else "SELECT",
-                            "columns": columns
+                            "columns": list(set(columns))
                         })
 
         except Exception as e:
-            # Fallback for complex Jinja or unsupported dialects: regex extraction
             print(f"SQL Parser Error (using regex fallback): {e}")
             refs = self.extract_dbt_refs(sql)
             for ref in refs:
@@ -80,6 +80,15 @@ class SQLLineageAnalyzer:
                 })
         
         return lineage
+
+    def _preprocess_sql(self, sql: str) -> str:
+        """Cleans up SQL of jinja templates so sqlglot can parse it."""
+        import re
+        # Replace {{ ... }} with a placeholder that sqlglot can handle as a literal or identifier
+        cleaned = re.sub(r"\{\{.*?\}\}", "TEMPLATE_VAR", sql)
+        # Replace {% ... %} with empty space
+        cleaned = re.sub(r"\{%.*?%\}", " ", cleaned)
+        return cleaned
 
     def extract_dbt_refs(self, sql: str) -> Set[str]:
         """Specific extractor for dbt ref() and source() calls."""

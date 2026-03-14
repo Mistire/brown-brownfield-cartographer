@@ -26,6 +26,8 @@ class Archivist:
             f.write("# CODEBASE.md: System Architecture Map\n\n")
             f.write("## 1. Architecture Overview\n")
             f.write("Generated on: " + datetime.now().strftime("%Y-%m-%d %H:%M") + "\n\n")
+            f.write("> [!IMPORTANT]\n")
+            f.write("> This is a live, queryable map of the system's architecture and data flows.\n\n")
             
             f.write("### 1.1 System Map (Mermaid)\n")
             f.write("```mermaid\ngraph TD\n")
@@ -34,67 +36,64 @@ class Archivist:
                 f.write(f'    "{u}" --> "{v}"\n')
             f.write("```\n\n")
             
-            f.write("## 2. Critical Architectural Hubs (PageRank)\n")
+            f.write("## 2. Critical Path & Architectural Hubs\n")
             hubs = sorted([m for m in nodes if m.get("is_hub")], key=lambda x: x.get("pagerank", 0), reverse=True)
             for hub in hubs:
-                f.write(f"- **`{hub.get('path', 'external_dependency')}`**: Centrality Score {hub.get('pagerank', 0):.4f}\n")
+                f.write(f"- **`{hub.get('path', 'external_dependency')}`**: PageRank {hub.get('pagerank', 0):.4f}\n")
             f.write("\n")
             
-            f.write("## 3. Architectural Debt & Risks\n")
+            f.write("## 3. Data Sources & Sinks\n")
+            # In a real lineage graph, sources have in-degree 0 in the LINEAGE graph
+            # Here we are using the module graph, so we look for dataset nodes
+            sources = [n for n, d in graph.nodes(data=True) if d.get("node_type") == "dataset" and graph.in_degree(n) == 0]
+            sinks = [n for n, d in graph.nodes(data=True) if d.get("node_type") == "dataset" and graph.out_degree(n) == 0]
+            
+            f.write("### 3.1 Known Inputs (Sources)\n")
+            for s in sources: f.write(f"- `{s}`\n")
+            if not sources: f.write("No distinct sources identified via static analysis.\n")
+            
+            f.write("\n### 3.2 Known Outputs (Sinks)\n")
+            for s in sinks: f.write(f"- `{s}`\n")
+            if not sinks: f.write("No distinct sinks identified via static analysis.\n")
+            
+            f.write("\n## 4. Technical Debt & Safety Risks\n")
             circular = [m for m in nodes if m.get("in_circular_dep")]
             if circular:
-                f.write("### 3.1 Circular Dependencies\n")
+                f.write("### 4.1 Circular Dependencies\n")
                 f.write("> [!WARNING]\n")
-                f.write("> These modules are part of circular import chains which can cause initialization issues.\n\n")
+                f.write("> Circular imports identified. These can cause silent initialization failures.\n\n")
                 for c in circular:
                     f.write(f"- `{c.get('path', 'external_dependency')}` (SCC ID: {c.get('scc_id')})\n")
             
             dead = [m for m in nodes if m.get("is_dead_candidate")]
             if dead:
-                f.write("\n### 3.2 Dead Code Candidates\n")
+                f.write("\n### 4.2 Dead Code Candidates\n")
                 f.write("> [!NOTE]\n")
-                f.write("> These modules have zero in-degree (no detected imports). Verify if they are entry points or unused.\n\n")
+                f.write("> Zero detected incoming references. Candidate for removal if not an entry point.\n\n")
                 for d in dead:
                     f.write(f"- `{d.get('path', 'external_dependency')}`\n")
                     
-            f.write("\n## 4. Module Purpose Index\n")
+            f.write("\n## 5. Recent Change Velocity (90-Day Map)\n")
+            f.write("> [!TIP]\n")
+            f.write("> High velocity files often indicate areas of high complexity or ongoing refactoring.\n\n")
+            hotspots = sorted(nodes, key=lambda x: x.get("change_velocity_30d", 0), reverse=True)[:5]
+            for h in hotspots:
+                if h.get("change_velocity_30d", 0) > 0:
+                    f.write(f"- `{h.get('path')}`: **{h.get('change_velocity_30d')}** changes in last 30 days\n")
+
+            f.write("\n## 6. Module Purpose Index\n")
             for mod in nodes:
                 path = mod.get('path', 'external_dependency')
+                if mod.get("node_type") == "dataset": continue
                 f.write(f"### `{path}`\n")
                 f.write(f"**Purpose:** {mod.get('purpose_statement', 'No purpose generated.')}\n")
                 
-                # Master Thinker: Report Documentation Drift
                 drift = mod.get("documentation_drift")
                 if drift and drift.get("drift_detected"):
-                    f.write(f"> [!WARNING]\n")
-                    f.write(f"> **Documentation Drift Detected!**\n")
-                    f.write(f"> Reason: {drift.get('mismatch_reason')}\n\n")
+                    f.write(f"> [!CAUTION]\n")
+                    f.write(f"> **Doc Drift!** {drift.get('mismatch_reason')}\n\n")
                 
-                f.write(f"**Complexity:** {mod.get('complexity_score', 0.0)} | **Velocity:** {mod.get('change_velocity_30d', 0)} changes/30d\n\n")
-                
-            f.write("## 5. Data Sources & Sinks\n")
-            sources = [n for n, d in graph.nodes(data=True) if d.get("type") == "dataset" and graph.in_degree(n) == 0]
-            sinks = [n for n, d in graph.nodes(data=True) if d.get("type") == "dataset" and graph.out_degree(n) == 0]
-            
-            f.write("### 5.1 Primary Sources (Ingestion)\n")
-            if sources:
-                for s in sources: f.write(f"- `{s}`\n")
-            else:
-                f.write("No distinct sources identified.\n")
-                
-            f.write("\n### 5.2 Primary Sinks (Output)\n")
-            if sinks:
-                for s in sinks: f.write(f"- `{s}`\n")
-            else:
-                f.write("No distinct sinks identified.\n")
-            
-            f.write("\n## 6. High-Velocity Core (Maintenance Hotspots)\n")
-            f.write("> [!TIP]\n")
-            f.write("> These files have the highest change frequency in the last 30 days.\n\n")
-            hotspots = list(sorted(nodes, key=lambda x: x.get("change_velocity_30d", 0), reverse=True))[:5]
-            for h in hotspots:
-                if h.get("change_velocity_30d", 0) > 0:
-                    f.write(f"- `{h.get('path')}`: **{h.get('change_velocity_30d')}** changes\n")
+                f.write(f"**Complexity:** {mod.get('complexity_score', 0.0)} | **Domain:** {mod.get('domain_cluster', 'N/A')}\n\n")
 
             f.write("\n## 7. System Statistics\n")
             f.write(f"Total Modules: {len(nodes)}\n")
@@ -170,8 +169,8 @@ class Archivist:
         
         with open(path, "w") as f:
             f.write("# FDE Day-One Onboarding Brief\n\n")
-            f.write("> [!NOTE]\n")
-            f.write("> This document is generated to accelerate the first 72 hours of embedding.\n\n")
+            f.write("> [!IMPORTANT]\n")
+            f.write("> This document is synthesized by the Brownfield Cartographer to accelerate FDE onboarding within the first 72 hours.\n\n")
             
             f.write("## 1. The Five Day-One Answers\n")
             questions = [
@@ -183,22 +182,22 @@ class Archivist:
             ]
             
             for i, q in enumerate(questions):
+                key = f"q{i+1}"
+                ans = day_one_answers.get(key, "Analysis inconclusive.")
                 f.write(f"### Q{i+1}: {q}\n")
-                f.write(f"{day_one_answers.get(f'q{i+1}', 'Analysis pending LLM synthesis.')}\n\n")
+                f.write(f"{ans}\n\n")
             
-            f.write("## 2. High-Velocity Hotspots\n")
-            # Filter for nodes that actually have a path
+            f.write("## 2. High-Velocity Hotspots (Maintenance Map)\n")
             valid_modules = [m for m in module_data if 'path' in m]
-            # Sort modules by velocity
             sorted_mods = sorted(valid_modules, key=lambda x: x.get('change_velocity_30d', 0), reverse=True)[:5]
             for mod in sorted_mods:
-                f.write(f"- `{mod['path']}` ({mod.get('change_velocity_30d', 0)} changes/30d)\n")
+                f.write(f"- `{mod['path']}`: **{mod.get('change_velocity_30d', 0)}** changes/30d. (Area of likely technical debt or high feature flux)\n")
             f.write("\n")
             
-            f.write("## 3. Top Complexity Risks\n")
+            f.write("## 3. High Complexity Risk Modules\n")
             sorted_comp = sorted(valid_modules, key=lambda x: x.get('complexity_score', 0), reverse=True)[:5]
             for mod in sorted_comp:
-                f.write(f"- `{mod['path']}` (Complexity: {mod.get('complexity_score', 0)})\n")
+                f.write(f"- `{mod['path']}`: Complexity Score **{mod.get('complexity_score', 0)}**. (Recommended for refactoring or deep-dive testing)\n")
 
     def log_trace(self, action: str, details: Dict[str, Any]):
         trace_path = os.path.join(self.output_dir, "cartography_trace.jsonl")

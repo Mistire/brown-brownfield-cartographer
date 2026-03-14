@@ -1,0 +1,543 @@
+{
+  "directed": true,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "\nimport pandas as pd\nfrom sklearn.linear_model import LogisticRegression\n\ndf = pd.read_csv('data.csv')\nmodel = LogisticRegression()\nmodel.fit(df, y)\npred = model.predict(test_df)\ndf.to_csv('out.csv')\n"
+    },
+    {
+      "id": "tests/test_hydrologist_ml.py"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "# CODEBASE.md: System Architecture Map\\n\\n"
+    },
+    {
+      "id": "src/agents/archivist.py"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "## 1. Architecture Overview\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "### 1.1 System Map (Mermaid)\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "```mermaid\\ngraph TD\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "f'    \"{u}\" --> \"{v}\"\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "```\\n\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "## 2. Critical Architectural Hubs (PageRank)\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"- **`{hub.get('path', 'external_dependency')}`**: Centrality Score {hub.get('pagerank', 0):.4f}\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "## 3. Architectural Debt & Risks\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "### 3.1 Circular Dependencies\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "> [!WARNING]\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "> These modules are part of circular import chains which can cause initialization issues.\\n\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"- `{c.get('path', 'external_dependency')}` (SCC ID: {c.get('scc_id')})\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "\\n### 3.2 Dead Code Candidates\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "> [!NOTE]\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "> These modules have zero in-degree (no detected imports). Verify if they are entry points or unused.\\n\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"- `{d.get('path', 'external_dependency')}`\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "\\n## 4. Module Purpose Index\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "f\"### `{path}`\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"**Purpose:** {mod.get('purpose_statement', 'No purpose generated.')}\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "f\"> [!WARNING]\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "f\"> **Documentation Drift Detected!**\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"> Reason: {drift.get('mismatch_reason')}\\n\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"**Complexity:** {mod.get('complexity_score', 0.0)} | **Velocity:** {mod.get('change_velocity_30d', 0)} changes/30d\\n\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "## 5. Data Sources & Sinks\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "### 5.1 Primary Sources (Ingestion)\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "f\"- `{s}`\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "No distinct sources identified.\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "\\n### 5.2 Primary Sinks (Output)\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "No distinct sinks identified.\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "\\n## 6. High-Velocity Core (Maintenance Hotspots)\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "> [!TIP]\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "> These files have the highest change frequency in the last 30 days.\\n\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"- `{h.get('path')}`: **{h.get('change_velocity_30d')}** changes\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "\\n## 7. System Statistics\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "f\"Total Modules: {len(nodes)}\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"Total Dependencies: {graph.number_of_edges()}\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "# FDE Day-One Onboarding Brief\\n\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "> This document is generated to accelerate the first 72 hours of embedding.\\n\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "## 1. The Five Day-One Answers\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "f\"### Q{i+1}: {q}\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"{day_one_answers.get(f'q{i+1}', 'Analysis pending LLM synthesis.')}\\n\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "## 2. High-Velocity Hotspots\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"- `{mod['path']}` ({mod.get('change_velocity_30d', 0)} changes/30d)\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "## 3. Top Complexity Risks\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"- `{mod['path']}` (Complexity: {mod.get('complexity_score', 0)})\\n"
+    }
+  ],
+  "edges": [
+    {
+      "type": "PRODUCES",
+      "line": 8,
+      "source": "tests/test_hydrologist_ml.py",
+      "target": "\nimport pandas as pd\nfrom sklearn.linear_model import LogisticRegression\n\ndf = pd.read_csv('data.csv')\nmodel = LogisticRegression()\nmodel.fit(df, y)\npred = model.predict(test_df)\ndf.to_csv('out.csv')\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 26,
+      "source": "src/agents/archivist.py",
+      "target": "# CODEBASE.md: System Architecture Map\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 27,
+      "source": "src/agents/archivist.py",
+      "target": "## 1. Architecture Overview\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 30,
+      "source": "src/agents/archivist.py",
+      "target": "### 1.1 System Map (Mermaid)\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 31,
+      "source": "src/agents/archivist.py",
+      "target": "```mermaid\\ngraph TD\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 34,
+      "source": "src/agents/archivist.py",
+      "target": "f'    \"{u}\" --> \"{v}\"\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 35,
+      "source": "src/agents/archivist.py",
+      "target": "```\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 37,
+      "source": "src/agents/archivist.py",
+      "target": "## 2. Critical Architectural Hubs (PageRank)\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 40,
+      "source": "src/agents/archivist.py",
+      "target": "f\"- **`{hub.get('path', 'external_dependency')}`**: Centrality Score {hub.get('pagerank', 0):.4f}\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 196,
+      "source": "src/agents/archivist.py",
+      "target": "\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 43,
+      "source": "src/agents/archivist.py",
+      "target": "## 3. Architectural Debt & Risks\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 46,
+      "source": "src/agents/archivist.py",
+      "target": "### 3.1 Circular Dependencies\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 47,
+      "source": "src/agents/archivist.py",
+      "target": "> [!WARNING]\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 48,
+      "source": "src/agents/archivist.py",
+      "target": "> These modules are part of circular import chains which can cause initialization issues.\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 50,
+      "source": "src/agents/archivist.py",
+      "target": "f\"- `{c.get('path', 'external_dependency')}` (SCC ID: {c.get('scc_id')})\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 54,
+      "source": "src/agents/archivist.py",
+      "target": "\\n### 3.2 Dead Code Candidates\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 173,
+      "source": "src/agents/archivist.py",
+      "target": "> [!NOTE]\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 56,
+      "source": "src/agents/archivist.py",
+      "target": "> These modules have zero in-degree (no detected imports). Verify if they are entry points or unused.\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 58,
+      "source": "src/agents/archivist.py",
+      "target": "f\"- `{d.get('path', 'external_dependency')}`\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 60,
+      "source": "src/agents/archivist.py",
+      "target": "\\n## 4. Module Purpose Index\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 63,
+      "source": "src/agents/archivist.py",
+      "target": "f\"### `{path}`\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 64,
+      "source": "src/agents/archivist.py",
+      "target": "f\"**Purpose:** {mod.get('purpose_statement', 'No purpose generated.')}\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 69,
+      "source": "src/agents/archivist.py",
+      "target": "f\"> [!WARNING]\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 70,
+      "source": "src/agents/archivist.py",
+      "target": "f\"> **Documentation Drift Detected!**\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 71,
+      "source": "src/agents/archivist.py",
+      "target": "f\"> Reason: {drift.get('mismatch_reason')}\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 73,
+      "source": "src/agents/archivist.py",
+      "target": "f\"**Complexity:** {mod.get('complexity_score', 0.0)} | **Velocity:** {mod.get('change_velocity_30d', 0)} changes/30d\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 75,
+      "source": "src/agents/archivist.py",
+      "target": "## 5. Data Sources & Sinks\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 79,
+      "source": "src/agents/archivist.py",
+      "target": "### 5.1 Primary Sources (Ingestion)\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 87,
+      "source": "src/agents/archivist.py",
+      "target": "f\"- `{s}`\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 83,
+      "source": "src/agents/archivist.py",
+      "target": "No distinct sources identified.\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 85,
+      "source": "src/agents/archivist.py",
+      "target": "\\n### 5.2 Primary Sinks (Output)\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 89,
+      "source": "src/agents/archivist.py",
+      "target": "No distinct sinks identified.\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 91,
+      "source": "src/agents/archivist.py",
+      "target": "\\n## 6. High-Velocity Core (Maintenance Hotspots)\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 92,
+      "source": "src/agents/archivist.py",
+      "target": "> [!TIP]\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 93,
+      "source": "src/agents/archivist.py",
+      "target": "> These files have the highest change frequency in the last 30 days.\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 97,
+      "source": "src/agents/archivist.py",
+      "target": "f\"- `{h.get('path')}`: **{h.get('change_velocity_30d')}** changes\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 99,
+      "source": "src/agents/archivist.py",
+      "target": "\\n## 7. System Statistics\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 100,
+      "source": "src/agents/archivist.py",
+      "target": "f\"Total Modules: {len(nodes)}\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 101,
+      "source": "src/agents/archivist.py",
+      "target": "f\"Total Dependencies: {graph.number_of_edges()}\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 172,
+      "source": "src/agents/archivist.py",
+      "target": "# FDE Day-One Onboarding Brief\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 174,
+      "source": "src/agents/archivist.py",
+      "target": "> This document is generated to accelerate the first 72 hours of embedding.\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 176,
+      "source": "src/agents/archivist.py",
+      "target": "## 1. The Five Day-One Answers\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 186,
+      "source": "src/agents/archivist.py",
+      "target": "f\"### Q{i+1}: {q}\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 187,
+      "source": "src/agents/archivist.py",
+      "target": "f\"{day_one_answers.get(f'q{i+1}', 'Analysis pending LLM synthesis.')}\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 189,
+      "source": "src/agents/archivist.py",
+      "target": "## 2. High-Velocity Hotspots\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 195,
+      "source": "src/agents/archivist.py",
+      "target": "f\"- `{mod['path']}` ({mod.get('change_velocity_30d', 0)} changes/30d)\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 198,
+      "source": "src/agents/archivist.py",
+      "target": "## 3. Top Complexity Risks\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 201,
+      "source": "src/agents/archivist.py",
+      "target": "f\"- `{mod['path']}` (Complexity: {mod.get('complexity_score', 0)})\\n"
+    }
+  ]
+}

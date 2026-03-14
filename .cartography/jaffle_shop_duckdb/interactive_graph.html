@@ -1,0 +1,321 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script>function neighbourhoodHighlight(params) {
+  // console.log("in nieghbourhoodhighlight");
+  allNodes = nodes.get({ returnType: "Object" });
+  // originalNodes = JSON.parse(JSON.stringify(allNodes));
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    highlightActive = true;
+    var i, j;
+    var selectedNode = params.nodes[0];
+    var degrees = 2;
+
+    // mark all nodes as hard to read.
+    for (let nodeId in allNodes) {
+      // nodeColors[nodeId] = allNodes[nodeId].color;
+      allNodes[nodeId].color = "rgba(200,200,200,0.5)";
+      if (allNodes[nodeId].hiddenLabel === undefined) {
+        allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+    var connectedNodes = network.getConnectedNodes(selectedNode);
+    var allConnectedNodes = [];
+
+    // get the second degree nodes
+    for (i = 1; i < degrees; i++) {
+      for (j = 0; j < connectedNodes.length; j++) {
+        allConnectedNodes = allConnectedNodes.concat(
+          network.getConnectedNodes(connectedNodes[j])
+        );
+      }
+    }
+
+    // all second degree nodes get a different color and their label back
+    for (i = 0; i < allConnectedNodes.length; i++) {
+      // allNodes[allConnectedNodes[i]].color = "pink";
+      allNodes[allConnectedNodes[i]].color = "rgba(150,150,150,0.75)";
+      if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[allConnectedNodes[i]].label =
+          allNodes[allConnectedNodes[i]].hiddenLabel;
+        allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // all first degree nodes get their own color and their label back
+    for (i = 0; i < connectedNodes.length; i++) {
+      // allNodes[connectedNodes[i]].color = undefined;
+      allNodes[connectedNodes[i]].color = nodeColors[connectedNodes[i]];
+      if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[connectedNodes[i]].label =
+          allNodes[connectedNodes[i]].hiddenLabel;
+        allNodes[connectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // the main node gets its own color and its label back.
+    // allNodes[selectedNode].color = undefined;
+    allNodes[selectedNode].color = nodeColors[selectedNode];
+    if (allNodes[selectedNode].hiddenLabel !== undefined) {
+      allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
+      allNodes[selectedNode].hiddenLabel = undefined;
+    }
+  } else if (highlightActive === true) {
+    // console.log("highlightActive was true");
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      // allNodes[nodeId].color = "purple";
+      allNodes[nodeId].color = nodeColors[nodeId];
+      // delete allNodes[nodeId].color;
+      if (allNodes[nodeId].hiddenLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
+        allNodes[nodeId].hiddenLabel = undefined;
+      }
+    }
+    highlightActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    // console.log("Nothing was selected");
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        // allNodes[nodeId].color = {};
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function filterHighlight(params) {
+  allNodes = nodes.get({ returnType: "Object" });
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    filterActive = true;
+    let selectedNodes = params.nodes;
+
+    // hiding all nodes and saving the label
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = true;
+      if (allNodes[nodeId].savedLabel === undefined) {
+        allNodes[nodeId].savedLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+
+    for (let i=0; i < selectedNodes.length; i++) {
+      allNodes[selectedNodes[i]].hidden = false;
+      if (allNodes[selectedNodes[i]].savedLabel !== undefined) {
+        allNodes[selectedNodes[i]].label = allNodes[selectedNodes[i]].savedLabel;
+        allNodes[selectedNodes[i]].savedLabel = undefined;
+      }
+    }
+
+  } else if (filterActive === true) {
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = false;
+      if (allNodes[nodeId].savedLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].savedLabel;
+        allNodes[nodeId].savedLabel = undefined;
+      }
+    }
+    filterActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function selectNode(nodes) {
+  network.selectNodes(nodes);
+  neighbourhoodHighlight({ nodes: nodes });
+  return nodes;
+}
+
+function selectNodes(nodes) {
+  network.selectNodes(nodes);
+  filterHighlight({nodes: nodes});
+  return nodes;
+}
+
+function highlightFilter(filter) {
+  let selectedNodes = []
+  let selectedProp = filter['property']
+  if (filter['item'] === 'node') {
+    let allNodes = nodes.get({ returnType: "Object" });
+    for (let nodeId in allNodes) {
+      if (allNodes[nodeId][selectedProp] && filter['value'].includes((allNodes[nodeId][selectedProp]).toString())) {
+        selectedNodes.push(nodeId)
+      }
+    }
+  }
+  else if (filter['item'] === 'edge'){
+    let allEdges = edges.get({returnType: 'object'});
+    // check if the selected property exists for selected edge and select the nodes connected to the edge
+    for (let edge in allEdges) {
+      if (allEdges[edge][selectedProp] && filter['value'].includes((allEdges[edge][selectedProp]).toString())) {
+        selectedNodes.push(allEdges[edge]['from'])
+        selectedNodes.push(allEdges[edge]['to'])
+      }
+    }
+  }
+  selectNodes(selectedNodes)
+}</script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+            
+            
+            
+            
+            
+
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 100vh;
+                 background-color: #0f172a;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"borderWidth": 2, "color": "#f59e0b", "font": {"color": "white"}, "id": "dbt_project.yml", "label": "dbt_project.yml", "shape": "dot", "title": "Path: dbt_project.yml\nComplexity: 10.5\nPageRank: 0.1111\nPurpose: This dbt project configuration defines the structure and behavior of a data transformation pipeline for the \u0027jaffle_shop\u0027 analytics system. It specifies paths for organizing models, seeds, tests, and macros, and sets materialization strategies\u2014such as building final models as tables and staging models as views\u2014to systematically convert raw data into persistent analytics tables. The configuration ensures version compatibility, cleanup of build artifacts, and consistent execution for reliable business intelligence outputs.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "profiles.yml", "label": "profiles.yml", "shape": "dot", "title": "Path: profiles.yml\nComplexity: 4.5\nPageRank: 0.1111\nPurpose: This configuration defines the development environment for the jaffle_shop data pipeline, routing all data transformations and queries to a local DuckDB database file named \u0027jaffle_shop.duckdb\u0027 with 24 threads for parallel processing. It isolates development work from production by using a file-based storage system, enabling safe and efficient iteration on data models. The setup optimizes local testing and debugging by specifying database type, path, and thread count directly in the pipeline configuration.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "models/orders.sql", "label": "orders.sql", "shape": "dot", "title": "Path: models/orders.sql\nComplexity: 1.0\nPageRank: 0.1111\nPurpose: This code aggregates payment data by order and payment method to create a unified dataset that breaks down the total amount paid for each order into specific payment channels (credit card, coupon, bank transfer, gift card). It joins this aggregated payment information with order details from staging tables, enabling financial analysis such as revenue tracking, payment method distribution, and order reconciliation for business reporting.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "models/customers.sql", "label": "customers.sql", "shape": "dot", "title": "Path: models/customers.sql\nComplexity: 1.0\nPageRank: 0.1111\nPurpose: This code aggregates raw customer, order, and payment data to compute essential customer-centric metrics such as first order date, most recent order date, total number of orders, and customer lifetime value. By joining these aggregates with customer details, it creates a unified customer profile table that supports business analytics, such as customer segmentation, behavior analysis, and lifetime value calculation.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "models/schema.yml", "label": "schema.yml", "shape": "dot", "title": "Path: models/schema.yml\nComplexity: 7.0\nPageRank: 0.1111\nPurpose: This schema configures analytical data models that aggregate customer order metrics (e.g., number_of_orders, total_order_amount) and detail order payment breakdowns (e.g., credit_card_amount, coupon_amount). It enables business intelligence on customer lifetime value, order fulfillment trends, and payment method distribution by structuring transactional data into ready-for-analysis tables.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "models/staging/stg_payments.sql", "label": "stg_payments.sql", "shape": "dot", "title": "Path: models/staging/stg_payments.sql\nComplexity: 1.0\nPageRank: 0.1111\nPurpose: This code standardizes raw payment data for business analytics by renaming the \u0027id\u0027 column to \u0027payment_id\u0027 for clarity and converting the \u0027amount\u0027 from cents to dollars to ensure monetary values are in a consistent unit. This transformation enables accurate financial reporting and analysis downstream.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "models/staging/stg_customers.sql", "label": "stg_customers.sql", "shape": "dot", "title": "Path: models/staging/stg_customers.sql\nComplexity: 1.0\nPageRank: 0.1111\nPurpose: This code standardizes raw customer data by renaming the \u0027id\u0027 column to \u0027customer_id\u0027 and selecting only first and last names, creating a clean and consistent customer attribute dataset. It acts as a foundational transformation in the data pipeline, ensuring downstream analytics and reporting use unified, relevant customer information while discarding unnecessary or raw fields.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "models/staging/schema.yml", "label": "schema.yml", "shape": "dot", "title": "Path: models/staging/schema.yml\nComplexity: 5.0\nPageRank: 0.1111\nPurpose: This configuration defines data quality tests for staging models of customers, orders, and payments to enforce integrity at the data ingestion layer. It specifies that identifiers like customer_id, order_id, and payment_id must be unique and non-null, and that order status and payment method fields are restricted to predefined acceptable values, preventing invalid data from entering downstream analytics or reporting systems.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}, {"borderWidth": 2, "color": "#10b981", "font": {"color": "white"}, "id": "models/staging/stg_orders.sql", "label": "stg_orders.sql", "shape": "dot", "title": "Path: models/staging/stg_orders.sql\nComplexity: 1.0\nPageRank: 0.1111\nPurpose: This code transforms raw order data by renaming columns to more descriptive business terms, specifically mapping \u0027id\u0027 to \u0027order_id\u0027 and \u0027user_id\u0027 to \u0027customer_id\u0027. It serves as a staging step in a data pipeline to standardize column names for downstream analytics or reporting, ensuring consistency and clarity in the data model. The use of dbt\u0027s ref function indicates it integrates with a modular data transformation workflow, pulling from a seed or model named \u0027raw_orders\u0027.\n\ud83d\udc7b DEAD CODE CANDIDATE\n"}]);
+                  edges = new vis.DataSet([]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"physics": {"enabled": false, "stabilization": false}, "interaction": {"hover": true, "navigationButtons": true, "multiselect": true}, "nodes": {"borderWidth": 2, "borderWidthSelected": 4, "shadow": true}, "edges": {"color": {"inherit": true}, "smooth": {"type": "continuous"}, "shadow": true}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

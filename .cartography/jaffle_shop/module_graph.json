@@ -4,417 +4,180 @@
   "graph": {},
   "nodes": [
     {
-      "path": "dbt_project.yml",
-      "language": "yaml",
-      "purpose_statement": "The code defines the configuration for a dbt project named 'jaffle_shop', specifying paths for models, seeds, tests, analysis, and macros, as well as target directories and version requirements. It also sets the materialization strategy for models and staging tables, ensuring efficient data transformation and storage.",
-      "domain_cluster": null,
+      "path": "targets/jaffle_shop/dbt_project.yml",
+      "keys": [
+        "name",
+        "config-version",
+        "version",
+        "profile",
+        "model-paths",
+        "seed-paths",
+        "test-paths",
+        "analysis-paths",
+        "macro-paths",
+        "target-path",
+        "clean-targets",
+        "require-dbt-version",
+        "models",
+        "jaffle_shop",
+        "materialized",
+        "staging"
+      ],
+      "imports": [],
       "complexity_score": 9.0,
-      "change_velocity_30d": 0,
-      "is_dead_code_candidate": false,
-      "docstring": null,
-      "decorators": [],
-      "type_hints": [],
-      "documentation_drift": null,
-      "last_modified": null,
-      "pagerank": 0.03418817447476,
+      "language": "yaml",
+      "pagerank": 0.125,
       "is_hub": false,
       "is_dead_candidate": true,
+      "purpose_statement": "This dbt project configuration establishes the 'jaffle_shop' data transformation pipeline by organizing code into models, seeds, tests, and macros, and defining materialization strategies\u2014core models as persistent tables and staging models as lightweight views\u2014to systematically convert raw data into analytics-ready structures. It manages build artifacts through target path cleaning and enforces dbt version compatibility, ensuring reliable and maintainable data processing for business reporting and analysis.",
       "confidence": 0.95,
       "id": "dbt_project.yml"
     },
     {
-      "path": "models/orders.sql",
-      "language": "sql",
-      "purpose_statement": "This code aggregates payment data by order, breaking down the total amount by payment method (credit card, coupon, bank transfer, gift card) and calculating the overall total for each order. It then joins this payment information with order details to provide a comprehensive view of each order's payment breakdown and total amount.",
-      "domain_cluster": null,
+      "path": "targets/jaffle_shop/models/orders.sql",
+      "imports": [
+        "payment_methods",
+        "order_payments",
+        "order_id",
+        "payment_method",
+        "total_amount",
+        "customer_id",
+        "order_date"
+      ],
+      "ctes": [],
       "complexity_score": 1.0,
-      "change_velocity_30d": 0,
-      "is_dead_code_candidate": false,
-      "docstring": null,
-      "decorators": [],
-      "type_hints": [],
-      "documentation_drift": null,
-      "last_modified": null,
-      "pagerank": 0.03418817447476,
+      "language": "sql",
+      "pagerank": 0.125,
       "is_hub": false,
       "is_dead_candidate": true,
-      "confidence": 0.95,
+      "purpose_statement": "This code aggregates payment transactions by order to create a comprehensive order summary that includes total revenue and breakdowns by specific payment methods (e.g., credit_card, coupon). It enables business analytics by providing clear insights into revenue sources per order, supporting financial reporting, reconciliation, and analysis of payment method usage. The dynamic handling of payment methods ensures the output adapts to changes in payment options without code modifications.",
+      "confidence": 1.0,
       "id": "models/orders.sql"
     },
     {
-      "pagerank": 0.03833947842136,
-      "is_hub": false,
-      "id": "payment_methods"
-    },
-    {
-      "pagerank": 0.03833947842136,
-      "is_hub": false,
-      "id": "order_payments"
-    },
-    {
-      "pagerank": 0.05771223017215999,
-      "is_hub": false,
-      "id": "order_id"
-    },
-    {
-      "pagerank": 0.04802585429675999,
-      "is_hub": false,
-      "id": "payment_method"
-    },
-    {
-      "pagerank": 0.04076107239020999,
-      "is_hub": false,
-      "id": "total_amount"
-    },
-    {
-      "pagerank": 0.05771223017215999,
-      "is_hub": false,
-      "id": "customer_id"
-    },
-    {
-      "pagerank": 0.04802585429675999,
-      "is_hub": false,
-      "id": "order_date"
-    },
-    {
-      "path": "models/customers.sql",
-      "language": "sql",
-      "purpose_statement": "This code aggregates customer data to provide a comprehensive view of customer behavior and value, including their first and most recent order dates, total number of orders, and lifetime value. It serves as a foundation for customer analytics and segmentation, enabling businesses to understand customer purchasing patterns and identify high-value customers.",
-      "domain_cluster": null,
+      "path": "targets/jaffle_shop/models/customers.sql",
+      "imports": [
+        "customer_orders",
+        "customer_id",
+        "order_date",
+        "first_order",
+        "most_recent_order",
+        "order_id",
+        "number_of_orders",
+        "customer_payments",
+        "total_amount",
+        "first_name",
+        "last_name",
+        "customer_lifetime_value"
+      ],
+      "ctes": [],
       "complexity_score": 1.0,
-      "change_velocity_30d": 0,
-      "is_dead_code_candidate": false,
-      "docstring": null,
-      "decorators": [],
-      "type_hints": [],
-      "documentation_drift": null,
-      "last_modified": null,
-      "pagerank": 0.03418817447476,
+      "language": "sql",
+      "pagerank": 0.125,
       "is_hub": false,
       "is_dead_candidate": true,
+      "purpose_statement": "This code aggregates order and payment data per customer to compute key business metrics such as first order date, most recent order date, order count, and customer lifetime value (total payments). It integrates these aggregates with customer demographic details to create a unified customer profile, enabling analysis of customer behavior, value segmentation, and retention strategies for business intelligence and reporting.",
       "confidence": 0.95,
       "id": "models/customers.sql"
     },
     {
-      "pagerank": 0.03660976844361,
-      "is_hub": false,
-      "id": "customer_orders"
-    },
-    {
-      "pagerank": 0.03660976844361,
-      "is_hub": false,
-      "id": "first_order"
-    },
-    {
-      "pagerank": 0.03660976844361,
-      "is_hub": false,
-      "id": "most_recent_order"
-    },
-    {
-      "pagerank": 0.03660976844361,
-      "is_hub": false,
-      "id": "number_of_orders"
-    },
-    {
-      "pagerank": 0.03660976844361,
-      "is_hub": false,
-      "id": "customer_payments"
-    },
-    {
-      "pagerank": 0.046296144319009996,
-      "is_hub": false,
-      "id": "first_name"
-    },
-    {
-      "pagerank": 0.046296144319009996,
-      "is_hub": false,
-      "id": "last_name"
-    },
-    {
-      "pagerank": 0.03660976844361,
-      "is_hub": false,
-      "id": "customer_lifetime_value"
-    },
-    {
-      "path": "models/schema.yml",
-      "language": "yaml",
-      "purpose_statement": "This code defines the structure of two database tables, 'customers' and 'orders', to store and manage customer and order information for a business system. It ensures data integrity and relationships between tables, enabling efficient tracking of customer orders, order statuses, and payment methods.",
-      "domain_cluster": null,
+      "path": "targets/jaffle_shop/models/schema.yml",
+      "keys": [
+        "version",
+        "models",
+        "name",
+        "description",
+        "columns",
+        "tests",
+        "relationships",
+        "to",
+        "field",
+        "accepted_values",
+        "values"
+      ],
+      "imports": [],
       "complexity_score": 6.5,
-      "change_velocity_30d": 0,
-      "is_dead_code_candidate": false,
-      "docstring": null,
-      "decorators": [],
-      "type_hints": [],
-      "documentation_drift": null,
-      "last_modified": null,
-      "pagerank": 0.03418817447476,
+      "language": "yaml",
+      "pagerank": 0.125,
       "is_hub": false,
       "is_dead_candidate": true,
+      "purpose_statement": "This code defines a data model schema that structures raw transactional data into business-ready tables for analytics. It creates a customers table aggregating order history (e.g., first order date, total spend) and an orders table detailing individual transactions with payment method splits, linked via foreign keys to support analysis of customer lifetime value, sales trends, and payment distribution.",
       "confidence": 0.95,
       "id": "models/schema.yml"
     },
     {
-      "path": "models/staging/stg_payments.sql",
-      "language": "sql",
-      "purpose_statement": "The code transforms raw payment data by converting the amount from cents to dollars and renaming columns for clarity, preparing it for further analysis or reporting.",
-      "domain_cluster": null,
+      "path": "targets/jaffle_shop/models/staging/stg_payments.sql",
+      "imports": [
+        "payment_id",
+        "order_id",
+        "payment_method"
+      ],
+      "ctes": [],
       "complexity_score": 1.0,
-      "change_velocity_30d": 0,
-      "is_dead_code_candidate": false,
-      "docstring": null,
-      "decorators": [],
-      "type_hints": [],
-      "documentation_drift": null,
-      "last_modified": null,
-      "pagerank": 0.03418817447476,
+      "language": "sql",
+      "pagerank": 0.125,
       "is_hub": false,
       "is_dead_candidate": true,
-      "confidence": 0.95,
+      "purpose_statement": "This code transforms raw payment data by renaming the 'id' column to 'payment_id' and converting the 'amount' from cents to dollars, standardizing the data for downstream analytics and reporting. It acts as a staging model in a data pipeline, preparing seed data from 'raw_payments' for consistent business intelligence use.",
+      "confidence": 1.0,
       "id": "models/staging/stg_payments.sql"
     },
     {
-      "pagerank": 0.04387455035015999,
-      "is_hub": false,
-      "id": "payment_id"
-    },
-    {
-      "path": "models/staging/stg_customers.sql",
-      "language": "sql",
-      "purpose_statement": "The code transforms raw customer data by selecting specific fields and renaming them for clarity and consistency. It serves to prepare customer information for downstream use in the system, ensuring data is structured and labeled appropriately for business processes.",
-      "domain_cluster": null,
+      "path": "targets/jaffle_shop/models/staging/stg_customers.sql",
+      "imports": [
+        "customer_id",
+        "first_name",
+        "last_name"
+      ],
+      "ctes": [],
       "complexity_score": 1.0,
-      "change_velocity_30d": 0,
-      "is_dead_code_candidate": false,
-      "docstring": null,
-      "decorators": [],
-      "type_hints": [],
-      "documentation_drift": null,
-      "last_modified": null,
-      "pagerank": 0.03418817447476,
+      "language": "sql",
+      "pagerank": 0.125,
       "is_hub": false,
       "is_dead_candidate": true,
+      "purpose_statement": "This code transforms raw customer data by renaming the 'id' column to 'customer_id' and selecting only first_name and last_name fields. It standardizes the customer identifier and reduces the dataset to core attributes, ensuring consistency and efficiency for downstream analytics and reporting. This acts as a cleaning step in the data pipeline to improve data quality and prepare it for further processing.",
       "confidence": 0.95,
       "id": "models/staging/stg_customers.sql"
     },
     {
-      "path": "models/staging/schema.yml",
-      "language": "yaml",
-      "purpose_statement": "This code defines data quality tests for staging tables in a data warehouse, ensuring data integrity and consistency for downstream analytics and reporting.",
-      "domain_cluster": null,
+      "path": "targets/jaffle_shop/models/staging/schema.yml",
+      "keys": [
+        "version",
+        "models",
+        "name",
+        "columns",
+        "tests",
+        "accepted_values",
+        "values"
+      ],
+      "imports": [],
       "complexity_score": 4.5,
-      "change_velocity_30d": 0,
-      "is_dead_code_candidate": false,
-      "docstring": null,
-      "decorators": [],
-      "type_hints": [],
-      "documentation_drift": null,
-      "last_modified": null,
-      "pagerank": 0.03418817447476,
+      "language": "yaml",
+      "pagerank": 0.125,
       "is_hub": false,
       "is_dead_candidate": true,
+      "purpose_statement": "This configuration defines staging data models for key business entities\u2014customers, orders, and payments\u2014and enforces data quality tests like uniqueness, non-null constraints, and accepted value lists on critical columns. It ensures that foundational data entering the pipeline is clean and reliable, supporting accurate analytics, reporting, and operational decisions by preventing invalid or inconsistent data from propagating downstream.",
       "confidence": 0.95,
       "id": "models/staging/schema.yml"
     },
     {
-      "path": "models/staging/stg_orders.sql",
-      "language": "sql",
-      "purpose_statement": "The code transforms raw order data by renaming columns to more meaningful names and selecting specific fields for further processing or analysis.",
-      "domain_cluster": null,
+      "path": "targets/jaffle_shop/models/staging/stg_orders.sql",
+      "imports": [
+        "order_id",
+        "user_id",
+        "customer_id",
+        "order_date"
+      ],
+      "ctes": [],
       "complexity_score": 1.0,
-      "change_velocity_30d": 0,
-      "is_dead_code_candidate": false,
-      "docstring": null,
-      "decorators": [],
-      "type_hints": [],
-      "documentation_drift": null,
-      "last_modified": null,
-      "pagerank": 0.03418817447476,
+      "language": "sql",
+      "pagerank": 0.125,
       "is_hub": false,
       "is_dead_candidate": true,
-      "confidence": 0.95,
+      "purpose_statement": "This code standardizes raw order data by renaming columns to business-friendly terms (e.g., `id` to `order_id`, `user_id` to `customer_id`) and selecting only key attributes like order date and status. It prepares a consistent, analytics-ready dataset for downstream reporting or business intelligence systems, ensuring uniform naming and focused data scope.",
+      "confidence": 1.0,
       "id": "models/staging/stg_orders.sql"
-    },
-    {
-      "pagerank": 0.04145295638131,
-      "is_hub": false,
-      "id": "user_id"
     }
   ],
-  "edges": [
-    {
-      "type": "IMPORTS",
-      "raw_string": "payment_methods",
-      "source": "models/orders.sql",
-      "target": "payment_methods"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "order_payments",
-      "source": "models/orders.sql",
-      "target": "order_payments"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "order_id",
-      "source": "models/orders.sql",
-      "target": "order_id"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "payment_method",
-      "source": "models/orders.sql",
-      "target": "payment_method"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "total_amount",
-      "source": "models/orders.sql",
-      "target": "total_amount"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "customer_id",
-      "source": "models/orders.sql",
-      "target": "customer_id"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "order_date",
-      "source": "models/orders.sql",
-      "target": "order_date"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "customer_orders",
-      "source": "models/customers.sql",
-      "target": "customer_orders"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "customer_id",
-      "source": "models/customers.sql",
-      "target": "customer_id"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "order_date",
-      "source": "models/customers.sql",
-      "target": "order_date"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "first_order",
-      "source": "models/customers.sql",
-      "target": "first_order"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "most_recent_order",
-      "source": "models/customers.sql",
-      "target": "most_recent_order"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "order_id",
-      "source": "models/customers.sql",
-      "target": "order_id"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "number_of_orders",
-      "source": "models/customers.sql",
-      "target": "number_of_orders"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "customer_payments",
-      "source": "models/customers.sql",
-      "target": "customer_payments"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "total_amount",
-      "source": "models/customers.sql",
-      "target": "total_amount"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "first_name",
-      "source": "models/customers.sql",
-      "target": "first_name"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "last_name",
-      "source": "models/customers.sql",
-      "target": "last_name"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "customer_lifetime_value",
-      "source": "models/customers.sql",
-      "target": "customer_lifetime_value"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "payment_id",
-      "source": "models/staging/stg_payments.sql",
-      "target": "payment_id"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "order_id",
-      "source": "models/staging/stg_payments.sql",
-      "target": "order_id"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "payment_method",
-      "source": "models/staging/stg_payments.sql",
-      "target": "payment_method"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "customer_id",
-      "source": "models/staging/stg_customers.sql",
-      "target": "customer_id"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "first_name",
-      "source": "models/staging/stg_customers.sql",
-      "target": "first_name"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "last_name",
-      "source": "models/staging/stg_customers.sql",
-      "target": "last_name"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "order_id",
-      "source": "models/staging/stg_orders.sql",
-      "target": "order_id"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "user_id",
-      "source": "models/staging/stg_orders.sql",
-      "target": "user_id"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "customer_id",
-      "source": "models/staging/stg_orders.sql",
-      "target": "customer_id"
-    },
-    {
-      "type": "IMPORTS",
-      "raw_string": "order_date",
-      "source": "models/staging/stg_orders.sql",
-      "target": "order_date"
-    }
-  ]
+  "edges": []
 }

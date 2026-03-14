@@ -1,0 +1,756 @@
+{
+  "directed": true,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "\nimport pandas as pd\nfrom sklearn.linear_model import LogisticRegression\n\ndf = pd.read_csv('data.csv')\nmodel = LogisticRegression()\nmodel.fit(df, y)\npred = model.predict(test_df)\ndf.to_csv('out.csv')\n"
+    },
+    {
+      "id": "tests/test_hydrologist_ml.py"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "# CODEBASE.md: System Architecture Map\\n\\n"
+    },
+    {
+      "id": "src/agents/archivist.py"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "## 1. Architecture Overview\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "> [!IMPORTANT]\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "> This is a live, queryable map of the system's architecture and data flows.\\n\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "### 1.1 System Map (Mermaid)\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "```mermaid\\ngraph TD\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "f'    \"{u}\" --> \"{v}\"\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "```\\n\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "## 2. Critical Path & Architectural Hubs\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"- **`{hub.get('path', 'external_dependency')}`**: PageRank {hub.get('pagerank', 0):.4f}\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "## 3. Data Sources & Sinks\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "### 3.1 Known Inputs (Sources)\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "f\"- `{s}`\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "No distinct sources identified via static analysis.\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "\\n### 3.2 Known Outputs (Sinks)\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "No distinct sinks identified via static analysis.\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "\\n## 4. Technical Debt & Safety Risks\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "### 4.1 Circular Dependencies\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "> [!WARNING]\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "> Circular imports identified. These can cause silent initialization failures.\\n\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"- `{c.get('path', 'external_dependency')}` (SCC ID: {c.get('scc_id')})\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "\\n### 4.2 Dead Code Candidates\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "> [!NOTE]\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "> Zero detected incoming references. Candidate for removal if not an entry point.\\n\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"- `{d.get('path', 'external_dependency')}`\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "\\n## 5. Recent Change Velocity (90-Day Map)\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "> [!TIP]\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "> High velocity files often indicate areas of high complexity or ongoing refactoring.\\n\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"- `{h.get('path')}`: **{h.get('change_velocity_30d')}** changes in last 30 days\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "\\n## 6. Module Purpose Index\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "f\"### `{path}`\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"**Purpose:** {mod.get('purpose_statement', 'No purpose generated.')}\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "f\"> [!CAUTION]\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"> **Doc Drift!** {drift.get('mismatch_reason')}\\n\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"**Complexity:** {mod.get('complexity_score', 0.0)} | **Domain:** {mod.get('domain_cluster', 'N/A')}\\n\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "\\n## 7. System Statistics\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "f\"Total Modules: {len(nodes)}\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"Total Dependencies: {graph.number_of_edges()}\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "# FDE Day-One Onboarding Brief\\n\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "> This document is synthesized by the Brownfield Cartographer to accelerate FDE onboarding within the first 72 hours.\\n\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "## 1. The Five Day-One Answers\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "f\"### Q{i+1}: {q}\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "f\"{ans}\\n\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "## 2. High-Velocity Hotspots (Maintenance Map)\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"- `{mod['path']}`: **{mod.get('change_velocity_30d', 0)}** changes/30d. (Area of likely technical debt or high feature flux)\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "## 3. High Complexity Risk Modules\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "file",
+      "id": "f\"- `{mod['path']}`: Complexity Score **{mod.get('complexity_score', 0)}**. (Recommended for refactoring or deep-dive testing)\\n"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "user"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "session"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "account"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "verification"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "session_userId_idx"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "account_userId_idx"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "verification_identifier_idx"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "owner": null,
+      "id": "stg_payments"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "result_set"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "TEMPLATE_VAR"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "owner": null,
+      "id": "stg_orders"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "owner": null,
+      "id": "stg_customers"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "owner": null,
+      "id": "customers"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "owner": null,
+      "id": "orders"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "raw_payments"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "raw_customers"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "raw_orders"
+    }
+  ],
+  "edges": [
+    {
+      "type": "PRODUCES",
+      "line": 8,
+      "source": "tests/test_hydrologist_ml.py",
+      "target": "\nimport pandas as pd\nfrom sklearn.linear_model import LogisticRegression\n\ndf = pd.read_csv('data.csv')\nmodel = LogisticRegression()\nmodel.fit(df, y)\npred = model.predict(test_df)\ndf.to_csv('out.csv')\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 26,
+      "source": "src/agents/archivist.py",
+      "target": "# CODEBASE.md: System Architecture Map\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 27,
+      "source": "src/agents/archivist.py",
+      "target": "## 1. Architecture Overview\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 172,
+      "source": "src/agents/archivist.py",
+      "target": "> [!IMPORTANT]\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 30,
+      "source": "src/agents/archivist.py",
+      "target": "> This is a live, queryable map of the system's architecture and data flows.\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 32,
+      "source": "src/agents/archivist.py",
+      "target": "### 1.1 System Map (Mermaid)\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 33,
+      "source": "src/agents/archivist.py",
+      "target": "```mermaid\\ngraph TD\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 36,
+      "source": "src/agents/archivist.py",
+      "target": "f'    \"{u}\" --> \"{v}\"\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 37,
+      "source": "src/agents/archivist.py",
+      "target": "```\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 39,
+      "source": "src/agents/archivist.py",
+      "target": "## 2. Critical Path & Architectural Hubs\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 42,
+      "source": "src/agents/archivist.py",
+      "target": "f\"- **`{hub.get('path', 'external_dependency')}`**: PageRank {hub.get('pagerank', 0):.4f}\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 195,
+      "source": "src/agents/archivist.py",
+      "target": "\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 45,
+      "source": "src/agents/archivist.py",
+      "target": "## 3. Data Sources & Sinks\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 51,
+      "source": "src/agents/archivist.py",
+      "target": "### 3.1 Known Inputs (Sources)\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 56,
+      "source": "src/agents/archivist.py",
+      "target": "f\"- `{s}`\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 53,
+      "source": "src/agents/archivist.py",
+      "target": "No distinct sources identified via static analysis.\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 55,
+      "source": "src/agents/archivist.py",
+      "target": "\\n### 3.2 Known Outputs (Sinks)\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 57,
+      "source": "src/agents/archivist.py",
+      "target": "No distinct sinks identified via static analysis.\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 59,
+      "source": "src/agents/archivist.py",
+      "target": "\\n## 4. Technical Debt & Safety Risks\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 62,
+      "source": "src/agents/archivist.py",
+      "target": "### 4.1 Circular Dependencies\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 63,
+      "source": "src/agents/archivist.py",
+      "target": "> [!WARNING]\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 64,
+      "source": "src/agents/archivist.py",
+      "target": "> Circular imports identified. These can cause silent initialization failures.\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 66,
+      "source": "src/agents/archivist.py",
+      "target": "f\"- `{c.get('path', 'external_dependency')}` (SCC ID: {c.get('scc_id')})\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 70,
+      "source": "src/agents/archivist.py",
+      "target": "\\n### 4.2 Dead Code Candidates\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 71,
+      "source": "src/agents/archivist.py",
+      "target": "> [!NOTE]\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 72,
+      "source": "src/agents/archivist.py",
+      "target": "> Zero detected incoming references. Candidate for removal if not an entry point.\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 74,
+      "source": "src/agents/archivist.py",
+      "target": "f\"- `{d.get('path', 'external_dependency')}`\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 76,
+      "source": "src/agents/archivist.py",
+      "target": "\\n## 5. Recent Change Velocity (90-Day Map)\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 77,
+      "source": "src/agents/archivist.py",
+      "target": "> [!TIP]\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 78,
+      "source": "src/agents/archivist.py",
+      "target": "> High velocity files often indicate areas of high complexity or ongoing refactoring.\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 82,
+      "source": "src/agents/archivist.py",
+      "target": "f\"- `{h.get('path')}`: **{h.get('change_velocity_30d')}** changes in last 30 days\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 84,
+      "source": "src/agents/archivist.py",
+      "target": "\\n## 6. Module Purpose Index\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 88,
+      "source": "src/agents/archivist.py",
+      "target": "f\"### `{path}`\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 89,
+      "source": "src/agents/archivist.py",
+      "target": "f\"**Purpose:** {mod.get('purpose_statement', 'No purpose generated.')}\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 93,
+      "source": "src/agents/archivist.py",
+      "target": "f\"> [!CAUTION]\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 94,
+      "source": "src/agents/archivist.py",
+      "target": "f\"> **Doc Drift!** {drift.get('mismatch_reason')}\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 96,
+      "source": "src/agents/archivist.py",
+      "target": "f\"**Complexity:** {mod.get('complexity_score', 0.0)} | **Domain:** {mod.get('domain_cluster', 'N/A')}\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 98,
+      "source": "src/agents/archivist.py",
+      "target": "\\n## 7. System Statistics\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 99,
+      "source": "src/agents/archivist.py",
+      "target": "f\"Total Modules: {len(nodes)}\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 100,
+      "source": "src/agents/archivist.py",
+      "target": "f\"Total Dependencies: {graph.number_of_edges()}\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 171,
+      "source": "src/agents/archivist.py",
+      "target": "# FDE Day-One Onboarding Brief\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 173,
+      "source": "src/agents/archivist.py",
+      "target": "> This document is synthesized by the Brownfield Cartographer to accelerate FDE onboarding within the first 72 hours.\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 175,
+      "source": "src/agents/archivist.py",
+      "target": "## 1. The Five Day-One Answers\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 187,
+      "source": "src/agents/archivist.py",
+      "target": "f\"### Q{i+1}: {q}\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 188,
+      "source": "src/agents/archivist.py",
+      "target": "f\"{ans}\\n\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 190,
+      "source": "src/agents/archivist.py",
+      "target": "## 2. High-Velocity Hotspots (Maintenance Map)\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 194,
+      "source": "src/agents/archivist.py",
+      "target": "f\"- `{mod['path']}`: **{mod.get('change_velocity_30d', 0)}** changes/30d. (Area of likely technical debt or high feature flux)\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 197,
+      "source": "src/agents/archivist.py",
+      "target": "## 3. High Complexity Risk Modules\\n"
+    },
+    {
+      "type": "PRODUCES",
+      "line": 200,
+      "source": "src/agents/archivist.py",
+      "target": "f\"- `{mod['path']}`: Complexity Score **{mod.get('complexity_score', 0)}**. (Recommended for refactoring or deep-dive testing)\\n"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "targets/better-auth/packages/cli/test/__snapshots__/migrations.sql",
+      "transformation_type": "SQL",
+      "source": "user",
+      "target": "user"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "targets/better-auth/packages/cli/test/__snapshots__/migrations.sql",
+      "transformation_type": "SQL",
+      "source": "user",
+      "target": "session"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "targets/better-auth/packages/cli/test/__snapshots__/migrations.sql",
+      "transformation_type": "SQL",
+      "source": "user",
+      "target": "account"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "targets/better-auth/packages/cli/test/__snapshots__/migrations.sql",
+      "transformation_type": "SQL",
+      "source": "session",
+      "target": "session"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "targets/better-auth/packages/cli/test/__snapshots__/migrations.sql",
+      "transformation_type": "SQL",
+      "source": "session",
+      "target": "session_userId_idx"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "targets/better-auth/packages/cli/test/__snapshots__/migrations.sql",
+      "transformation_type": "SQL",
+      "source": "account",
+      "target": "account"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "targets/better-auth/packages/cli/test/__snapshots__/migrations.sql",
+      "transformation_type": "SQL",
+      "source": "account",
+      "target": "account_userId_idx"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "targets/better-auth/packages/cli/test/__snapshots__/migrations.sql",
+      "transformation_type": "SQL",
+      "source": "verification",
+      "target": "verification"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "targets/better-auth/packages/cli/test/__snapshots__/migrations.sql",
+      "transformation_type": "SQL",
+      "source": "verification",
+      "target": "verification_identifier_idx"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "targets/jaffle_shop/models/customers.sql",
+      "transformation_type": "SQL",
+      "source": "stg_payments",
+      "target": "result_set"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "targets/jaffle_shop/models/staging/stg_orders.sql",
+      "transformation_type": "SQL",
+      "source": "TEMPLATE_VAR",
+      "target": "result_set"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "targets/jaffle_shop/models/customers.sql",
+      "transformation_type": "SQL",
+      "source": "stg_orders",
+      "target": "result_set"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "targets/jaffle_shop/models/customers.sql",
+      "transformation_type": "SQL",
+      "source": "stg_customers",
+      "target": "result_set"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "targets/jaffle_shop/models/staging/stg_payments.sql",
+      "transformation_type": "SQL",
+      "source": "raw_payments",
+      "target": "result_set"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "targets/jaffle_shop/models/staging/stg_customers.sql",
+      "transformation_type": "SQL",
+      "source": "raw_customers",
+      "target": "result_set"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "targets/jaffle_shop/models/staging/stg_orders.sql",
+      "transformation_type": "SQL",
+      "source": "raw_orders",
+      "target": "result_set"
+    }
+  ]
+}

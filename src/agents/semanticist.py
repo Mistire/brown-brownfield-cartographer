@@ -10,15 +10,41 @@ from models.graph import ModuleNode
 
 class ContextWindowBudget:
     """Tracks token usage and cost for LLM operations."""
-    def __init__(self):
+    # Rough pricing per 1M tokens (USD)
+    PRICING = {
+        "qwen/qwen-2.5-72b-instruct:free": (0.0, 0.0),
+        "anthropic/claude-3-haiku": (0.25, 1.25),
+        "anthropic/claude-3-sonnet": (3.0, 15.0),
+        "google/gemini-flash-1.5": (0.1, 0.4),
+        "openai/gpt-4o-mini": (0.15, 0.6),
+    }
+
+    def __init__(self, model_name: str = "qwen/qwen-2.5-72b-instruct:free"):
+        self.model_name = model_name
         self.total_prompt_tokens = 0
         self.total_completion_tokens = 0
         self.total_cost = 0.0
 
     def record(self, response: Any):
         if hasattr(response, 'usage_metadata'):
-             self.total_prompt_tokens += response.usage_metadata.get('prompt_tokens', 0)
-             self.total_completion_tokens += response.usage_metadata.get('completion_tokens', 0)
+             p_tokens = response.usage_metadata.get('prompt_tokens', 0)
+             c_tokens = response.usage_metadata.get('completion_tokens', 0)
+             self.total_prompt_tokens += p_tokens
+             self.total_completion_tokens += c_tokens
+             
+             # Calculate cost
+             p_rate, c_rate = self.PRICING.get(self.model_name, (0.01, 0.03)) # Fallback tiny rate
+             self.total_cost += (p_tokens / 1_000_000) * p_rate
+             self.total_cost += (c_tokens / 1_000_000) * c_rate
+
+    def get_summary(self) -> Dict[str, Any]:
+        return {
+            "model": self.model_name,
+            "prompt_tokens": self.total_prompt_tokens,
+            "completion_tokens": self.total_completion_tokens,
+            "total_tokens": self.total_prompt_tokens + self.total_completion_tokens,
+            "estimated_cost_usd": float(f"{self.total_cost:.6f}")
+        }
 
 class Semanticist:
     """
@@ -44,9 +70,9 @@ class Semanticist:
     def enabled(self) -> bool:
         return self.llm is not None
 
-    async def generate_purpose(self, code: str) -> str:
+    async def generate_purpose(self, code: str) -> tuple[str, float]:
         if not self.llm:
-            return "LLM Analysis Disabled"
+            return "LLM Analysis Disabled", 0.0
             
         @retry(stop=stop_after_attempt(3))
         async def _invoke():
@@ -141,9 +167,9 @@ class Semanticist:
     async def cluster_into_domains(self, nodes: List[Dict[str, Any]]) -> Dict[str, List[str]]:
         """Uses LLM to categorize modules into domains (ingestion, core, etc)."""
         if not self.llm:
-            return {"unclassified": [m.get("path") for m in nodes]}
+            return {"unclassified": [str(m.get("path", "")) for m in nodes]}
             
-        paths = [m.get("path") for m in nodes if m.get("path")]
+        paths = [str(m.get("path", "")) for m in nodes if m.get("path")]
         
         prompt = f"""
         Categorize these file paths into high-level business domains (e.g., 'ingestion', 'transformation', 'infra', 'logic').
@@ -157,6 +183,36 @@ class Semanticist:
             text = response.content.strip()
             if "```json" in text:
                 text = text.split("```json")[1].split("```")[0].strip()
-            return json.loads(text)
+            data = json.loads(text)
+            # Ensure all values are list of strings
+            return {k: [str(v) for v in vs] for k, vs in data.items()}
         except:
             return {"unclassified": paths}
+
+    async def get_embeddings(self, text: str) -> List[float]:
+        """Generates embeddings for a given text using the LLM's embedding model if available."""
+        # For OpenRouter, we might need a specific embedding model or use a generic one.
+        # However, since we are using langchain-openai, we can leverage their embedding interface
+        # if the provider supports it. For now, we'll use a mocked/simpler approach or 
+        # a dedicated embedding model if configured.
+        
+        # NOTE: OpenRouter doesn't always support /embeddings in the same way.
+        # A more robust FDE approach is to use a local or standard embedding model.
+        # For this challenge, we'll try to use the OpenAI compatible embeddings if provided.
+        
+        if not self.api_key:
+            return []
+
+        from langchain_openai import OpenAIEmbeddings
+        try:
+            embeddings = OpenAIEmbeddings(
+                model="text-embedding-3-small", # Default choice
+                openai_api_key=self.api_key,
+                openai_api_base=os.getenv("OPENROUTER_API_BASE", "https://openrouter.ai/api/v1")
+            )
+            return await embeddings.aembed_query(text)
+        except Exception as e:
+            print(f"Embedding failed: {e}")
+            # Fallback: return a zero vector of standard size (1536) for consistency
+            import numpy as np
+            return np.zeros(1536).tolist()

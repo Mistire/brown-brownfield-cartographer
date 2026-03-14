@@ -1,0 +1,113 @@
+{
+  "directed": true,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "owner": null,
+      "id": "stg_orders"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "result_set"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "TEMPLATE_VAR"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "owner": null,
+      "id": "stg_payments"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "owner": null,
+      "id": "stg_customers"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "owner": null,
+      "id": "customers"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "owner": null,
+      "id": "orders"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "raw_payments"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "raw_customers"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "id": "raw_orders"
+    }
+  ],
+  "edges": [
+    {
+      "type": "LINEAGE",
+      "source_file": "models/customers.sql",
+      "transformation_type": "SQL",
+      "source": "stg_orders",
+      "target": "result_set"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "models/staging/stg_orders.sql",
+      "transformation_type": "SQL",
+      "source": "TEMPLATE_VAR",
+      "target": "result_set"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "models/customers.sql",
+      "transformation_type": "SQL",
+      "source": "stg_payments",
+      "target": "result_set"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "models/customers.sql",
+      "transformation_type": "SQL",
+      "source": "stg_customers",
+      "target": "result_set"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "models/staging/stg_payments.sql",
+      "transformation_type": "SQL",
+      "source": "raw_payments",
+      "target": "result_set"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "models/staging/stg_customers.sql",
+      "transformation_type": "SQL",
+      "source": "raw_customers",
+      "target": "result_set"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "models/staging/stg_orders.sql",
+      "transformation_type": "SQL",
+      "source": "raw_orders",
+      "target": "result_set"
+    }
+  ]
+}

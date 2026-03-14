@@ -1,160 +1,79 @@
 # CODEBASE.md: System Architecture Map
 
 ## 1. Architecture Overview
-Generated on: 2026-03-13 13:33
+Generated on: 2026-03-14 23:30
+
+> [!IMPORTANT]
+> This is a live, queryable map of the system's architecture and data flows.
 
 ### 1.1 System Map (Mermaid)
 ```mermaid
 graph TD
-    "models/orders.sql" --> "payment_methods"
-    "models/orders.sql" --> "order_payments"
-    "models/orders.sql" --> "order_id"
-    "models/orders.sql" --> "payment_method"
-    "models/orders.sql" --> "total_amount"
-    "models/orders.sql" --> "customer_id"
-    "models/orders.sql" --> "order_date"
-    "models/customers.sql" --> "customer_orders"
-    "models/customers.sql" --> "customer_id"
-    "models/customers.sql" --> "order_date"
-    "models/customers.sql" --> "first_order"
-    "models/customers.sql" --> "most_recent_order"
-    "models/customers.sql" --> "order_id"
-    "models/customers.sql" --> "number_of_orders"
-    "models/customers.sql" --> "customer_payments"
-    "models/customers.sql" --> "total_amount"
-    "models/customers.sql" --> "first_name"
-    "models/customers.sql" --> "last_name"
-    "models/customers.sql" --> "customer_lifetime_value"
-    "models/staging/stg_payments.sql" --> "payment_id"
-    "models/staging/stg_payments.sql" --> "order_id"
-    "models/staging/stg_payments.sql" --> "payment_method"
-    "models/staging/stg_customers.sql" --> "customer_id"
-    "models/staging/stg_customers.sql" --> "first_name"
-    "models/staging/stg_customers.sql" --> "last_name"
-    "models/staging/stg_orders.sql" --> "order_id"
-    "models/staging/stg_orders.sql" --> "user_id"
-    "models/staging/stg_orders.sql" --> "customer_id"
-    "models/staging/stg_orders.sql" --> "order_date"
 ```
 
-## 2. Critical Architectural Hubs (PageRank)
+## 2. Critical Path & Architectural Hubs
 
-## 3. Architectural Debt & Risks
+## 3. Data Sources & Sinks
+### 3.1 Known Inputs (Sources)
+No distinct sources identified via static analysis.
 
-### 3.2 Dead Code Candidates
+### 3.2 Known Outputs (Sinks)
+No distinct sinks identified via static analysis.
+
+## 4. Technical Debt & Safety Risks
+
+### 4.2 Dead Code Candidates
 > [!NOTE]
-> These modules have zero in-degree (no detected imports). Verify if they are entry points or unused.
+> Zero detected incoming references. Candidate for removal if not an entry point.
 
-- `dbt_project.yml`
-- `models/orders.sql`
-- `models/customers.sql`
-- `models/schema.yml`
-- `models/staging/stg_payments.sql`
-- `models/staging/stg_customers.sql`
-- `models/staging/schema.yml`
-- `models/staging/stg_orders.sql`
+- `targets/jaffle_shop/dbt_project.yml`
+- `targets/jaffle_shop/models/orders.sql`
+- `targets/jaffle_shop/models/customers.sql`
+- `targets/jaffle_shop/models/schema.yml`
+- `targets/jaffle_shop/models/staging/stg_payments.sql`
+- `targets/jaffle_shop/models/staging/stg_customers.sql`
+- `targets/jaffle_shop/models/staging/schema.yml`
+- `targets/jaffle_shop/models/staging/stg_orders.sql`
 
-## 4. Module Purpose Index
-### `dbt_project.yml`
-**Purpose:** The code defines the configuration for a dbt project named 'jaffle_shop', specifying paths for models, seeds, tests, analysis, and macros, as well as target directories and version requirements. It also sets the materialization strategy for models and staging tables, ensuring efficient data transformation and storage.
-**Complexity:** 9.0 | **Velocity:** 0 changes/30d
+## 5. Recent Change Velocity (90-Day Map)
+> [!TIP]
+> High velocity files often indicate areas of high complexity or ongoing refactoring.
 
-### `models/orders.sql`
-**Purpose:** This code aggregates payment data by order, breaking down the total amount by payment method (credit card, coupon, bank transfer, gift card) and calculating the overall total for each order. It then joins this payment information with order details to provide a comprehensive view of each order's payment breakdown and total amount.
-**Complexity:** 1.0 | **Velocity:** 0 changes/30d
 
-### `external_dependency`
-**Purpose:** No purpose generated.
-**Complexity:** 0.0 | **Velocity:** 0 changes/30d
+## 6. Module Purpose Index
+### `targets/jaffle_shop/dbt_project.yml`
+**Purpose:** This dbt project configuration establishes the 'jaffle_shop' data transformation pipeline by organizing code into models, seeds, tests, and macros, and defining materialization strategies—core models as persistent tables and staging models as lightweight views—to systematically convert raw data into analytics-ready structures. It manages build artifacts through target path cleaning and enforces dbt version compatibility, ensuring reliable and maintainable data processing for business reporting and analysis.
+**Complexity:** 9.0 | **Domain:** N/A
 
-### `external_dependency`
-**Purpose:** No purpose generated.
-**Complexity:** 0.0 | **Velocity:** 0 changes/30d
+### `targets/jaffle_shop/models/orders.sql`
+**Purpose:** This code aggregates payment transactions by order to create a comprehensive order summary that includes total revenue and breakdowns by specific payment methods (e.g., credit_card, coupon). It enables business analytics by providing clear insights into revenue sources per order, supporting financial reporting, reconciliation, and analysis of payment method usage. The dynamic handling of payment methods ensures the output adapts to changes in payment options without code modifications.
+**Complexity:** 1.0 | **Domain:** N/A
 
-### `external_dependency`
-**Purpose:** No purpose generated.
-**Complexity:** 0.0 | **Velocity:** 0 changes/30d
+### `targets/jaffle_shop/models/customers.sql`
+**Purpose:** This code aggregates order and payment data per customer to compute key business metrics such as first order date, most recent order date, order count, and customer lifetime value (total payments). It integrates these aggregates with customer demographic details to create a unified customer profile, enabling analysis of customer behavior, value segmentation, and retention strategies for business intelligence and reporting.
+**Complexity:** 1.0 | **Domain:** N/A
 
-### `external_dependency`
-**Purpose:** No purpose generated.
-**Complexity:** 0.0 | **Velocity:** 0 changes/30d
+### `targets/jaffle_shop/models/schema.yml`
+**Purpose:** This code defines a data model schema that structures raw transactional data into business-ready tables for analytics. It creates a customers table aggregating order history (e.g., first order date, total spend) and an orders table detailing individual transactions with payment method splits, linked via foreign keys to support analysis of customer lifetime value, sales trends, and payment distribution.
+**Complexity:** 6.5 | **Domain:** N/A
 
-### `external_dependency`
-**Purpose:** No purpose generated.
-**Complexity:** 0.0 | **Velocity:** 0 changes/30d
+### `targets/jaffle_shop/models/staging/stg_payments.sql`
+**Purpose:** This code transforms raw payment data by renaming the 'id' column to 'payment_id' and converting the 'amount' from cents to dollars, standardizing the data for downstream analytics and reporting. It acts as a staging model in a data pipeline, preparing seed data from 'raw_payments' for consistent business intelligence use.
+**Complexity:** 1.0 | **Domain:** N/A
 
-### `external_dependency`
-**Purpose:** No purpose generated.
-**Complexity:** 0.0 | **Velocity:** 0 changes/30d
+### `targets/jaffle_shop/models/staging/stg_customers.sql`
+**Purpose:** This code transforms raw customer data by renaming the 'id' column to 'customer_id' and selecting only first_name and last_name fields. It standardizes the customer identifier and reduces the dataset to core attributes, ensuring consistency and efficiency for downstream analytics and reporting. This acts as a cleaning step in the data pipeline to improve data quality and prepare it for further processing.
+**Complexity:** 1.0 | **Domain:** N/A
 
-### `external_dependency`
-**Purpose:** No purpose generated.
-**Complexity:** 0.0 | **Velocity:** 0 changes/30d
+### `targets/jaffle_shop/models/staging/schema.yml`
+**Purpose:** This configuration defines staging data models for key business entities—customers, orders, and payments—and enforces data quality tests like uniqueness, non-null constraints, and accepted value lists on critical columns. It ensures that foundational data entering the pipeline is clean and reliable, supporting accurate analytics, reporting, and operational decisions by preventing invalid or inconsistent data from propagating downstream.
+**Complexity:** 4.5 | **Domain:** N/A
 
-### `models/customers.sql`
-**Purpose:** This code aggregates customer data to provide a comprehensive view of customer behavior and value, including their first and most recent order dates, total number of orders, and lifetime value. It serves as a foundation for customer analytics and segmentation, enabling businesses to understand customer purchasing patterns and identify high-value customers.
-**Complexity:** 1.0 | **Velocity:** 0 changes/30d
+### `targets/jaffle_shop/models/staging/stg_orders.sql`
+**Purpose:** This code standardizes raw order data by renaming columns to business-friendly terms (e.g., `id` to `order_id`, `user_id` to `customer_id`) and selecting only key attributes like order date and status. It prepares a consistent, analytics-ready dataset for downstream reporting or business intelligence systems, ensuring uniform naming and focused data scope.
+**Complexity:** 1.0 | **Domain:** N/A
 
-### `external_dependency`
-**Purpose:** No purpose generated.
-**Complexity:** 0.0 | **Velocity:** 0 changes/30d
 
-### `external_dependency`
-**Purpose:** No purpose generated.
-**Complexity:** 0.0 | **Velocity:** 0 changes/30d
-
-### `external_dependency`
-**Purpose:** No purpose generated.
-**Complexity:** 0.0 | **Velocity:** 0 changes/30d
-
-### `external_dependency`
-**Purpose:** No purpose generated.
-**Complexity:** 0.0 | **Velocity:** 0 changes/30d
-
-### `external_dependency`
-**Purpose:** No purpose generated.
-**Complexity:** 0.0 | **Velocity:** 0 changes/30d
-
-### `external_dependency`
-**Purpose:** No purpose generated.
-**Complexity:** 0.0 | **Velocity:** 0 changes/30d
-
-### `external_dependency`
-**Purpose:** No purpose generated.
-**Complexity:** 0.0 | **Velocity:** 0 changes/30d
-
-### `external_dependency`
-**Purpose:** No purpose generated.
-**Complexity:** 0.0 | **Velocity:** 0 changes/30d
-
-### `models/schema.yml`
-**Purpose:** This code defines the structure of two database tables, 'customers' and 'orders', to store and manage customer and order information for a business system. It ensures data integrity and relationships between tables, enabling efficient tracking of customer orders, order statuses, and payment methods.
-**Complexity:** 6.5 | **Velocity:** 0 changes/30d
-
-### `models/staging/stg_payments.sql`
-**Purpose:** The code transforms raw payment data by converting the amount from cents to dollars and renaming columns for clarity, preparing it for further analysis or reporting.
-**Complexity:** 1.0 | **Velocity:** 0 changes/30d
-
-### `external_dependency`
-**Purpose:** No purpose generated.
-**Complexity:** 0.0 | **Velocity:** 0 changes/30d
-
-### `models/staging/stg_customers.sql`
-**Purpose:** The code transforms raw customer data by selecting specific fields and renaming them for clarity and consistency. It serves to prepare customer information for downstream use in the system, ensuring data is structured and labeled appropriately for business processes.
-**Complexity:** 1.0 | **Velocity:** 0 changes/30d
-
-### `models/staging/schema.yml`
-**Purpose:** This code defines data quality tests for staging tables in a data warehouse, ensuring data integrity and consistency for downstream analytics and reporting.
-**Complexity:** 4.5 | **Velocity:** 0 changes/30d
-
-### `models/staging/stg_orders.sql`
-**Purpose:** The code transforms raw order data by renaming columns to more meaningful names and selecting specific fields for further processing or analysis.
-**Complexity:** 1.0 | **Velocity:** 0 changes/30d
-
-### `external_dependency`
-**Purpose:** No purpose generated.
-**Complexity:** 0.0 | **Velocity:** 0 changes/30d
-
-## 5. System Statistics
-Total Modules: 25
-Total Dependencies: 29
+## 7. System Statistics
+Total Modules: 8
+Total Dependencies: 0

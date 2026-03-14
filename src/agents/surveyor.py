@@ -39,7 +39,7 @@ class Surveyor:
         self.resolver = PathResolver(repo_path)
         self.graph = graph if graph is not None else nx.DiGraph()
 
-    def run(self, files_to_scan: Optional[List[str]] = None):
+    def run(self, files_to_scan: Optional[List[str]] = None, on_progress: Optional[callable] = None):
         """
         Executes the survey phase. If files_to_scan is provided, only those are analyzed (incremental mode).
         """
@@ -53,7 +53,7 @@ class Surveyor:
             total_files = 0
             iterate_over = []
             for root, _, files in os.walk(self.repo_path):
-                if any(d in root for d in [".git", ".venv", "__pycache__", ".cartography"]): continue
+                if any(d in root for d in [".git", ".venv", "__pycache__", ".cartography", "node_modules", "dist", "build", ".next", ".dbt"]): continue
                 for f in files:
                     if f.endswith((".py", ".sql", ".yaml", ".yml", ".ipynb")):
                         total_files += 1
@@ -66,6 +66,9 @@ class Surveyor:
             rel_path = os.path.relpath(full_path, self.repo_path)
             processed_count += 1
             
+            if on_progress:
+                on_progress("surveyor_progress", f"[{processed_count}/{total_files}] Surveying {rel_path}...")
+
             if processed_count % 10 == 0 or processed_count == total_files:
                 print(f"[{processed_count}/{total_files}] Surveying {rel_path}...")
 

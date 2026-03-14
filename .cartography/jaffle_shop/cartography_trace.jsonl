@@ -1,69 +1,9 @@
-{"timestamp": "2026-03-13T10:40:20.118047", "action": "surveyor_start", "repo": "targets/jaffle_shop", "incremental": false}
-{"timestamp": "2026-03-13T10:40:20.386969", "action": "hydrologist_start"}
-{"timestamp": "2026-03-13T10:40:20.850778", "action": "semanticist_start", "enabled": false}
-{"timestamp": "2026-03-13T10:40:20.881401", "action": "pipeline_complete", "artifacts_dir": ".cartography/jaffle_shop"}
-{"timestamp": "2026-03-13T11:50:44.867493", "action": "surveyor_start", "repo": "targets/jaffle_shop", "incremental": false}
-{"timestamp": "2026-03-13T11:50:45.072817", "action": "hydrologist_start"}
-{"timestamp": "2026-03-13T11:50:45.594703", "action": "semanticist_start", "enabled": false}
-{"timestamp": "2026-03-13T11:50:45.628495", "action": "pipeline_complete", "artifacts_dir": ".cartography/jaffle_shop", "token_usage": {"prompt": 0, "completion": 0, "model": "qwen/qwen-2.5-72b-instruct:free"}}
-{"timestamp": "2026-03-13T11:51:21.646142", "action": "navigator_query", "query": "What is the blast radius of models/staging/stg_orders.sql?"}
-{"timestamp": "2026-03-13T11:51:21.656187", "action": "navigator_response", "response_teaser": "LLM is disabled. I cannot navigate the codebase."}
-{"timestamp": "2026-03-13T12:13:28.068556", "action": "surveyor_start", "repo": "targets/jaffle_shop", "incremental": false}
-{"timestamp": "2026-03-13T12:13:28.303233", "action": "hydrologist_start"}
-{"timestamp": "2026-03-13T12:13:28.805280", "action": "semanticist_start", "enabled": false}
-{"timestamp": "2026-03-13T12:13:28.841782", "action": "pipeline_complete", "artifacts_dir": ".cartography/jaffle_shop", "token_usage": {"prompt": 0, "completion": 0, "model": "qwen/qwen-2.5-72b-instruct:free"}}
-{"timestamp": "2026-03-13T12:37:40.926277", "action": "surveyor_start", "repo": "targets/jaffle_shop", "incremental": false}
-{"timestamp": "2026-03-13T12:37:41.154269", "action": "hydrologist_start"}
-{"timestamp": "2026-03-13T12:37:41.550990", "action": "semanticist_start", "enabled": false}
-{"timestamp": "2026-03-13T12:37:41.589670", "action": "pipeline_complete", "artifacts_dir": ".cartography/jaffle_shop", "token_usage": {"prompt": 0, "completion": 0, "model": "qwen/qwen-2.5-72b-instruct:free"}}
-{"timestamp": "2026-03-13T12:45:47.043975", "action": "surveyor_start", "repo": "targets/jaffle_shop", "incremental": false}
-{"timestamp": "2026-03-13T12:45:47.276610", "action": "hydrologist_start"}
-{"timestamp": "2026-03-13T12:45:47.756116", "action": "semanticist_start", "enabled": true}
-{"timestamp": "2026-03-13T12:45:49.082416", "action": "semantic_analysis", "node": "dbt_project.yml", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T12:45:49.691386", "action": "semantic_analysis", "node": "models/orders.sql", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T12:45:50.287758", "action": "semantic_analysis", "node": "models/customers.sql", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T12:45:50.920129", "action": "semantic_analysis", "node": "models/schema.yml", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T12:45:51.517543", "action": "semantic_analysis", "node": "models/staging/stg_payments.sql", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T12:45:52.117283", "action": "semantic_analysis", "node": "models/staging/stg_customers.sql", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T12:45:52.715722", "action": "semantic_analysis", "node": "models/staging/schema.yml", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T12:45:53.318259", "action": "semantic_analysis", "node": "models/staging/stg_orders.sql", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T12:45:53.745412", "action": "pipeline_complete", "artifacts_dir": ".cartography/jaffle_shop", "token_usage": {"prompt": 0, "completion": 0, "model": "openai/gpt-oss-20b:free"}}
-{"timestamp": "2026-03-13T12:54:33.035624", "action": "surveyor_start", "repo": "targets/jaffle_shop", "incremental": false}
-{"timestamp": "2026-03-13T12:54:33.355200", "action": "hydrologist_start"}
-{"timestamp": "2026-03-13T12:54:33.968631", "action": "semanticist_start", "enabled": true}
-{"timestamp": "2026-03-13T12:54:36.465909", "action": "semantic_analysis", "node": "dbt_project.yml", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T12:54:37.112227", "action": "semantic_analysis", "node": "models/orders.sql", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T12:54:37.729054", "action": "semantic_analysis", "node": "models/customers.sql", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T12:54:38.342509", "action": "semantic_analysis", "node": "models/schema.yml", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T12:54:38.958631", "action": "semantic_analysis", "node": "models/staging/stg_payments.sql", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T12:54:39.576037", "action": "semantic_analysis", "node": "models/staging/stg_customers.sql", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T12:54:40.191439", "action": "semantic_analysis", "node": "models/staging/schema.yml", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T12:54:40.799037", "action": "semantic_analysis", "node": "models/staging/stg_orders.sql", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T12:54:41.253268", "action": "pipeline_complete", "artifacts_dir": ".cartography/jaffle_shop", "token_usage": {"prompt": 0, "completion": 0, "model": "openai/gpt-oss-20b:free"}}
-{"timestamp": "2026-03-13T13:10:27.208723", "action": "surveyor_start", "repo": "targets/jaffle_shop", "incremental": false}
-{"timestamp": "2026-03-13T13:10:27.423257", "action": "hydrologist_start"}
-{"timestamp": "2026-03-13T13:10:27.779932", "action": "semanticist_start", "enabled": true}
-{"timestamp": "2026-03-13T13:10:35.798758", "action": "semantic_analysis", "node": "dbt_project.yml", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T13:10:42.720319", "action": "semantic_analysis", "node": "models/orders.sql", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T13:10:48.673556", "action": "semantic_analysis", "node": "models/customers.sql", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T13:10:52.039388", "action": "surveyor_start", "repo": "targets/jaffle_shop", "incremental": false}
-{"timestamp": "2026-03-13T13:10:52.251570", "action": "hydrologist_start"}
-{"timestamp": "2026-03-13T13:10:52.608425", "action": "semanticist_start", "enabled": true}
-{"timestamp": "2026-03-13T13:10:54.477090", "action": "semantic_analysis", "node": "models/schema.yml", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T13:11:00.330574", "action": "semantic_analysis", "node": "models/staging/stg_payments.sql", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T13:11:05.786017", "action": "semantic_analysis", "node": "models/staging/stg_customers.sql", "confidence": 0.0, "drift_metrics": null}
-{"timestamp": "2026-03-13T13:11:10.826334", "action": "semantic_analysis", "node": "models/staging/schema.yml", "confidence": 0.95, "drift_metrics": null}
-{"timestamp": "2026-03-13T13:11:13.956519", "action": "semantic_analysis", "node": "models/staging/stg_orders.sql", "confidence": 0.95, "drift_metrics": null}
-{"timestamp": "2026-03-13T13:11:27.208151", "action": "pipeline_complete", "artifacts_dir": ".cartography/jaffle_shop", "token_usage": {"prompt": 0, "completion": 0, "model": "google/gemma-3-27b-it:free"}}
-{"timestamp": "2026-03-13T13:32:39.825543", "action": "surveyor_start", "repo": "targets/jaffle_shop", "incremental": false}
-{"timestamp": "2026-03-13T13:32:40.090795", "action": "hydrologist_start"}
-{"timestamp": "2026-03-13T13:32:40.468294", "action": "semanticist_start", "enabled": true}
-{"timestamp": "2026-03-13T13:32:52.822100", "action": "semantic_analysis", "node": "dbt_project.yml", "confidence": 0.95, "drift_metrics": null}
-{"timestamp": "2026-03-13T13:32:54.920196", "action": "semantic_analysis", "node": "models/orders.sql", "confidence": 0.95, "drift_metrics": null}
-{"timestamp": "2026-03-13T13:33:00.651500", "action": "semantic_analysis", "node": "models/customers.sql", "confidence": 0.95, "drift_metrics": null}
-{"timestamp": "2026-03-13T13:33:02.736521", "action": "semantic_analysis", "node": "models/schema.yml", "confidence": 0.95, "drift_metrics": null}
-{"timestamp": "2026-03-13T13:33:07.874065", "action": "semantic_analysis", "node": "models/staging/stg_payments.sql", "confidence": 0.95, "drift_metrics": null}
-{"timestamp": "2026-03-13T13:33:09.487314", "action": "semantic_analysis", "node": "models/staging/stg_customers.sql", "confidence": 0.95, "drift_metrics": null}
-{"timestamp": "2026-03-13T13:33:17.099932", "action": "semantic_analysis", "node": "models/staging/schema.yml", "confidence": 0.95, "drift_metrics": null}
-{"timestamp": "2026-03-13T13:33:35.500365", "action": "semantic_analysis", "node": "models/staging/stg_orders.sql", "confidence": 0.95, "drift_metrics": null}
-{"timestamp": "2026-03-13T13:33:55.397391", "action": "pipeline_complete", "artifacts_dir": ".cartography/jaffle_shop", "token_usage": {"prompt": 0, "completion": 0, "model": "arcee-ai/trinity-large-preview:free"}}
+{"timestamp": "2026-03-14T23:29:02.780498", "action": "semantic_analysis", "node": "dbt_project.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T23:29:12.927691", "action": "semantic_analysis", "node": "models/orders.sql", "confidence": 1.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T23:29:23.674254", "action": "semantic_analysis", "node": "models/customers.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T23:29:32.808363", "action": "semantic_analysis", "node": "models/schema.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T23:29:39.908934", "action": "semantic_analysis", "node": "models/staging/stg_payments.sql", "confidence": 1.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T23:29:53.824103", "action": "semantic_analysis", "node": "models/staging/stg_customers.sql", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T23:30:03.964294", "action": "semantic_analysis", "node": "models/staging/schema.yml", "confidence": 0.95, "drift_metrics": null}
+{"timestamp": "2026-03-14T23:30:12.912311", "action": "semantic_analysis", "node": "models/staging/stg_orders.sql", "confidence": 1.0, "drift_metrics": null}
+{"timestamp": "2026-03-14T23:30:59.700045", "action": "pipeline_complete", "artifacts_dir": "/app/.cartography/jaffle_shop", "token_usage": {"model": "qwen/qwen-2.5-72b-instruct:free", "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0, "estimated_cost_usd": 0.0}}

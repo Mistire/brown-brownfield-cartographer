@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: src/ui/api/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - CARTOGRAPHY_DIR=/app/.cartography
+      - PYTHONPATH=/app:/app/src
+    volumes:
+      - .:/app
+      - ./.cartography:/app/.cartography
+      - .env:/app/.env
+    env_file:
+      - .env
+    restart: always
+
+  dashboard:
+    build:
+      context: src/ui/dashboard
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    restart: always
+
+volumes:
+  cartography_data:
