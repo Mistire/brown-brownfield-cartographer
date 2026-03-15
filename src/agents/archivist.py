@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Dict, Any, List, Optional
 import networkx as nx
 from pyvis.network import Network
+from graph.knowledge_graph import KnowledgeGraph
 
 from utils.paths import get_cartography_dir
 
@@ -17,9 +18,9 @@ class Archivist:
         self.output_dir = os.path.join(base_dir, project_name)
         os.makedirs(self.output_dir, exist_ok=True)
 
-    def generate_codebase_md(self, graph: nx.DiGraph):
+    def generate_codebase_md(self, kg: KnowledgeGraph):
         path = os.path.join(self.output_dir, "CODEBASE.md")
-        
+        graph = kg.module_graph
         nodes = [data for n, data in graph.nodes(data=True)]
         
         with open(path, "w") as f:
@@ -43,10 +44,8 @@ class Archivist:
             f.write("\n")
             
             f.write("## 3. Data Sources & Sinks\n")
-            # In a real lineage graph, sources have in-degree 0 in the LINEAGE graph
-            # Here we are using the module graph, so we look for dataset nodes
-            sources = [n for n, d in graph.nodes(data=True) if d.get("node_type") == "dataset" and graph.in_degree(n) == 0]
-            sinks = [n for n, d in graph.nodes(data=True) if d.get("node_type") == "dataset" and graph.out_degree(n) == 0]
+            sources = kg.find_sources()
+            sinks = kg.find_sinks()
             
             f.write("### 3.1 Known Inputs (Sources)\n")
             for s in sources: f.write(f"- `{s}`\n")
@@ -56,7 +55,7 @@ class Archivist:
             for s in sinks: f.write(f"- `{s}`\n")
             if not sinks: f.write("No distinct sinks identified via static analysis.\n")
             
-            f.write("\n## 4. Technical Debt & Safety Risks\n")
+            f.write("## 4. Technical Debt & Safety Risks (Known Debt)\n")
             circular = [m for m in nodes if m.get("in_circular_dep")]
             if circular:
                 f.write("### 4.1 Circular Dependencies\n")
@@ -72,15 +71,23 @@ class Archivist:
                 f.write("> Zero detected incoming references. Candidate for removal if not an entry point.\n\n")
                 for d in dead:
                     f.write(f"- `{d.get('path', 'external_dependency')}`\n")
+ 
+            drift_mods = [m for m in nodes if m.get("documentation_drift", {}).get("drift_detected")]
+            if drift_mods:
+                f.write("\n### 4.3 Documentation Drift\n")
+                f.write("> [!CAUTION]\n")
+                f.write("> Mismatch detected between code implementation and docstrings.\n\n")
+                for m in drift_mods:
+                    f.write(f"- `{m.get('path')}`: {m.get('documentation_drift', {}).get('mismatch_reason')}\n")
                     
-            f.write("\n## 5. Recent Change Velocity (90-Day Map)\n")
+            f.write("\n## 5. High-Velocity Files (Maintenance Hotspots)\n")
             f.write("> [!TIP]\n")
             f.write("> High velocity files often indicate areas of high complexity or ongoing refactoring.\n\n")
             hotspots = sorted(nodes, key=lambda x: x.get("change_velocity_30d", 0), reverse=True)[:5]
             for h in hotspots:
                 if h.get("change_velocity_30d", 0) > 0:
                     f.write(f"- `{h.get('path')}`: **{h.get('change_velocity_30d')}** changes in last 30 days\n")
-
+ 
             f.write("\n## 6. Module Purpose Index\n")
             for mod in nodes:
                 path = mod.get('path', 'external_dependency')
@@ -94,7 +101,7 @@ class Archivist:
                     f.write(f"> **Doc Drift!** {drift.get('mismatch_reason')}\n\n")
                 
                 f.write(f"**Complexity:** {mod.get('complexity_score', 0.0)} | **Domain:** {mod.get('domain_cluster', 'N/A')}\n\n")
-
+ 
             f.write("\n## 7. System Statistics\n")
             f.write(f"Total Modules: {len(nodes)}\n")
             f.write(f"Total Dependencies: {graph.number_of_edges()}\n")

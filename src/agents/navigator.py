@@ -8,14 +8,14 @@ from langchain_openai import ChatOpenAI
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, ToolMessage
 from langchain_core.tools import tool
 from dotenv import load_dotenv
-from src.graph.knowledge_graph import KnowledgeGraph
-from src.utils.paths import get_cartography_dir
+from graph.knowledge_graph import KnowledgeGraph
+from utils.paths import get_cartography_dir
 
 load_dotenv()
-from src.agents.semanticist import Semanticist
-from src.agents.semantic_index import SemanticIndex
-from src.agents.archivist import Archivist
-from src.agents.hydrologist import Hydrologist
+from agents.semanticist import Semanticist
+from agents.semantic_index import SemanticIndex
+from agents.archivist import Archivist
+from agents.hydrologist import Hydrologist
 
 class AgentState(TypedDict):
     messages: List[BaseMessage]
@@ -60,7 +60,7 @@ class Navigator:
                 results = self.semantic_index.search(query_emb, top_k=5)
                 if results:
                     matches = [f"- `{r['path']}` (Score: {r['score']:.2f}): {r['purpose']}" for r in results]
-                    return "Semantic Search Results:\n" + "\n".join(matches)
+                    return ("Semantic Search Results (Inference: LLM, Confidence: High):\n" + "\n".join(matches))
             
             # Fallback to keyword search
             matches = []
@@ -70,8 +70,8 @@ class Navigator:
                     matches.append(f"- `{node}`: {purpose}")
             
             if not matches:
-                return f"No direct implementation found for '{concept}'."
-            return "Keyword Search Results:\n" + "\n".join(matches[:5])
+                return f"No direct implementation found for '{concept}'. (Inference: Static Analysis)"
+            return ("Keyword Search Results (Inference: Static Analysis, Confidence: 1.0):\n" + "\n".join(matches[:5]))
 
         @tool
         def trace_lineage(dataset: str, direction: str = "upstream") -> str:
@@ -89,12 +89,12 @@ class Navigator:
             if not nodes:
                 return f"No {direction} dependencies found for '{dataset}'."
             
-            res = [msg]
+            res = [f"{msg} (Inference: Static Analysis, Confidence: 1.0)"]
             for n in nodes:
                 data = self.kg.lineage_graph.nodes.get(n, {})
-                citation = data.get("citation", "no citation")
+                citation = f"{data.get('source_file', 'unknown')}:{data.get('line', '?')}"
                 purpose = data.get("purpose_statement", "N/A")
-                res.append(f"- `{n}` ({citation}): {purpose}")
+                res.append(f"- `{n}` (Citation: {citation}): {purpose}")
             
             return "\n".join(res)
 
@@ -105,15 +105,16 @@ class Navigator:
                 # Try partial match
                 matches = [n for n in self.kg.module_graph.nodes if module_path in n]
                 if not matches:
-                    return f"Module '{module_path}' not found."
+                    return f"Module '{module_path}' not found. (Inference: Static Analysis)"
                 module_path = matches[0]
 
-            dependents = nx.descendants(self.kg.module_graph, module_path)
+            dependents = list(nx.descendants(self.kg.module_graph, module_path))
             if not dependents:
-                return f"No downstream dependents for `{module_path}`. Change impact is local."
+                return f"No downstream dependents for `{module_path}`. Change impact is local. (Inference: Static Analysis, Confidence: 1.0)"
             
-            return f"Blast radius of `{module_path}` ({len(dependents)} modules):\n" + \
-                   "\n".join([f"- `{d}`" for d in sorted(dependents)[:10]])
+            dependents_sorted = sorted(dependents)
+            return (f"Blast radius of `{module_path}` ({len(dependents)} modules). (Inference: Static Analysis, Confidence: 1.0):\n" + 
+                   "\n".join([f"- `{d}`" for d in dependents_sorted[:10]]))
 
         @tool
         def explain_module(path: str) -> str:
@@ -122,14 +123,16 @@ class Navigator:
                 # Try partial match
                 matches = [n for n in self.kg.module_graph.nodes if path in n]
                 if not matches:
-                    return f"Module '{path}' not found."
+                    return f"Module '{path}' not found. (Inference: Static Analysis)"
                 path = matches[0]
             
             data = self.kg.module_graph.nodes[path]
             return (f"**Module:** `{path}`\n"
                     f"**Purpose:** {data.get('purpose_statement', 'N/A')}\n"
                     f"**Complexity:** {data.get('complexity_score', 0)}\n"
-                    f"**Centrality (PageRank):** {data.get('pagerank', 0):.4f}")
+                    f"**Centrality (PageRank):** {data.get('pagerank', 0):.4f}\n"
+                    f"**Inference:** {data.get('inference_type', 'LLM Inference')}\n"
+                    f"**Confidence:** {data.get('confidence', 0.5)}")
 
         self.tools_list = [find_implementation, trace_lineage, blast_radius, explain_module]
         self.tools = {t.name: t for t in self.tools_list}

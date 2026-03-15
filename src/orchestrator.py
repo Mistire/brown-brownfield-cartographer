@@ -27,6 +27,22 @@ class Orchestrator:
         self.index = None
         self.on_progress = on_progress
 
+    async def checkpoint(self):
+        """Save intermediate results to disk."""
+        self._log("checkpoint", "Preserving partial results...")
+        self.kg.serialize(self.archivist.output_dir)
+        if self.index:
+            self.index.save()
+        # Mark successful stages in a hidden file
+        status_path = os.path.join(self.archivist.output_dir, ".cartography_status.json")
+        status = {
+            "surveyor": True if self.kg.module_graph.nodes else False,
+            "hydrologist": True if self.kg.lineage_graph.edges else False,
+            "semanticist": True if self.index and self.index.entries else False
+        }
+        with open(status_path, "w") as f:
+            json.dump(status, f)
+
     def _log(self, step: str, details: Any):
         if self.on_progress:
             self.on_progress(step, details)
@@ -37,7 +53,14 @@ class Orchestrator:
         changed_files = None
         current_commit = None
         
-        # Step 0: Robust Incremental Detection
+        # Step 0: Robust Incremental Detection & Resume Check
+        status_path = os.path.join(self.archivist.output_dir, ".cartography_status.json")
+        status = {}
+        if os.path.exists(status_path):
+            with open(status_path, "r") as f:
+                status = json.load(f)
+            self._log("resume_detect", "Found previous partial results, skipping completed stages.")
+
         try:
             import subprocess
             current_commit = subprocess.check_output(["git", "-C", self.repo_path, "rev-parse", "HEAD"], text=True).strip()
@@ -62,15 +85,28 @@ class Orchestrator:
             if incremental:
                 print(f"Incremental detection failed: {e}. Falling back to full scan.")
 
-        self._log("surveyor_start", {"repo": self.repo_path, "incremental": incremental})
-        # Execute blocking surveyor in thread to keep loop free for WS progress
-        await asyncio.to_thread(self.surveyor.run, changed_files, self.on_progress)
-        
-        self._log("hydrologist_start", {})
-        await asyncio.to_thread(self.hydrologist.run, changed_files, self.on_progress)
+        if not status.get("surveyor"):
+            self._log("surveyor_start", {"repo": self.repo_path, "incremental": incremental})
+            # Execute blocking surveyor in thread to keep loop free for WS progress
+            await asyncio.to_thread(self.surveyor.run, changed_files, self.on_progress)
+            await self.checkpoint()
+        else:
+            self._log("surveyor_skip", "Surveyor results found, resuming...")
+            self.kg = KnowledgeGraph.load(self.archivist.output_dir)
+            # Re-init agents with loaded graph if needed
+            self.surveyor.graph = self.kg.module_graph
+            self.hydrologist.graph = self.kg.lineage_graph
+
+        if not status.get("hydrologist"):
+            self._log("hydrologist_start", {})
+            await asyncio.to_thread(self.hydrologist.run, changed_files, self.on_progress)
+            await self.checkpoint()
+        else:
+            self._log("hydrologist_skip", "Hydrologist results found, resuming...")
         
         self._log("analytics_start", "Computing advanced analytics (PageRank, Circularities, Dead Code)...")
         self.kg.enrich_metadata()
+        await self.checkpoint()
         
         self._log("semanticist_start", {"enabled": self.semanticist.enabled})
         module_data = [data for _, data in self.kg.module_graph.nodes(data=True)]
@@ -91,7 +127,8 @@ class Orchestrator:
                         with open(full_path, "r") as f:
                             code = f.read()
                         
-                        purpose, confidence = await self.semanticist.generate_purpose(code)
+                        file_size = os.path.getsize(full_path)
+                        purpose, confidence = await self.semanticist.generate_purpose(code, size=file_size)
                         data["purpose_statement"] = purpose
                         data["confidence"] = confidence
                         
@@ -100,22 +137,25 @@ class Orchestrator:
                         self.index.add_entry(node, purpose, embedding)
                         
                         # Master Thinker: Detect Documentation Drift
+                        drift_info = None
                         docstring = data.get("docstring")
                         if docstring:
-                            drift = await self.semanticist.detect_drift(docstring, purpose)
-                            data["documentation_drift"] = drift
+                            drift_info = await self.semanticist.detect_drift(docstring, purpose)
+                            data["documentation_drift"] = drift_info
                             
                         # Log semantic analysis in trace
                         self.archivist.log_trace("semantic_analysis", {
                             "node": node,
                             "confidence": confidence,
-                            "drift_metrics": drift if docstring else None
+                            "inference_type": "LLM Inference",
+                            "drift_metrics": drift_info
                         })
                     except Exception as e:
                         print(f"Error analyzing semantic purpose for {node}: {e}")
             
             self._log("semantic_index_save", "Saving Semantic Index...")
             self.index.save()
+            await self.checkpoint()
         
         # Cluster domains
         self._log("domain_clustering", "Clustering modules into semantic domains...")
@@ -142,7 +182,7 @@ class Orchestrator:
         self.kg.serialize(self.archivist.output_dir)
 
         self._log("artifacts_gen", "Generating high-fidelity artifacts...")
-        self.archivist.generate_codebase_md(self.kg.module_graph)
+        self.archivist.generate_codebase_md(self.kg)
         self.archivist.generate_interactive_graph(self.kg.module_graph)
         self.archivist.generate_onboarding_brief(module_data, day_one_answers)
 

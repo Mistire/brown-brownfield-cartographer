@@ -47,26 +47,36 @@ class KnowledgeGraph:
 
     def enrich_metadata(self):
         """Compute advanced analytics and inject into node metadata."""
-        if len(self.module_graph) == 0:
-            return
-            
-        # PageRank (Centrality)
-        pr = self.get_pagerank()
-        for node, rank in pr.items():
-            self.module_graph.nodes[node]["pagerank"] = rank
-            self.module_graph.nodes[node]["is_hub"] = rank > (1.0 / len(self.module_graph)) * 1.5
+        # 1. Module Graph Enrichment
+        if len(self.module_graph) > 0:
+            # PageRank (Centrality)
+            pr = self.get_pagerank()
+            for node, rank in pr.items():
+                self.module_graph.nodes[node]["pagerank"] = rank
+                self.module_graph.nodes[node]["is_hub"] = rank > (1.0 / len(self.module_graph)) * 1.5
 
-        # SCC (Circular Dependencies)
-        sccs = self.get_strongly_connected()
-        for i, scc in enumerate(sccs):
-            for node in scc:
-                self.module_graph.nodes[node]["scc_id"] = i
-                self.module_graph.nodes[node]["in_circular_dep"] = True
+            # SCC (Circular Dependencies)
+            sccs = self.get_strongly_connected()
+            for i, scc in enumerate(sccs):
+                for node in scc:
+                    self.module_graph.nodes[node]["scc_id"] = i
+                    self.module_graph.nodes[node]["in_circular_dep"] = True
 
-        # Dead Code
-        dead = self.find_dead_code()
-        for node in dead:
-            self.module_graph.nodes[node]["is_dead_candidate"] = True
+            # Dead Code
+            dead = self.find_dead_code()
+            for node in dead:
+                self.module_graph.nodes[node]["is_dead_candidate"] = True
+
+        # 2. Lineage Graph Enrichment
+        if len(self.lineage_graph) > 0:
+            for node in self.lineage_graph.nodes():
+                in_deg = self.lineage_graph.in_degree(node)
+                out_deg = self.lineage_graph.out_degree(node)
+                
+                if in_deg == 0 and out_deg > 0:
+                    self.lineage_graph.nodes[node]["is_source"] = True
+                if out_deg == 0 and in_deg > 0:
+                    self.lineage_graph.nodes[node]["is_sink"] = True
 
     def serialize(self, output_dir: str):
         os.makedirs(output_dir, exist_ok=True)

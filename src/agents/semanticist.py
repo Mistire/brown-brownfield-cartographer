@@ -9,40 +9,41 @@ from langchain_openai import ChatOpenAI
 from models.graph import ModuleNode
 
 class ContextWindowBudget:
-    """Tracks token usage and cost for LLM operations."""
-    # Rough pricing per 1M tokens (USD)
+    """Tracks token usage and cost for LLM operations with model tiering."""
     PRICING = {
-        "qwen/qwen-2.5-72b-instruct:free": (0.0, 0.0),
-        "anthropic/claude-3-haiku": (0.25, 1.25),
-        "anthropic/claude-3-sonnet": (3.0, 15.0),
-        "google/gemini-flash-1.5": (0.1, 0.4),
+        "openai/gpt-4o": (5.0, 15.0),
         "openai/gpt-4o-mini": (0.15, 0.6),
+        "qwen/qwen-2.5-72b-instruct:free": (0.0, 0.0),
     }
 
-    def __init__(self, model_name: str = "qwen/qwen-2.5-72b-instruct:free"):
-        self.model_name = model_name
+    def __init__(self, max_tokens: int = 100_000):
+        self.max_tokens = max_tokens
         self.total_prompt_tokens = 0
         self.total_completion_tokens = 0
         self.total_cost = 0.0
+        self.is_exhausted = False
 
-    def record(self, response: Any):
+    def record(self, model_name: str, response: Any):
         if hasattr(response, 'usage_metadata'):
              p_tokens = response.usage_metadata.get('prompt_tokens', 0)
              c_tokens = response.usage_metadata.get('completion_tokens', 0)
              self.total_prompt_tokens += p_tokens
              self.total_completion_tokens += c_tokens
              
-             # Calculate cost
-             p_rate, c_rate = self.PRICING.get(self.model_name, (0.01, 0.03)) # Fallback tiny rate
+             p_rate, c_rate = self.PRICING.get(model_name, (0.01, 0.03))
              self.total_cost += (p_tokens / 1_000_000) * p_rate
              self.total_cost += (c_tokens / 1_000_000) * c_rate
 
+             if (self.total_prompt_tokens + self.total_completion_tokens) > self.max_tokens:
+                 self.is_exhausted = True
+
     def get_summary(self) -> Dict[str, Any]:
         return {
-            "model": self.model_name,
             "prompt_tokens": self.total_prompt_tokens,
             "completion_tokens": self.total_completion_tokens,
             "total_tokens": self.total_prompt_tokens + self.total_completion_tokens,
+            "limit": self.max_tokens,
+            "is_exhausted": self.is_exhausted,
             "estimated_cost_usd": float(f"{self.total_cost:.6f}")
         }
 
@@ -52,28 +53,39 @@ class Semanticist:
     """
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or os.getenv("OPENROUTER_API_KEY")
-        self.model_name = os.getenv("LLM_MODEL", "qwen/qwen-2.5-72b-instruct:free")
+        self.high_model = os.getenv("LLM_HIGH_MODEL", "openai/gpt-4o")
+        self.low_model = os.getenv("LLM_LOW_MODEL", "openai/gpt-4o-mini")
         self.budget = ContextWindowBudget()
+        self.current_model = self.low_model
         
         if self.api_key:
-            self.llm = ChatOpenAI(
-                model=self.model_name,
-                openai_api_key=self.api_key,
-                openai_api_base=os.getenv("OPENROUTER_API_BASE", "https://openrouter.ai/api/v1"),
-                temperature=0.1
-            )
+            self._init_llm(self.low_model)
         else:
             self.llm = None
             print("Warning: OPENROUTER_API_KEY not set. Semanticist will be disabled.")
+
+    def _init_llm(self, model: str):
+        self.llm = ChatOpenAI(
+            model=model,
+            openai_api_key=self.api_key,
+            openai_api_base=os.getenv("OPENROUTER_API_BASE", "https://openrouter.ai/api/v1"),
+            temperature=0.1
+        )
+        self.current_model = model
 
     @property
     def enabled(self) -> bool:
         return self.llm is not None
 
-    async def generate_purpose(self, code: str) -> tuple[str, float]:
-        if not self.llm:
-            return "LLM Analysis Disabled", 0.0
+    async def generate_purpose(self, code: str, size: int = 0) -> tuple[str, float]:
+        if not self.llm or self.budget.is_exhausted:
+            return "Analysis Limitation (Budget/Disabled)", 0.0
             
+        # Tiering: Use high model for files > 50KB or complex files
+        target_model = self.high_model if size > 50000 else self.low_model
+        if self.current_model != target_model:
+            self._init_llm(target_model)
+
         @retry(stop=stop_after_attempt(3))
         async def _invoke():
             prompt = f"""
@@ -82,17 +94,16 @@ class Semanticist:
             
             RULES:
             1. Focus on WHAT the code does for the business/system, not HOW it is implemented.
-            2. Ground your answer in implementation evidence (e.g. specific data transformations, API calls, or logic flows seen in the code).
-            3. IGNORE the docstrings - tell me what the code ACTUALLY does.
-            4. If the code is purely configuration or boilerplate, identify its role in the pipeline.
+            2. Ground your answer in implementation evidence.
+            3. IGNORE the docstrings.
             
             Return JSON: {{"purpose": str, "confidence": 0.0-1.0}}
             
             Code:
-            {code[:8000]} 
+            {code[:12000] if target_model == self.high_model else code[:6000]} 
             """
             response = await self.llm.ainvoke(prompt)
-            self.budget.record(response)
+            self.budget.record(self.current_model, response)
             text = response.content.strip()
             if "```json" in text:
                 text = text.split("```json")[1].split("```")[0].strip()
@@ -122,13 +133,15 @@ class Semanticist:
         """
         try:
             response = await self.llm.ainvoke(prompt)
-            self.budget.record(response)
+            self.budget.record(self.current_model, response)
             text = response.content.strip()
             if "```json" in text:
                 text = text.split("```json")[1].split("```")[0].strip()
-            return json.loads(text)
+            data = json.loads(text)
+            data["inference_type"] = "LLM Inference"
+            return data
         except:
-            return {"drift_detected": False, "score": 0.0, "confidence": 0.0}
+            return {"drift_detected": False, "score": 0.0, "confidence": 0.0, "inference_type": "LLM Inference"}
 
     async def answer_day_one_questions(self, context: Dict[str, Any]) -> Dict[str, str]:
         if not self.llm:
@@ -156,11 +169,13 @@ class Semanticist:
         """
         try:
             response = await self.llm.ainvoke(prompt)
-            self.budget.record(response)
+            self.budget.record(self.current_model, response)
             text = response.content.strip()
             if "```json" in text:
                 text = text.split("```json")[1].split("```")[0].strip()
-            return json.loads(text)
+            data = json.loads(text)
+            # Standardize Day-One results with inference markers
+            return {k: f"{v} (Inference: LLM)" for k, v in data.items()}
         except Exception as e:
             return {f"q{i+1}": f"Error: {str(e)}" for i in range(5)}
 
@@ -179,7 +194,7 @@ class Semanticist:
         """
         try:
             response = await self.llm.ainvoke(prompt)
-            self.budget.record(response)
+            self.budget.record(self.current_model, response)
             text = response.content.strip()
             if "```json" in text:
                 text = text.split("```json")[1].split("```")[0].strip()

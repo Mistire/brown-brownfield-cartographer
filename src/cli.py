@@ -29,7 +29,22 @@ async def main():
     args = parser.parse_args()
 
     if args.command == "analyze":
-        orchestrator = Orchestrator(args.repo_path)
+        repo_path = args.repo_path
+        
+        # GitHub URL Support
+        if repo_path.startswith("http") and "github.com" in repo_path:
+            import subprocess
+            project_name = repo_path.split("/")[-1].replace(".git", "")
+            target_dir = os.path.join("targets", project_name)
+            
+            if not os.path.exists(target_dir):
+                print(f"Cloning {repo_path} into {target_dir}...")
+                subprocess.run(["git", "clone", repo_path, target_dir], check=True)
+            else:
+                print(f"Project directory {target_dir} already exists. Using existing clone.")
+            repo_path = target_dir
+
+        orchestrator = Orchestrator(repo_path)
         await orchestrator.run_full_pipeline(incremental=args.incremental)
     elif args.command == "query":
         navigator = Navigator(args.repo_path)

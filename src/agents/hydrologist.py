@@ -57,14 +57,28 @@ class Hydrologist:
                         self.lineage_graph.add_node(
                             dataset_name, 
                             type="dataset", 
-                            storage_type="file" if "." in dataset_name else "table"
+                            storage_type="file" if "." in dataset_name else "table",
+                            inference_type="Static Analysis",
+                            confidence=1.0
                         )
                         
                         # Add Transformation metadata
                         if io.get("type") == "source":
-                            self.lineage_graph.add_edge(dataset_name, rel_path, type="CONSUMES", line=io.get("line"))
+                            self.lineage_graph.add_edge(
+                                dataset_name, rel_path, 
+                                type="CONSUMES", 
+                                line=io.get("line"),
+                                inference_type="Static Analysis",
+                                confidence=1.0
+                            )
                         else:
-                            self.lineage_graph.add_edge(rel_path, dataset_name, type="PRODUCES", line=io.get("line"))
+                            self.lineage_graph.add_edge(
+                                rel_path, dataset_name, 
+                                type="PRODUCES", 
+                                line=io.get("line"),
+                                inference_type="Static Analysis",
+                                confidence=1.0
+                            )
                 
                 elif file_name.endswith(".sql"):
                     with open(full_path, "r") as f:
@@ -74,13 +88,23 @@ class Hydrologist:
                         source = item.get("source")
                         target = item.get("target")
                         if source and target:
-                            self.lineage_graph.add_node(source, type="dataset", storage_type="table")
-                            self.lineage_graph.add_node(target, type="dataset", storage_type="table")
+                            self.lineage_graph.add_node(
+                                source, type="dataset", storage_type="table",
+                                inference_type="Static Analysis",
+                                confidence=1.0
+                            )
+                            self.lineage_graph.add_node(
+                                target, type="dataset", storage_type="table",
+                                inference_type="Static Analysis",
+                                confidence=1.0
+                            )
                             self.lineage_graph.add_edge(
                                 source, target, 
                                 type="LINEAGE", 
                                 source_file=rel_path,
-                                transformation_type="SQL"
+                                transformation_type="SQL",
+                                inference_type="Static Analysis",
+                                confidence=1.0
                             )
                         
                 elif file_name.endswith((".yml", ".yaml")):
@@ -89,10 +113,32 @@ class Hydrologist:
                         for model in models:
                             sink = model.get("name")
                             if sink:
-                                self.lineage_graph.add_node(sink, type="dataset", storage_type="table", owner=model.get("owner"))
+                                self.lineage_graph.add_node(
+                                    sink, type="dataset", storage_type="table", 
+                                    owner=model.get("owner"),
+                                    inference_type="Static Analysis",
+                                    confidence=1.0
+                                )
+                
+                # Enrichment: Label Sources and Sinks
+                self._enrich_lineage_metadata()
                                 
             except Exception as e:
                 print(f"Error mapping lineage in {rel_path}: {e}")
+
+    def _enrich_lineage_metadata(self):
+        """Identifies and labels sources and sinks in the lineage graph."""
+        for node in self.lineage_graph.nodes():
+            in_degree = self.lineage_graph.in_degree(node)
+            out_degree = self.lineage_graph.out_degree(node)
+            
+            # Label as Source if no predecessors
+            if in_degree == 0 and out_degree > 0:
+                self.lineage_graph.nodes[node]["is_source"] = True
+            
+            # Label as Sink if no successors
+            if out_degree == 0 and in_degree > 0:
+                self.lineage_graph.nodes[node]["is_sink"] = True
 
     def blast_radius(self, node_name: str) -> Set[str]:
         if node_name not in self.lineage_graph:
@@ -100,10 +146,10 @@ class Hydrologist:
         return set(nx.descendants(self.lineage_graph, node_name))
 
     def find_sources(self) -> Set[str]:
-        return {n for n in self.lineage_graph.nodes() if self.lineage_graph.in_degree(n) == 0}
+        return {n for n, d in self.lineage_graph.nodes(data=True) if d.get("is_source")}
 
     def find_sinks(self) -> Set[str]:
-        return {n for n in self.lineage_graph.nodes() if self.lineage_graph.out_degree(n) == 0}
+        return {n for n, d in self.lineage_graph.nodes(data=True) if d.get("is_sink")}
 
     def save_graph(self, output_path: str):
         import json
