@@ -42,3 +42,5 @@
 {"timestamp": "2026-03-14T20:28:27.559733", "action": "semantic_analysis", "node": "src/models/graph.py", "confidence": 0.95, "drift_metrics": null}
 {"timestamp": "2026-03-14T20:28:33.355377", "action": "pipeline_complete", "artifacts_dir": "/app/.cartography/brown-brownfield-cartographer", "token_usage": {"model": "qwen/qwen-2.5-72b-instruct:free", "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0, "estimated_cost_usd": 0.0}}
 {"timestamp": "2026-03-14T20:28:38.248094", "action": "pipeline_complete", "artifacts_dir": "/app/.cartography/brown-brownfield-cartographer", "token_usage": {"model": "qwen/qwen-2.5-72b-instruct:free", "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0, "estimated_cost_usd": 0.0}}
+{"timestamp": "2026-03-15T00:46:17.678427", "action": "navigator_query", "query": "what is the blast radius of src/agents/archivist.py"}
+{"timestamp": "2026-03-15T01:00:46.435859", "action": "navigator_query", "query": "what is the blast radius of src/agents/archivist.py"}

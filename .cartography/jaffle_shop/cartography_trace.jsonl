@@ -7,3 +7,12 @@
 {"timestamp": "2026-03-14T23:30:03.964294", "action": "semantic_analysis", "node": "models/staging/schema.yml", "confidence": 0.95, "drift_metrics": null}
 {"timestamp": "2026-03-14T23:30:12.912311", "action": "semantic_analysis", "node": "models/staging/stg_orders.sql", "confidence": 1.0, "drift_metrics": null}
 {"timestamp": "2026-03-14T23:30:59.700045", "action": "pipeline_complete", "artifacts_dir": "/app/.cartography/jaffle_shop", "token_usage": {"model": "qwen/qwen-2.5-72b-instruct:free", "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0, "estimated_cost_usd": 0.0}}
+{"timestamp": "2026-03-15T01:08:00.746671", "action": "semantic_analysis", "node": "dbt_project.yml", "confidence": 0.9, "inference_type": "LLM Inference", "drift_metrics": null}
+{"timestamp": "2026-03-15T01:08:04.548178", "action": "semantic_analysis", "node": "models/orders.sql", "confidence": 0.9, "inference_type": "LLM Inference", "drift_metrics": null}
+{"timestamp": "2026-03-15T01:08:07.243037", "action": "semantic_analysis", "node": "models/customers.sql", "confidence": 0.9, "inference_type": "LLM Inference", "drift_metrics": null}
+{"timestamp": "2026-03-15T01:08:10.205666", "action": "semantic_analysis", "node": "models/schema.yml", "confidence": 0.9, "inference_type": "LLM Inference", "drift_metrics": null}
+{"timestamp": "2026-03-15T01:08:13.014029", "action": "semantic_analysis", "node": "models/staging/stg_payments.sql", "confidence": 0.9, "inference_type": "LLM Inference", "drift_metrics": null}
+{"timestamp": "2026-03-15T01:08:15.303905", "action": "semantic_analysis", "node": "models/staging/stg_customers.sql", "confidence": 0.9, "inference_type": "LLM Inference", "drift_metrics": null}
+{"timestamp": "2026-03-15T01:08:18.680468", "action": "semantic_analysis", "node": "models/staging/schema.yml", "confidence": 0.9, "inference_type": "LLM Inference", "drift_metrics": null}
+{"timestamp": "2026-03-15T01:08:21.739822", "action": "semantic_analysis", "node": "models/staging/stg_orders.sql", "confidence": 0.9, "inference_type": "LLM Inference", "drift_metrics": null}
+{"timestamp": "2026-03-15T01:11:52.533803", "action": "navigator_query", "query": "what is the blast radius of stg_orders"}

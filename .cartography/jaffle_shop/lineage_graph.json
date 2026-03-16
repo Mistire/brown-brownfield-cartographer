@@ -6,28 +6,43 @@
     {
       "type": "dataset",
       "storage_type": "table",
-      "owner": null,
-      "id": "stg_payments"
-    },
-    {
-      "type": "dataset",
-      "storage_type": "table",
-      "id": "result_set"
-    },
-    {
-      "type": "dataset",
-      "storage_type": "table",
-      "id": "TEMPLATE_VAR"
-    },
-    {
-      "type": "dataset",
-      "storage_type": "table",
+      "inference_type": "Static Analysis",
+      "confidence": 1.0,
+      "is_source": true,
       "owner": null,
       "id": "stg_orders"
     },
     {
       "type": "dataset",
       "storage_type": "table",
+      "inference_type": "Static Analysis",
+      "confidence": 1.0,
+      "is_sink": true,
+      "id": "result_set"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "inference_type": "Static Analysis",
+      "confidence": 1.0,
+      "is_source": true,
+      "owner": null,
+      "id": "stg_payments"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "inference_type": "Static Analysis",
+      "confidence": 1.0,
+      "is_source": true,
+      "id": "TEMPLATE_VAR"
+    },
+    {
+      "type": "dataset",
+      "storage_type": "table",
+      "inference_type": "Static Analysis",
+      "confidence": 1.0,
+      "is_source": true,
       "owner": null,
       "id": "stg_customers"
     },
@@ -35,27 +50,40 @@
       "type": "dataset",
       "storage_type": "table",
       "owner": null,
+      "inference_type": "Static Analysis",
+      "confidence": 1.0,
       "id": "customers"
     },
     {
       "type": "dataset",
       "storage_type": "table",
       "owner": null,
+      "inference_type": "Static Analysis",
+      "confidence": 1.0,
       "id": "orders"
     },
     {
       "type": "dataset",
       "storage_type": "table",
+      "inference_type": "Static Analysis",
+      "confidence": 1.0,
+      "is_source": true,
       "id": "raw_payments"
     },
     {
       "type": "dataset",
       "storage_type": "table",
+      "inference_type": "Static Analysis",
+      "confidence": 1.0,
+      "is_source": true,
       "id": "raw_customers"
     },
     {
       "type": "dataset",
       "storage_type": "table",
+      "inference_type": "Static Analysis",
+      "confidence": 1.0,
+      "is_source": true,
       "id": "raw_orders"
     }
   ],
@@ -64,20 +92,8 @@
       "type": "LINEAGE",
       "source_file": "models/customers.sql",
       "transformation_type": "SQL",
-      "source": "stg_payments",
-      "target": "result_set"
-    },
-    {
-      "type": "LINEAGE",
-      "source_file": "models/staging/stg_orders.sql",
-      "transformation_type": "SQL",
-      "source": "TEMPLATE_VAR",
-      "target": "result_set"
-    },
-    {
-      "type": "LINEAGE",
-      "source_file": "models/customers.sql",
-      "transformation_type": "SQL",
+      "inference_type": "Static Analysis",
+      "confidence": 1.0,
       "source": "stg_orders",
       "target": "result_set"
     },
@@ -85,6 +101,26 @@
       "type": "LINEAGE",
       "source_file": "models/customers.sql",
       "transformation_type": "SQL",
+      "inference_type": "Static Analysis",
+      "confidence": 1.0,
+      "source": "stg_payments",
+      "target": "result_set"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "models/staging/stg_orders.sql",
+      "transformation_type": "SQL",
+      "inference_type": "Static Analysis",
+      "confidence": 1.0,
+      "source": "TEMPLATE_VAR",
+      "target": "result_set"
+    },
+    {
+      "type": "LINEAGE",
+      "source_file": "models/customers.sql",
+      "transformation_type": "SQL",
+      "inference_type": "Static Analysis",
+      "confidence": 1.0,
       "source": "stg_customers",
       "target": "result_set"
     },
@@ -92,6 +128,8 @@
       "type": "LINEAGE",
       "source_file": "models/staging/stg_payments.sql",
       "transformation_type": "SQL",
+      "inference_type": "Static Analysis",
+      "confidence": 1.0,
       "source": "raw_payments",
       "target": "result_set"
     },
@@ -99,6 +137,8 @@
       "type": "LINEAGE",
       "source_file": "models/staging/stg_customers.sql",
       "transformation_type": "SQL",
+      "inference_type": "Static Analysis",
+      "confidence": 1.0,
       "source": "raw_customers",
       "target": "result_set"
     },
@@ -106,6 +146,8 @@
       "type": "LINEAGE",
       "source_file": "models/staging/stg_orders.sql",
       "transformation_type": "SQL",
+      "inference_type": "Static Analysis",
+      "confidence": 1.0,
       "source": "raw_orders",
       "target": "result_set"
     }

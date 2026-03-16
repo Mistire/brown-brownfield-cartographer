@@ -1,0 +1,4 @@
+# file: /home/mistire/Projects/10Academy/course/week-4/brownfield-cartographer/src/analyzers/tree_sitter_analyzer.py
+# hypothesis_version: 6.151.9
+
+[0.5, 1.0, '"\' \n', '*', '.ipynb', '.js', '.py', '.sql', '.ts', '.yaml', '.yml', ':', 'STAR_IMPORT', '_', 'captures', 'cell_type', 'cells', 'classes', 'code', 'complexity_score', 'ctes', 'decorators', 'docstring', 'error', 'functions', 'imports', 'javascript', 'keys', 'language', 'module', 'name', 'path', 'python', 'r', 'rb', 'source', 'sql', 'status', 'type_hints', 'typescript', 'unknown', 'utf-8', 'yaml']

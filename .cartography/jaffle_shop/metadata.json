@@ -30,5 +30,37 @@
   {
     "path": "models/staging/stg_orders.sql",
     "purpose": "This code standardizes raw order data by renaming columns to business-friendly terms (e.g., `id` to `order_id`, `user_id` to `customer_id`) and selecting only key attributes like order date and status. It prepares a consistent, analytics-ready dataset for downstream reporting or business intelligence systems, ensuring uniform naming and focused data scope."
+  },
+  {
+    "path": "dbt_project.yml",
+    "purpose": "The code defines the configuration for a data transformation project named 'jaffle_shop', specifying the structure and paths for models, seeds, tests, and analysis, which facilitates the management and execution of data workflows. It ensures that the project adheres to specific version requirements and organizes output into designated target directories."
+  },
+  {
+    "path": "models/orders.sql",
+    "purpose": "This code aggregates payment data for each order, categorizing the total amounts by various payment methods, which enables the business to analyze payment trends and customer preferences. It combines order details with payment information to provide a comprehensive view of financial transactions associated with each order."
+  },
+  {
+    "path": "models/customers.sql",
+    "purpose": "This code aggregates customer data to provide insights into customer behavior, including their first and most recent orders, total number of orders, and lifetime value based on payment amounts. It enables the business to analyze customer engagement and financial contributions over time."
+  },
+  {
+    "path": "models/schema.yml",
+    "purpose": "The code defines data models for customers and orders, capturing essential information about customer identities and their purchasing behaviors, which enables the business to analyze customer engagement and order trends effectively."
+  },
+  {
+    "path": "models/staging/stg_payments.sql",
+    "purpose": "This code transforms raw payment data by renaming fields and converting payment amounts from cents to dollars, facilitating easier analysis and reporting for business operations."
+  },
+  {
+    "path": "models/staging/stg_customers.sql",
+    "purpose": "This code extracts customer data from a raw data source, renames specific fields for clarity, and prepares the data for further processing or analysis within the system."
+  },
+  {
+    "path": "models/staging/schema.yml",
+    "purpose": "The code defines data models for customers, orders, and payments, ensuring data integrity through uniqueness and non-null constraints, as well as validating acceptable values for order statuses and payment methods. This structure supports reliable transaction processing and customer management within the business system."
+  },
+  {
+    "path": "models/staging/stg_orders.sql",
+    "purpose": "This code extracts and transforms order data from a raw orders table by renaming specific fields to enhance clarity and usability for downstream processes or reporting."
   }
 ]

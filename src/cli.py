@@ -44,6 +44,10 @@ async def main():
                 print(f"Project directory {target_dir} already exists. Using existing clone.")
             repo_path = target_dir
 
+        if not os.path.isdir(repo_path):
+            print(f"Error: repository path '{repo_path}' does not exist or is not a directory.", file=sys.stderr)
+            sys.exit(1)
+
         orchestrator = Orchestrator(repo_path)
         await orchestrator.run_full_pipeline(incremental=args.incremental)
     elif args.command == "query":

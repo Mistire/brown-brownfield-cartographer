@@ -5,7 +5,7 @@ import os
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode, tools_condition
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, ToolMessage
+from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, ToolMessage, SystemMessage
 from langchain_core.tools import tool
 from dotenv import load_dotenv
 from graph.knowledge_graph import KnowledgeGraph
@@ -16,6 +16,7 @@ from agents.semanticist import Semanticist
 from agents.semantic_index import SemanticIndex
 from agents.archivist import Archivist
 from agents.hydrologist import Hydrologist
+from agents.semanticist import select_model
 
 class AgentState(TypedDict):
     messages: List[BaseMessage]
@@ -34,21 +35,27 @@ class Navigator:
         self.archivist = Archivist(self.project_name)
         self.semanticist = Semanticist()
         self.semanticist.output_dir = self.output_dir
-        self.semantic_index = SemanticIndex(self.project_name)
+        self.semantic_index = SemanticIndex(self.output_dir)
         self.archivist.output_dir = self.output_dir
-        self.hydrologist = Hydrologist(self.project_name)
+        self.hydrologist = Hydrologist(self.repo_path, graph=self.kg.lineage_graph)
         
         load_dotenv()
         self.api_key = os.getenv("OPENROUTER_API_KEY")
+        # Navigator needs tool-calling support; use env override or auto-select
+        # the smallest free tool-capable model (falls back to largest if needed)
         if self.api_key:
+            nav_model = os.getenv("NAVIGATOR_MODEL") or select_model(4096, require_tools=True)
             self.llm = ChatOpenAI(
-                model_name="openai/gpt-4o", 
+                model_name=nav_model,
                 openai_api_key=self.api_key,
                 openai_api_base="https://openrouter.ai/api/v1",
-                temperature=0
+                temperature=0,
             )
         else:
-            self.llm = ChatOpenAI(model_name="gpt-4o", temperature=0)
+            self.llm = ChatOpenAI(
+                model_name=os.getenv("NAVIGATOR_MODEL", "gpt-4o"),
+                temperature=0,
+            )
 
         # Tools
         @tool
@@ -74,7 +81,7 @@ class Navigator:
             return ("Keyword Search Results (Inference: Static Analysis, Confidence: 1.0):\n" + "\n".join(matches[:5]))
 
         @tool
-        def trace_lineage(dataset: str, direction: str = "upstream") -> str:
+        async def trace_lineage(dataset: str, direction: str = "upstream") -> str:
             """Trace data lineage for a dataset. Direction can be 'upstream' or 'downstream'."""
             if dataset not in self.kg.lineage_graph:
                 return f"Dataset '{dataset}' not found in lineage graph."
@@ -99,7 +106,7 @@ class Navigator:
             return "\n".join(res)
 
         @tool
-        def blast_radius(module_path: str) -> str:
+        async def blast_radius(module_path: str) -> str:
             """Identify all modules that depend on the given module (downstream)."""
             if module_path not in self.kg.module_graph:
                 # Try partial match
@@ -117,7 +124,7 @@ class Navigator:
                    "\n".join([f"- `{d}`" for d in dependents_sorted[:10]]))
 
         @tool
-        def explain_module(path: str) -> str:
+        async def explain_module(path: str) -> str:
             """Provides a summary/explanation of a specific module."""
             if path not in self.kg.module_graph:
                 # Try partial match
@@ -169,7 +176,7 @@ class Navigator:
         # Insert system msg at the start if not present
         messages = state["messages"]
         if not any(m.type == "system" for m in messages):
-             messages = [AIMessage(content=system_msg["content"])] + messages
+             messages = [SystemMessage(content=system_msg["content"])] + messages
 
         response = self.llm_with_tools.invoke(messages)
         

@@ -29,8 +29,8 @@
       "pagerank": 0.125,
       "is_hub": false,
       "is_dead_candidate": true,
-      "purpose_statement": "This dbt project configuration establishes the 'jaffle_shop' data transformation pipeline by organizing code into models, seeds, tests, and macros, and defining materialization strategies\u2014core models as persistent tables and staging models as lightweight views\u2014to systematically convert raw data into analytics-ready structures. It manages build artifacts through target path cleaning and enforces dbt version compatibility, ensuring reliable and maintainable data processing for business reporting and analysis.",
-      "confidence": 0.95,
+      "purpose_statement": "The code defines the configuration for a data transformation project named 'jaffle_shop', specifying the structure and paths for models, seeds, tests, and analysis, which facilitates the management and execution of data workflows. It ensures that the project adheres to specific version requirements and organizes output into designated target directories.",
+      "confidence": 0.9,
       "id": "dbt_project.yml"
     },
     {
@@ -50,8 +50,8 @@
       "pagerank": 0.125,
       "is_hub": false,
       "is_dead_candidate": true,
-      "purpose_statement": "This code aggregates payment transactions by order to create a comprehensive order summary that includes total revenue and breakdowns by specific payment methods (e.g., credit_card, coupon). It enables business analytics by providing clear insights into revenue sources per order, supporting financial reporting, reconciliation, and analysis of payment method usage. The dynamic handling of payment methods ensures the output adapts to changes in payment options without code modifications.",
-      "confidence": 1.0,
+      "purpose_statement": "This code aggregates payment data for each order, categorizing the total amounts by various payment methods, which enables the business to analyze payment trends and customer preferences. It combines order details with payment information to provide a comprehensive view of financial transactions associated with each order.",
+      "confidence": 0.9,
       "id": "models/orders.sql"
     },
     {
@@ -76,8 +76,8 @@
       "pagerank": 0.125,
       "is_hub": false,
       "is_dead_candidate": true,
-      "purpose_statement": "This code aggregates order and payment data per customer to compute key business metrics such as first order date, most recent order date, order count, and customer lifetime value (total payments). It integrates these aggregates with customer demographic details to create a unified customer profile, enabling analysis of customer behavior, value segmentation, and retention strategies for business intelligence and reporting.",
-      "confidence": 0.95,
+      "purpose_statement": "This code aggregates customer data to provide insights into customer behavior, including their first and most recent orders, total number of orders, and lifetime value based on payment amounts. It enables the business to analyze customer engagement and financial contributions over time.",
+      "confidence": 0.9,
       "id": "models/customers.sql"
     },
     {
@@ -101,8 +101,8 @@
       "pagerank": 0.125,
       "is_hub": false,
       "is_dead_candidate": true,
-      "purpose_statement": "This code defines a data model schema that structures raw transactional data into business-ready tables for analytics. It creates a customers table aggregating order history (e.g., first order date, total spend) and an orders table detailing individual transactions with payment method splits, linked via foreign keys to support analysis of customer lifetime value, sales trends, and payment distribution.",
-      "confidence": 0.95,
+      "purpose_statement": "The code defines data models for customers and orders, capturing essential information about customer identities and their purchasing behaviors, which enables the business to analyze customer engagement and order trends effectively.",
+      "confidence": 0.9,
       "id": "models/schema.yml"
     },
     {
@@ -118,8 +118,8 @@
       "pagerank": 0.125,
       "is_hub": false,
       "is_dead_candidate": true,
-      "purpose_statement": "This code transforms raw payment data by renaming the 'id' column to 'payment_id' and converting the 'amount' from cents to dollars, standardizing the data for downstream analytics and reporting. It acts as a staging model in a data pipeline, preparing seed data from 'raw_payments' for consistent business intelligence use.",
-      "confidence": 1.0,
+      "purpose_statement": "This code transforms raw payment data by renaming fields and converting payment amounts from cents to dollars, facilitating easier analysis and reporting for business operations.",
+      "confidence": 0.9,
       "id": "models/staging/stg_payments.sql"
     },
     {
@@ -135,8 +135,8 @@
       "pagerank": 0.125,
       "is_hub": false,
       "is_dead_candidate": true,
-      "purpose_statement": "This code transforms raw customer data by renaming the 'id' column to 'customer_id' and selecting only first_name and last_name fields. It standardizes the customer identifier and reduces the dataset to core attributes, ensuring consistency and efficiency for downstream analytics and reporting. This acts as a cleaning step in the data pipeline to improve data quality and prepare it for further processing.",
-      "confidence": 0.95,
+      "purpose_statement": "This code extracts customer data from a raw data source, renames specific fields for clarity, and prepares the data for further processing or analysis within the system.",
+      "confidence": 0.9,
       "id": "models/staging/stg_customers.sql"
     },
     {
@@ -156,8 +156,8 @@
       "pagerank": 0.125,
       "is_hub": false,
       "is_dead_candidate": true,
-      "purpose_statement": "This configuration defines staging data models for key business entities\u2014customers, orders, and payments\u2014and enforces data quality tests like uniqueness, non-null constraints, and accepted value lists on critical columns. It ensures that foundational data entering the pipeline is clean and reliable, supporting accurate analytics, reporting, and operational decisions by preventing invalid or inconsistent data from propagating downstream.",
-      "confidence": 0.95,
+      "purpose_statement": "The code defines data models for customers, orders, and payments, ensuring data integrity through uniqueness and non-null constraints, as well as validating acceptable values for order statuses and payment methods. This structure supports reliable transaction processing and customer management within the business system.",
+      "confidence": 0.9,
       "id": "models/staging/schema.yml"
     },
     {
@@ -174,8 +174,8 @@
       "pagerank": 0.125,
       "is_hub": false,
       "is_dead_candidate": true,
-      "purpose_statement": "This code standardizes raw order data by renaming columns to business-friendly terms (e.g., `id` to `order_id`, `user_id` to `customer_id`) and selecting only key attributes like order date and status. It prepares a consistent, analytics-ready dataset for downstream reporting or business intelligence systems, ensuring uniform naming and focused data scope.",
-      "confidence": 1.0,
+      "purpose_statement": "This code extracts and transforms order data from a raw orders table by renaming specific fields to enhance clarity and usability for downstream processes or reporting.",
+      "confidence": 0.9,
       "id": "models/staging/stg_orders.sql"
     }
   ],

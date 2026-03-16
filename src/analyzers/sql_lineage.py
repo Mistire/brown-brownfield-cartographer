@@ -93,8 +93,8 @@ class SQLLineageAnalyzer:
     def extract_dbt_refs(self, sql: str) -> Set[str]:
         """Specific extractor for dbt ref() and source() calls."""
         import re
-        refs = re.findall(r"\{\{\s*ref\(['\"](.+?)['\"]\)\s*\}\}", sql)
-        sources = re.findall(r"\{\{\s*source\(['\"].+?['\"]\s*,\s*['\"](.+?)['\"]\)\s*\}\}", sql)
+        refs = re.findall(r'\{\{\s*ref\(\s*[\'"](.+?)[\'"]\s*\)\s*\}\}', sql)
+        sources = re.findall(r'\{\{\s*source\(\s*[\'"].+?[\'"]\s*,\s*[\'"](.+?)[\'"]\s*\)\s*\}\}', sql)
         return set(refs) | set(sources)
 
     def extract_dependencies(self, sql: str) -> Set[str]:

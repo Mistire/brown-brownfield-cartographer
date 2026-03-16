@@ -7,22 +7,27 @@ from typing import Dict, Any, List, Optional
 from pydantic import BaseModel
 import asyncio
 import subprocess
-from src.orchestrator import Orchestrator
-from src.graph.knowledge_graph import KnowledgeGraph
+from orchestrator import Orchestrator
+from graph.knowledge_graph import KnowledgeGraph
 
 app = FastAPI(title="Brownfield Cartographer API")
 
 # Enable CORS for frontend development
+_ALLOWED_ORIGINS = [o.strip() for o in os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:5173").split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=_ALLOWED_ORIGINS,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
 CARTOGRAPHY_DIR = os.getenv("CARTOGRAPHY_DIR", ".cartography")
 TARGETS_DIR = os.getenv("TARGETS_DIR", "targets")
 os.makedirs(TARGETS_DIR, exist_ok=True)
+
+MAX_WS_MESSAGE_BYTES = int(os.getenv("WS_MAX_MESSAGE_BYTES", 65536))   # 64 KB default
+WS_IDLE_TIMEOUT_SECS = int(os.getenv("WS_IDLE_TIMEOUT_SECS", 300))    # 5 min default
 
 class ConnectionManager:
     def __init__(self):
@@ -72,10 +77,10 @@ def get_graph(project: str, type: str = "module"):
     return {"nodes": nodes, "links": links}
 
 @app.get("/metadata/{project}")
-def get_metadata(project: str):
-    path = os.path.join(CARTOGRAPHY_DIR, project, "CODEBASE.md")
+def get_metadata(project: str, filename: str = "CODEBASE.md"):
+    path = os.path.join(CARTOGRAPHY_DIR, project, filename)
     if not os.path.exists(path):
-        return {"content": "No summary available"}
+        raise HTTPException(status_code=404, detail=f"Artifact '{filename}' not found for project '{project}'")
     
     with open(path, "r") as f:
         return {"content": f.read()}
@@ -85,8 +90,8 @@ navigators: Dict[str, Any] = {}
 
 @app.post("/query")
 async def run_query(req: QueryRequest):
-    from src.agents.navigator import Navigator
-    from src.utils.paths import get_cartography_dir
+    from agents.navigator import Navigator
+    from utils.paths import get_cartography_dir
     
     project_path = os.path.join(get_cartography_dir(), req.project)
     if not os.path.exists(project_path):
@@ -114,7 +119,19 @@ async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
     try:
         while True:
-            await websocket.receive_text()
+            try:
+                data = await asyncio.wait_for(
+                    websocket.receive_text(),
+                    timeout=WS_IDLE_TIMEOUT_SECS
+                )
+                if len(data.encode()) > MAX_WS_MESSAGE_BYTES:
+                    await websocket.close(code=1009)  # Message Too Big
+                    manager.disconnect(websocket)
+                    return
+            except asyncio.TimeoutError:
+                await websocket.close(code=1001)  # Going Away (idle)
+                manager.disconnect(websocket)
+                return
     except WebSocketDisconnect:
         manager.disconnect(websocket)
 

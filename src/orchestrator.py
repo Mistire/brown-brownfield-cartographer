@@ -38,7 +38,7 @@ class Orchestrator:
         status = {
             "surveyor": True if self.kg.module_graph.nodes else False,
             "hydrologist": True if self.kg.lineage_graph.edges else False,
-            "semanticist": True if self.index and self.index.entries else False
+            "semanticist": True if self.index and self.index.metadata else False
         }
         with open(status_path, "w") as f:
             json.dump(status, f)
@@ -57,9 +57,16 @@ class Orchestrator:
         status_path = os.path.join(self.archivist.output_dir, ".cartography_status.json")
         status = {}
         if os.path.exists(status_path):
-            with open(status_path, "r") as f:
-                status = json.load(f)
-            self._log("resume_detect", "Found previous partial results, skipping completed stages.")
+            try:
+                with open(status_path, "r") as f:
+                    loaded = json.load(f)
+                if all(k in loaded and isinstance(loaded[k], bool) for k in ("surveyor", "hydrologist", "semanticist")):
+                    status = loaded
+                    self._log("resume_detect", "Found previous partial results, skipping completed stages.")
+                else:
+                    self._log("resume_detect", "Status file missing expected keys, performing full re-run.")
+            except (json.JSONDecodeError, OSError):
+                self._log("resume_detect", "Status file corrupt or unreadable, performing full re-run.")
 
         try:
             import subprocess
@@ -87,9 +94,13 @@ class Orchestrator:
 
         if not status.get("surveyor"):
             self._log("surveyor_start", {"repo": self.repo_path, "incremental": incremental})
-            # Execute blocking surveyor in thread to keep loop free for WS progress
-            await asyncio.to_thread(self.surveyor.run, changed_files, self.on_progress)
-            await self.checkpoint()
+            try:
+                # Execute blocking surveyor in thread to keep loop free for WS progress
+                await asyncio.to_thread(self.surveyor.run, changed_files, self.on_progress)
+                await self.checkpoint()
+            except Exception as e:
+                self._log("surveyor_error", f"Surveyor failed: {e}")
+                raise
         else:
             self._log("surveyor_skip", "Surveyor results found, resuming...")
             self.kg = KnowledgeGraph.load(self.archivist.output_dir)
@@ -157,9 +168,12 @@ class Orchestrator:
             self.index.save()
             await self.checkpoint()
         
-        # Cluster domains
+        # Cluster domains — only when LLM is available
         self._log("domain_clustering", "Clustering modules into semantic domains...")
-        domain_clusters = await self.semanticist.cluster_into_domains(module_data)
+        if self.semanticist.enabled:
+            domain_clusters = await self.semanticist.cluster_into_domains(module_data)
+        else:
+            domain_clusters = {"[LLM DISABLED] unclassified": [str(d.get("path", "")) for d in module_data]}
 
         # Generate Day-One answers
         day_one_answers = {}
@@ -177,6 +191,8 @@ class Orchestrator:
                 "domain_map": domain_clusters
             }
             day_one_answers = await self.semanticist.answer_day_one_questions(synthesis_context)
+        else:
+            day_one_answers = {f"q{i+1}": "[LLM DISABLED] Analysis requires OPENROUTER_API_KEY." for i in range(5)}
 
         self._log("graphics_save", "Saving graphs...")
         self.kg.serialize(self.archivist.output_dir)

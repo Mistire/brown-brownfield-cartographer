@@ -24,18 +24,23 @@ class SemanticIndex:
             self.embeddings = np.load(self.embeddings_path)
 
     def add_entry(self, path: str, purpose: str, embedding: List[float]):
-        """Adds a new entry to the index."""
+        """Adds a new entry to the index, replacing any existing entry for the same path."""
+        # Deduplicate: remove existing entry for this path if present
+        existing_idx = next((i for i, m in enumerate(self.metadata) if m["path"] == path), None)
+        if existing_idx is not None:
+            self.metadata.pop(existing_idx)
+            if self.embeddings is not None and len(self.embeddings) > existing_idx:
+                self.embeddings = np.delete(self.embeddings, existing_idx, axis=0)
+                if len(self.embeddings) == 0:
+                    self.embeddings = None
+
         new_embedding = np.array(embedding, dtype=np.float32).reshape(1, -1)
-        
         if self.embeddings is None:
             self.embeddings = new_embedding
         else:
             self.embeddings = np.vstack([self.embeddings, new_embedding])
-            
-        self.metadata.append({
-            "path": path,
-            "purpose": purpose
-        })
+
+        self.metadata.append({"path": path, "purpose": purpose})
 
     def save(self):
         """Persists the index to disk."""

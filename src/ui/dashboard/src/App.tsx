@@ -3,7 +3,7 @@ import axios from 'axios';
 import { 
   LayoutDashboard, GitGraph, Terminal, FileText, 
   Search, Plus, X, MessageSquare, 
-  FileCode, Info, Map as MapIcon
+  FileCode, Info, Map as MapIcon, AlertTriangle, Skull, Filter
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
@@ -47,10 +47,17 @@ interface GraphNode {
   purpose_statement?: string;
   complexity_score?: number;
   is_dead_candidate?: boolean;
+  in_circular_dep?: boolean;
+  is_hub?: boolean;
+  documentation_drift?: { drift_detected?: boolean };
 }
 
+type GraphFilter = 'all' | 'hubs' | 'dead' | 'drift' | 'circular';
+
 const KnowledgeGraph: React.FC<{ project: string; type: 'module' | 'lineage'; onSelect: (node: GraphNode) => void }> = ({ project, type, onSelect }) => {
-  const [data, setData] = useState<{ nodes: GraphNode[]; links: any[] }>({ nodes: [], links: [] });
+  const [allData, setAllData] = useState<{ nodes: GraphNode[]; links: any[] }>({ nodes: [], links: [] });
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState<GraphFilter>('all');
   const fgRef = useRef<any>(null);
 
   useEffect(() => {
@@ -59,43 +66,97 @@ const KnowledgeGraph: React.FC<{ project: string; type: 'module' | 'lineage'; on
       try {
         const res = await axios.get(`${API_BASE}/graph/${project}?type=${type}`);
         const d = res.data || {};
-        setData({
+        setAllData({
           nodes: Array.isArray(d.nodes) ? d.nodes : [],
           links: Array.isArray(d.links) ? d.links : []
         });
       } catch (err) {
         console.error('Failed to fetch graph data', err);
-        setData({ nodes: [], links: [] });
+        setAllData({ nodes: [], links: [] });
       }
     };
     fetchData();
   }, [project, type]);
 
+  const filteredData = React.useMemo(() => {
+    let nodes = allData.nodes;
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      nodes = nodes.filter(n => n.id.toLowerCase().includes(q));
+    }
+    if (filter === 'hubs') nodes = nodes.filter(n => n.is_hub);
+    else if (filter === 'dead') nodes = nodes.filter(n => n.is_dead_candidate);
+    else if (filter === 'drift') nodes = nodes.filter(n => n.documentation_drift?.drift_detected);
+    else if (filter === 'circular') nodes = nodes.filter(n => n.in_circular_dep);
+    const nodeIds = new Set(nodes.map(n => n.id));
+    const links = allData.links.filter((l: any) => nodeIds.has(l.source?.id ?? l.source) && nodeIds.has(l.target?.id ?? l.target));
+    return { nodes, links };
+  }, [allData, search, filter]);
+
+  const filterCounts = React.useMemo(() => ({
+    hubs: allData.nodes.filter(n => n.is_hub).length,
+    dead: allData.nodes.filter(n => n.is_dead_candidate).length,
+    drift: allData.nodes.filter(n => n.documentation_drift?.drift_detected).length,
+    circular: allData.nodes.filter(n => n.in_circular_dep).length,
+  }), [allData]);
+
   return (
-    <div className="graph-container">
-      <ErrorBoundary fallback={<p style={{ padding: '2rem' }}>Graph could not be loaded.</p>}>
-        <Suspense fallback={<p style={{ padding: '2rem', opacity: 0.5 }}>Loading graph engine…</p>}>
-          <ForceGraph
-            ref={fgRef}
-            graphData={data}
-            nodeLabel="id"
-            nodeColor={(node: any) =>
-              node.type === 'dataset' ? '#10b981' : node.type === 'transformation' ? '#f59e0b' : '#6366f1'
-            }
-            linkDirectionalArrowLength={3.5}
-            linkDirectionalArrowRelPos={1}
-            linkColor={() => 'rgba(255, 255, 255, 0.35)'}
-            linkWidth={1.5}
-            nodeRelSize={6}
-            onNodeClick={(node: any) => {
-              fgRef.current?.centerAt(node.x, node.y, 1000);
-              fgRef.current?.zoom(2, 1000);
-              onSelect(node);
-            }}
-            backgroundColor="#0a0a0c"
-          />
-        </Suspense>
-      </ErrorBoundary>
+    <div style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column' }}>
+      {/* Search + Filter toolbar */}
+      <div className="graph-toolbar glass" style={{ display: 'flex', gap: 8, padding: '8px 12px', margin: '8px 12px 0', borderRadius: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+        <Search size={14} style={{ opacity: 0.5, flexShrink: 0 }} />
+        <input
+          type="text"
+          placeholder="Filter nodes…"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          style={{ background: 'transparent', border: 'none', color: 'white', outline: 'none', fontSize: '0.85rem', minWidth: 120, flex: 1 }}
+        />
+        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+          {(['all', 'hubs', 'dead', 'drift', 'circular'] as GraphFilter[]).map(f => (
+            <button key={f} onClick={() => setFilter(f)} style={{
+              background: filter === f ? 'rgba(99,102,241,0.3)' : 'rgba(255,255,255,0.05)',
+              border: `1px solid ${filter === f ? 'rgba(99,102,241,0.6)' : 'rgba(255,255,255,0.1)'}`,
+              color: 'white', borderRadius: 6, padding: '2px 8px', fontSize: '0.75rem', cursor: 'pointer'
+            }}>
+              {f === 'all' ? `All (${allData.nodes.length})` : `${f} (${filterCounts[f as keyof typeof filterCounts]})`}
+            </button>
+          ))}
+        </div>
+      </div>
+      {/* Legend */}
+      <div style={{ display: 'flex', gap: 12, padding: '4px 12px', fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', flexWrap: 'wrap' }}>
+        <span><span style={{ color: '#10b981' }}>●</span> Low complexity</span>
+        <span><span style={{ color: '#f59e0b' }}>●</span> Medium (&gt;10)</span>
+        <span><span style={{ color: '#ef4444' }}>●</span> High (&gt;25)</span>
+        <span><span style={{ color: '#6366f1' }}>●</span> Module</span>
+        <span style={{ opacity: 0.6 }}>Hub nodes have thick border</span>
+      </div>
+      <div className="graph-container" style={{ flex: 1 }}>
+        <ErrorBoundary fallback={<p style={{ padding: '2rem' }}>Graph could not be loaded.</p>}>
+          <Suspense fallback={<p style={{ padding: '2rem', opacity: 0.5 }}>Loading graph engine…</p>}>
+            <ForceGraph
+              ref={fgRef}
+              graphData={filteredData}
+              nodeLabel="id"
+              nodeColor={(node: any) =>
+                node.type === 'dataset' ? '#10b981' : node.type === 'transformation' ? '#f59e0b' : '#6366f1'
+              }
+              linkDirectionalArrowLength={3.5}
+              linkDirectionalArrowRelPos={1}
+              linkColor={() => 'rgba(255, 255, 255, 0.35)'}
+              linkWidth={1.5}
+              nodeRelSize={6}
+              onNodeClick={(node: any) => {
+                fgRef.current?.centerAt(node.x, node.y, 1000);
+                fgRef.current?.zoom(2, 1000);
+                onSelect(node);
+              }}
+              backgroundColor="#0a0a0c"
+            />
+          </Suspense>
+        </ErrorBoundary>
+      </div>
     </div>
   );
 };
@@ -104,15 +165,19 @@ const KnowledgeGraph: React.FC<{ project: string; type: 'module' | 'lineage'; on
 const ArtifactViewer: React.FC<{ project: string; filename: string }> = ({ project, filename }) => {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
+  const [llmDisabled, setLlmDisabled] = useState(false);
 
   useEffect(() => {
     const fetchArtifact = async () => {
       setLoading(true);
       try {
         const res = await axios.get(`${API_BASE}/metadata/${project}?filename=${filename}`);
-        setContent(res.data.content);
+        const text = res.data.content;
+        setContent(text);
+        setLlmDisabled(text.includes('[LLM DISABLED]'));
       } catch {
         setContent('Artifact not found or analysis incomplete.');
+        setLlmDisabled(false);
       }
       setLoading(false);
     };
@@ -123,6 +188,11 @@ const ArtifactViewer: React.FC<{ project: string; filename: string }> = ({ proje
 
   return (
     <div className="artifact-container glass">
+      {llmDisabled && (
+        <div style={{ background: 'rgba(245, 158, 11, 0.15)', border: '1px solid rgba(245, 158, 11, 0.4)', borderRadius: 8, padding: '10px 16px', marginBottom: '1rem', color: '#fbbf24', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 8 }}>
+          ⚠ LLM analysis was disabled during this run. Some sections show placeholder data.
+        </div>
+      )}
       <div className="artifact-body">
         <ReactMarkdown>{content}</ReactMarkdown>
       </div>
@@ -214,7 +284,7 @@ const Dashboard: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [input, setInput] = useState('');
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
-  const [stats, setStats] = useState({ modules: 0, complexity: 0 });
+  const [stats, setStats] = useState({ modules: 0, complexity: 0, dead: 0, drift: 0 });
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const timerRef = useRef<number | null>(null);
@@ -232,25 +302,40 @@ const Dashboard: React.FC = () => {
     fetchProjects();
 
     let ws: WebSocket | null = null;
-    try {
-      const wsUrl = API_BASE.replace('http', 'ws') + '/ws/analysis';
-      ws = new WebSocket(wsUrl);
-      ws.onmessage = event => {
-        const data = JSON.parse(event.data);
-        
-        // Handle incoming logs with granular step filtering if needed
-        setLogs(prev => [...prev, data]);
-        
-        if (data.step === 'pipeline_complete') {
-          fetchProjects();
-          setIsTimerRunning(false);
-        }
-      };
-      ws.onclose = () => console.log('WebSocket closed');
-      ws.onerror = () => console.warn('WebSocket connection failed – live logs unavailable');
-    } catch {
-      console.warn('Could not open WebSocket');
-    }
+    let retryCount = 0;
+    const MAX_RETRIES = 3;
+    const RETRY_DELAYS = [2000, 4000, 8000];
+
+    const connect = () => {
+      try {
+        const wsUrl = API_BASE.replace('http', 'ws') + '/ws/analysis';
+        ws = new WebSocket(wsUrl);
+        ws.onmessage = event => {
+          const data = JSON.parse(event.data);
+          setLogs(prev => [...prev, data]);
+          if (data.step === 'pipeline_complete') {
+            fetchProjects();
+            setIsTimerRunning(false);
+            retryCount = 0;
+          }
+        };
+        ws.onclose = () => {
+          if (retryCount < MAX_RETRIES) {
+            const delay = RETRY_DELAYS[retryCount];
+            retryCount++;
+            setLogs(prev => [...prev, { step: 'ws_reconnect', details: `Reconnecting in ${delay / 1000}s… (attempt ${retryCount}/${MAX_RETRIES})` }]);
+            setTimeout(connect, delay);
+          } else {
+            console.warn('WebSocket max retries reached – live logs unavailable');
+          }
+        };
+        ws.onerror = () => console.warn('WebSocket connection failed');
+      } catch {
+        console.warn('Could not open WebSocket');
+      }
+    };
+
+    connect();
 
     return () => {
       ws?.close();
@@ -270,7 +355,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     if (!project) {
-      setStats({ modules: 0, complexity: 0 });
+      setStats({ modules: 0, complexity: 0, dead: 0, drift: 0 });
       setSelectedNode(null);
       return;
     }
@@ -280,10 +365,12 @@ const Dashboard: React.FC = () => {
         const res = await axios.get(`${API_BASE}/graph/${project}?type=module`);
         const nodes = res.data.nodes || [];
         const avgComp = nodes.reduce((acc: number, n: any) => acc + (n.complexity_score || 0), 0) / (nodes.length || 1);
-        setStats({ modules: nodes.length, complexity: parseFloat(avgComp.toFixed(1)) });
+        const deadCount = nodes.filter((n: any) => n.is_dead_candidate).length;
+        const driftCount = nodes.filter((n: any) => n.documentation_drift?.drift_detected).length;
+        setStats({ modules: nodes.length, complexity: parseFloat(avgComp.toFixed(1)), dead: deadCount, drift: driftCount });
       } catch (err) {
         console.error("Stats fetch failed", err);
-        setStats({ modules: 0, complexity: 0 });
+        setStats({ modules: 0, complexity: 0, dead: 0, drift: 0 });
       }
     };
     fetchStats();
@@ -411,6 +498,18 @@ const Dashboard: React.FC = () => {
               <span className="value">{stats.complexity}</span>
             </div>
             <div className="stat">
+              <span className="label">Dead Code</span>
+              <span className="value" style={{ color: stats.dead > 0 ? '#ef4444' : '#10b981' }}>
+                {stats.dead > 0 ? <><Skull size={14} style={{ display: 'inline', marginRight: 4 }} />{stats.dead}</> : stats.dead}
+              </span>
+            </div>
+            <div className="stat">
+              <span className="label">Doc Drift</span>
+              <span className="value" style={{ color: stats.drift > 0 ? '#f59e0b' : '#10b981' }}>
+                {stats.drift > 0 ? <><AlertTriangle size={14} style={{ display: 'inline', marginRight: 4 }} />{stats.drift}</> : stats.drift}
+              </span>
+            </div>
+            <div className="stat">
               <span className="label">Status</span>
               <span className="value" style={{ color: activeAgent === 'error' ? '#ef4444' : '#10b981' }}>
                 {activeAgent === 'idle' ? 'Ready' : activeAgent.toUpperCase()}
@@ -432,7 +531,7 @@ const Dashboard: React.FC = () => {
           <button
             className="premium-gradient"
             style={{ border: 'none', color: 'white', cursor: 'pointer', padding: '10px 20px', borderRadius: 8, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8 }}
-            onClick={() => { setProject(null); setStats({ modules: 0, complexity: 0 }); }}
+            onClick={() => { setProject(null); setStats({ modules: 0, complexity: 0, dead: 0, drift: 0 }); }}
           >
             <Plus size={16} /> New Project
           </button>
@@ -448,8 +547,7 @@ const Dashboard: React.FC = () => {
           <ArtifactViewer project={project!} filename="CODEBASE.md" />
         ) : (
           <div style={{ position: 'relative', flex: 1, display: 'flex' }}>
-            <KnowledgeGraph project={project} type={view === 'lineage' ? 'lineage' : 'module'} onSelect={setSelectedNode} />
-            {selectedNode && (
+            <KnowledgeGraph project={project} type={view === 'lineage' ? 'lineage' : 'module'} onSelect={setSelectedNode} />            {selectedNode && (
                <div className="inspector-panel glass">
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', alignItems: 'center' }}>
                    <h4 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -459,12 +557,32 @@ const Dashboard: React.FC = () => {
                      <X size={18} />
                    </button>
                  </div>
-                 <div className="inspector-content">
+               <div className="inspector-content">
                    <p className="label">ID / PATH</p>
                    <p className="value code">{selectedNode?.id}</p>
                    
                    <p className="label">PURPOSE</p>
                    <p className="value">{selectedNode?.purpose_statement || 'No semantic analysis available yet.'}</p>
+                   
+                   {(selectedNode?.is_dead_candidate || selectedNode?.in_circular_dep || selectedNode?.documentation_drift?.drift_detected) && (
+                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
+                       {selectedNode?.is_dead_candidate && (
+                         <span style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', color: '#ef4444', borderRadius: 6, padding: '2px 8px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: 4 }}>
+                           <Skull size={10} /> Dead Code
+                         </span>
+                       )}
+                       {selectedNode?.in_circular_dep && (
+                         <span style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.4)', color: '#f59e0b', borderRadius: 6, padding: '2px 8px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: 4 }}>
+                           <AlertTriangle size={10} /> Circular Dep
+                         </span>
+                       )}
+                       {selectedNode?.documentation_drift?.drift_detected && (
+                         <span style={{ background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.4)', color: '#a5b4fc', borderRadius: 6, padding: '2px 8px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: 4 }}>
+                           <Filter size={10} /> Doc Drift
+                         </span>
+                       )}
+                     </div>
+                   )}
                    
                    <p className="label">STATISTICS</p>
                    <div style={{ display: 'flex', gap: '1rem' }}>
@@ -496,6 +614,11 @@ const Dashboard: React.FC = () => {
               </button>
             </div>
             <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {!project && (
+                <div className="glass" style={{ padding: 12, borderRadius: 8, color: '#fbbf24', fontSize: '0.85rem' }}>
+                  Select a project first to use Navigator.
+                </div>
+              )}
               {chatMessages.map((m: { role: string; text: string }, i: number) => (
                 <div key={i} className={`glass message ${m.role}`} style={{ padding: '12px 16px', borderRadius: 12, alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start', maxWidth: '85%' }}>
                   <div className="prose-chat">
@@ -504,22 +627,24 @@ const Dashboard: React.FC = () => {
                 </div>
               ))}
               {isTyping && <div className="log-line fade">Navigator is searching knowledge base…</div>}
-              {chatMessages.length === 0 && <div className="glass" style={{ padding: 12, borderRadius: 8 }}>How can I help you understand this codebase?</div>}
+              {chatMessages.length === 0 && project && <div className="glass" style={{ padding: 12, borderRadius: 8 }}>How can I help you understand this codebase?</div>}
             </div>
             <div style={{ marginTop: '1rem', display: 'flex', gap: 8 }}>
               <input 
                 type="text" 
                 className="glass" 
-                style={{ flex: 1, padding: 12, color: 'white', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)' }} 
-                placeholder="Ask a question…" 
+                style={{ flex: 1, padding: 12, color: 'white', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', opacity: !project ? 0.5 : 1 }} 
+                placeholder={project ? "Ask a question…" : "Select a project first…"}
                 value={input}
                 onChange={e => setInput(e.target.value)}
-                onKeyPress={e => e.key === 'Enter' && handleSendMessage()}
+                onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
+                disabled={!project}
               />
               <button 
                 className="premium-gradient" 
-                style={{ border: 'none', padding: '0 20px', borderRadius: 8, color: 'white', fontWeight: 'bold', cursor: 'pointer' }}
+                style={{ border: 'none', padding: '0 20px', borderRadius: 8, color: 'white', fontWeight: 'bold', cursor: !project ? 'not-allowed' : 'pointer', opacity: !project ? 0.5 : 1 }}
                 onClick={handleSendMessage}
+                disabled={!project}
               >
                 Send
               </button>

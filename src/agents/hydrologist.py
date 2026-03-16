@@ -119,12 +119,12 @@ class Hydrologist:
                                     inference_type="Static Analysis",
                                     confidence=1.0
                                 )
-                
-                # Enrichment: Label Sources and Sinks
-                self._enrich_lineage_metadata()
                                 
             except Exception as e:
                 print(f"Error mapping lineage in {rel_path}: {e}")
+
+        # Enrichment: Label Sources and Sinks — called ONCE after all files processed
+        self._enrich_lineage_metadata()
 
     def _enrich_lineage_metadata(self):
         """Identifies and labels sources and sinks in the lineage graph."""
